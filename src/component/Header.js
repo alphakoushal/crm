@@ -155,7 +155,7 @@ clientObject[e.value] = {
         apppush.push(obj);
       })
       let formdata={
-        'type':'emailformat',
+        'type':'emailformat', 
         'data':'',
         'apps':JSON.stringify(apppush)
       }
