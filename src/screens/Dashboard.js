@@ -300,6 +300,16 @@ const names = [
    comments.shift();
    return comments.filter((c,i,a)=>{return (a.indexOf(c)==i && c!='')}).join('\r\n\r\n');
 }
+async function emailformat()
+{
+  let appno=document.querySelectorAll('.appno'); let apppush=[];
+  let formdata={
+    'type':'emailformat',
+    'data':'',
+    'apps':JSON.stringify(d.map((val)=>{return [val[0],val[1],val[11],val[5],val[7],val[2]]}))
+  }
+  const res = Uploaddata.emailformat(formdata).then((resposne)=>{return resposne});
+}
     return( 
 <>
  
@@ -307,7 +317,7 @@ const names = [
 {showeditmodal.state==true ? <Editmodal show={showeditmodal} fn={editinfo}></Editmodal> : <></> }
     <Commentmodal/>
     <Style></Style>
-    <Header clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
+    <Header emailformat={emailformat} clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
    
     <div className="container-fluid bootstrap-table">
         <div className="fixed-table-container fixed-height d-flex">

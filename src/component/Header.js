@@ -15,9 +15,8 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
 import { styled } from '@mui/system';
 import commentprocess from "../services/commentservice";
-import Uploaddata from "../services/uploaddata";
 import Addmodal from "./modals/addmodal";
-const Header = React.memo(({clearfilters,refreshdata,formdatas,showcurrencies}) =>{
+const Header = React.memo(({clearfilters,refreshdata,formdatas,showcurrencies,emailformat}) =>{
   console.log('header change');
   const navigate=useNavigate(); 
   let auth= localStorage.getItem("user"); 
@@ -147,21 +146,7 @@ clientObject[e.value] = {
       console.log('choose row');
     }
     }
-    async function emailformat()
-    {
-      let appno=document.querySelectorAll('.appno'); let apppush=[];
-      appno.forEach((value,key)=>{
-        let obj={'app':value.value,'senton':'','mailformat':''};
-        apppush.push(obj);
-      })
-      let formdata={
-        'type':'emailformat',
-        'data':'',
-        'apps':JSON.stringify(apppush)
-      }
-      const res = Uploaddata.emailformat(formdata).then((resposne)=>{return resposne});
-      console.log(res);
-    }
+
     const showuserprofile = () =>{
       let ps=document.querySelector('.user-profile');
       (ps.classList.contains('show') ? ps.classList.remove('show') : ps.classList.add('show'));
