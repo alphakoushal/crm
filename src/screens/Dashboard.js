@@ -17,6 +17,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Sidebarprofile from "../component/modals/Sidebarprofile";
+import Emailbox from "../component/modals/Emailprocess";
 import { constant } from "lodash";
 function Loading() {
     return <h2>🌀 Loading...</h2>;
@@ -29,6 +30,7 @@ const Dashboard =() =>{
     const [emailstatusdata,setemail]=useState([]);const [callstatusdata,setcall]=useState([]);
     const [showcurrencytab,setcurrency]=useState(false);
     const [showeditmodal, updateeditmodal] = useState({state:false,data:{}}); 
+    const [opensendmailbox, setsendmailbox] = useState(false);
     //const ref=useRef(false); 
     const auth= JSON.parse(localStorage.getItem("user")); 
     const valued=useSelector((state)=>state.userdata.value);
@@ -69,7 +71,12 @@ let formdata =useMemo(()=>{return formdata1},[formdata1])
         document.querySelector('table').classList.add("table","table-bordered","table-hover");
     }
    useEffect(()=>{loaddata(formdata);},[]);
-
+   const showmailbox = () =>{
+    setsendmailbox(true);
+  }
+  const closeemailsendbox = () =>{
+    setsendmailbox(false);
+  }
 function returndata(collection,value,key)
 {
   value=(value!='' && value !=null ? value.toLowerCase(): '');
@@ -300,16 +307,18 @@ const names = [
    comments.shift();
    return comments.filter((c,i,a)=>{return (a.indexOf(c)==i && c!='')}).join('\r\n\r\n');
 }
-async function emailformat()
+async function emailformat(t,a)
 {
   let appno=document.querySelectorAll('.appno'); let apppush=[];
   let formdata={
     'type':'emailformat',
     'data':'',
+    't':t,
+    'a':a,
     'apps':JSON.stringify(d.map((val)=>{return [val[0],val[1],val[11],val[5],val[7],val[2]]}))
   }
-  const res = Uploaddata.emailformat(formdata).then((resposne)=>{return resposne});
-}
+ return Uploaddata.emailformat(formdata).then((resposne)=>{return resposne});
+ }
     return( 
 <>
  
@@ -317,12 +326,12 @@ async function emailformat()
 {showeditmodal.state==true ? <Editmodal show={showeditmodal} fn={editinfo}></Editmodal> : <></> }
     <Commentmodal/>
     <Style></Style>
-    <Header emailformat={emailformat} clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
-   
+    <Header showmailbox={showmailbox}  clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
+    {opensendmailbox ? <Emailbox emailformat={emailformat} emailsdata={d} fn={closeemailsendbox}></Emailbox> : <></>}
     <div className="container-fluid bootstrap-table">
         <div className="fixed-table-container fixed-height d-flex">
         <ul style={{'width': '100%','left': '0','zIndex':'9','background':'white'}} className="breadcrumb">
-            <li className="col-2">
+            <li className="col-2"> 
               <input disabled className="form-control cell-name"/>
             </li>
             <li className="col-10" >

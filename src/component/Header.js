@@ -16,14 +16,15 @@ import TextareaAutosize from '@mui/base/TextareaAutosize';
 import { styled } from '@mui/system';
 import commentprocess from "../services/commentservice";
 import Addmodal from "./modals/addmodal";
-const Header = React.memo(({clearfilters,refreshdata,formdatas,showcurrencies,emailformat}) =>{
-  console.log('header change');
+
+const Header = React.memo(({showmailbox,clearfilters,refreshdata,formdatas,showcurrencies}) =>{
   const navigate=useNavigate(); 
   let auth= localStorage.getItem("user"); 
   auth =(auth!='' ? JSON.parse(auth) : '')
   const [openemailbox, setOpen] = useState(false);
   const [opencallbox, setOpencall] = useState(false);const [openfollowbox, setOpenfollow] = useState(false);
   const [openaddbox, setaddbox] = useState(false);
+
 const [status,setstatus] =useState();
 const [callstatus,setcallstatus] =useState();
 const StyledTextarea = styled(TextareaAutosize)(
@@ -64,6 +65,7 @@ const closeaddbox = ()=>{
   const handleClosefollow = () => {
     setOpenfollow(false);
   };
+
     const valued=useSelector((state)=>state.userdata.value);
     const [d,sd]=useState('hi');
     function showsidebar()
@@ -154,6 +156,7 @@ clientObject[e.value] = {
     return(
         <>
         {openaddbox ? <Addmodal fn={closeaddbox}></Addmodal> : <></>}
+       
          <Dialog open={openemailbox} onClose={handleClose}>
         <DialogTitle>Email Comments</DialogTitle>
         <DialogContent>
@@ -263,13 +266,6 @@ clientObject[e.value] = {
 
         <header className="app-header fixed-header"> 
           <nav className="navbar navbar-expand-lg navbar-light">
-            <ul className="navbar-nav">
-              <li className="nav-item d-none d-lg-block">
-                <a className="nav-link nav-icon-hover" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                  <i className="ti ti-search"></i>
-                </a>
-              </li>
-            </ul>
             <ul className="navbar-nav quick-links d-none d-lg-flex">
               <li className="nav-item dropdown hover-dd d-none d-lg-block">
                 <a className="nav-link" href="javascript:void(0)" data-bs-toggle="dropdown">Dashboard<span className="mt-1"><i className="ti ti-chevron-down"></i></span></a>
@@ -316,17 +312,60 @@ clientObject[e.value] = {
                   </div>
                 </div>
               </li>
-              <li className="nav-item dropdown-hover d-none d-lg-block">
-                <a onClick={(e)=>handleClickOpen(e)} className="nav-link" href="#"><i className="ti ti ti-mail"></i> Email Comment</a>
-              </li>
-              <li className="nav-item dropdown-hover d-none d-lg-block">
-                <a onClick={(e)=>callboxevent(e)} className="nav-link" href="#"><i className="ti ti-phone-call"></i> Call Comment</a>
-              </li>
-              <li className="nav-item dropdown-hover d-none d-lg-block">
-                <a onClick={(e)=>followboxevent(e)} className="nav-link" href="#"><i className="ti ti-brand-hipchat"></i> Followup</a>
-              </li>
-              <li className="nav-item dropdown-hover d-none d-lg-block">
-                <a onClick={(e)=>addentry(e)} className="nav-link" href="#"><i className="ti ti-brand-hipchat"></i> Add Application</a>
+              <li className="nav-item dropdown hover-dd d-none d-lg-block">
+                <a className="nav-link" href="javascript:void(0)" data-bs-toggle="dropdown">Comments<span className="mt-1"><i className="ti ti-chevron-down"></i></span></a>
+                <div className="dropdown-menu dropdown-menu-nav dropdown-menu-animate-up py-0">
+                  <div className="row">
+                    <div className="col-12">
+                      <div className=" ps-7 pt-7">
+                        <div className="border-bottom">
+                          <div className="row">
+                            <div className="col-6">
+                              <div className="position-relative">
+                                <a onClick={(e)=>handleClickOpen(e)} href="#" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div  class="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
+                                    <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-dd-chat.svg" alt="" class="img-fluid" width="24" height="24"/>
+                                  </div>
+                                  <div class="d-inline-block">
+                                    <h6 class="mb-1 fw-semibold bg-hover-primary"> Email Comment</h6>
+                                    <span class="fs-2 d-block text-dark">Add New Email Comment</span>
+                                  </div>
+                                </a>
+                                <a onClick={(e)=>callboxevent(e)} href="#" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div  class="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
+                                    <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-dd-chat.svg" alt="" class="img-fluid" width="24" height="24"/>
+                                  </div>
+                                  <div class="d-inline-block">
+                                    <h6 class="mb-1 fw-semibold bg-hover-primary"> Call Comment</h6>
+                                    <span class="fs-2 d-block text-dark">Add New Call Comment</span>
+                                  </div>
+                                </a>
+                                <a onClick={(e)=>followboxevent(e)} href="#" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div  class="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
+                                    <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-dd-chat.svg" alt="" class="img-fluid" width="24" height="24"/>
+                                  </div>
+                                  <div class="d-inline-block">
+                                    <h6 class="mb-1 fw-semibold bg-hover-primary">Followup</h6>
+                                    <span class="fs-2 d-block text-dark">Update Followup</span>
+                                  </div>
+                                </a>
+                                <a onClick={(e)=>addentry(e)} href="#" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div  class="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
+                                    <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-dd-chat.svg" alt="" class="img-fluid" width="24" height="24"/>
+                                  </div>
+                                  <div class="d-inline-block">
+                                    <h6 class="mb-1 fw-semibold bg-hover-primary">Add Application</h6>
+                                    <span class="fs-2 d-block text-dark">Add New application</span>
+                                  </div>
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </li>
             </ul> 
             <div className="d-block d-lg-none">
@@ -344,19 +383,17 @@ clientObject[e.value] = {
                   <i className="ti ti-align-justified fs-7"></i>
                 </a>
                 <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-center">
-               <li>
-               <select onChange={()=>{emailformat()}} id="templateid" className="form-select">
-                              <option value="">Choose Format</option>
-                                <option value="1">Format One</option>
-                                <option value="2">Format 2</option>
-                                <option value="3">Format 3</option>
-                              </select>
-               </li>
+               <li onClick={()=>showmailbox()} className="nav-item">
+                    <a className="nav-link notify-badge nav-icon-hover" href="javascript:void(0)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                        <i  className="ti ti-mail"></i>               
+                    </a>
+                  </li>
                 <li onClick={()=>clearfilters()} className="nav-item">
                     <a className="nav-link notify-badge nav-icon-hover" href="javascript:void(0)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-eraser"></i>               
                     </a>
                   </li>
+
                 <li onClick={()=>showcurrencies()} className="nav-item">
                     <a className="nav-link notify-badge nav-icon-hover" href="javascript:void(0)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-zoom-money"></i>               
