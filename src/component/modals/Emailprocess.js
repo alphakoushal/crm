@@ -2,10 +2,22 @@ import React,{Suspense,useEffect,useState} from "react";
 import { TableVirtuoso } from "react-virtuoso";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
-const Emailbox = ({fn,emailsdata,emailformat})=>{
+import Uploaddata from "../../services/uploaddata";
+const Emailbox = ({fn,emailsdata,closeemailsendbox})=>{
     console.log(emailsdata);
     const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:'',modalstatus:true});
-
+    async function emailformat(t,a,emailsdata)
+    {
+      let appno=document.querySelectorAll('.appno'); let apppush=[];
+      let formdata={
+        'type':'emailformat',
+        'data':'',
+        't':t,
+        'a':a,
+        'apps':JSON.stringify(emailsdata.map((val)=>{return [val[0],val[1],val[11],val[5],val[7],val[2]]}))
+      }
+     return Uploaddata.emailformat(formdata).then((resposne)=>{return resposne});
+     }
     function Loading() {
         return <h2>🌀 Loading...</h2>;
       }
@@ -27,10 +39,10 @@ if(t=='')
 
         }
         else{
-const res =await emailformat(t,a);
+const res =await emailformat(t,a,emailsdata);
 if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true,modalstatus:false, message: res.data.message,color:'success',icon:'success' })) }
 else {setvalidate((validate)=>({...validate,status:true,modalstatus:true,message:res.data.errors.error}));}
-
+closeemailsendbox(false);
     }
       }
       useEffect(()=>{

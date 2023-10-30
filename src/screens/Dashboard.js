@@ -307,18 +307,6 @@ const names = [
    comments.shift();
    return comments.filter((c,i,a)=>{return (a.indexOf(c)==i && c!='')}).join('\r\n\r\n');
 }
-async function emailformat(t,a)
-{
-  let appno=document.querySelectorAll('.appno'); let apppush=[];
-  let formdata={
-    'type':'emailformat',
-    'data':'',
-    't':t,
-    'a':a,
-    'apps':JSON.stringify(d.map((val)=>{return [val[0],val[1],val[11],val[5],val[7],val[2]]}))
-  }
- return Uploaddata.emailformat(formdata).then((resposne)=>{return resposne});
- }
     return( 
 <>
  
@@ -327,7 +315,7 @@ async function emailformat(t,a)
     <Commentmodal/>
     <Style></Style>
     <Header showmailbox={showmailbox}  clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
-    {opensendmailbox ? <Emailbox emailformat={emailformat} emailsdata={d} fn={closeemailsendbox}></Emailbox> : <></>}
+    {opensendmailbox ? <Emailbox closeemailsendbox={closeemailsendbox} emailsdata={d} fn={closeemailsendbox}></Emailbox> : <></>}
     <div className="container-fluid bootstrap-table">
         <div className="fixed-table-container fixed-height d-flex">
         <ul style={{'width': '100%','left': '0','zIndex':'9','background':'white'}} className="breadcrumb">
