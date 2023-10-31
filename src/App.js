@@ -7,7 +7,7 @@ import './App.css';
 import './bootstrap-table.min.css';
 function App() {
   let auth= localStorage.getItem("user"); 
-  auth =(auth!='' ? JSON.parse(auth) : '')
+  auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
   return (
     <div className="page-wrapper" id="main-wrapper" data-theme="blue_theme" data-layout="vertical" data-sidebartype="" data-sidebar-position="fixed" data-header-position="">
      <BrowserRouter basename={process.env.PUBLIC_URL}>

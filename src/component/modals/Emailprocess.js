@@ -1,10 +1,12 @@
-import React,{Suspense,useEffect,useState} from "react";
+import React,{Suspense,useEffect,useState,useContext} from "react";
 import { TableVirtuoso } from "react-virtuoso";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Uploaddata from "../../services/uploaddata";
 const Emailbox = ({fn,emailsdata,closeemailsendbox})=>{
-    console.log(emailsdata);
+  let auth= localStorage.getItem("user"); 
+ 
+  auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
     const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:'',modalstatus:true});
     async function emailformat(t,a,emailsdata)
     {
@@ -13,6 +15,7 @@ const Emailbox = ({fn,emailsdata,closeemailsendbox})=>{
         'type':'emailformat',
         'data':'',
         't':t,
+        'userid':auth.userid,
         'a':a,
         'apps':JSON.stringify(emailsdata.map((val)=>{return [val[0],val[1],val[11],val[5],val[7],val[2]]}))
       }
@@ -42,7 +45,7 @@ if(t=='')
 const res =await emailformat(t,a,emailsdata);
 if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true,modalstatus:false, message: res.data.message,color:'success',icon:'success' })) }
 else {setvalidate((validate)=>({...validate,status:true,modalstatus:true,message:res.data.errors.error}));}
-closeemailsendbox(false);
+setTimeout(()=>{closeemailsendbox(false)},1000);
     }
       }
       useEffect(()=>{
@@ -96,9 +99,7 @@ return (
     <div className="mb-3 text-center d-md-flex align-items-center mt-3  align-content-md-between gap-3">
     <select id="templateid" className="form-select">
                               <option value="">Choose Format</option>
-                                <option value="1">Format One</option>
-                                <option value="2">Format 2</option>
-                                <option value="3">Format 3</option>
+                                <option value="1">First Email</option>
                               </select>
                               <select id="chooseaccount" className="form-select">
                               <option value="">Choose Account</option>
