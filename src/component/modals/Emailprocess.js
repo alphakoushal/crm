@@ -100,6 +100,7 @@ return (
     <select id="templateid" className="form-select">
                               <option value="">Choose Format</option>
                                 <option value="1">First Email</option>
+                                <option value="2">Agent First Email</option>
                               </select>
                               <select id="chooseaccount" className="form-select">
                               <option value="">Choose Account</option>
