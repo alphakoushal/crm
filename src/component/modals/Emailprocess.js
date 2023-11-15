@@ -8,16 +8,20 @@ const Emailbox = ({fn,emailsdata,closeemailsendbox})=>{
  
   auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
     const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:'',modalstatus:true});
-    async function emailformat(t,a,emailsdata)
+    async function emailformat(t,a,emailsdata,title,template,account)
     {
       let appno=document.querySelectorAll('.appno'); let apppush=[];
       let formdata={
         'type':'emailformat',
         'data':'',
         't':t,
+        'templatename':template,
+        'account':account,
+        'title':title,
         'userid':auth.userid,
         'a':a,
-        'apps':JSON.stringify(emailsdata.map((val)=>{return [val[0],val[1],val[11],val[5],val[7],val[2]]}))
+        'totalapp':emailsdata.length,
+        'apps':JSON.stringify(emailsdata.map((val)=>{return [val[0],val[1],val[11],val[5],val[7],val[2],val[10]]}))
       }
      return Uploaddata.emailformat(formdata).then((resposne)=>{return resposne});
      }
@@ -30,19 +34,25 @@ const Emailbox = ({fn,emailsdata,closeemailsendbox})=>{
 }
       async function choosetype(e){
         e.preventDefault();
-let t=document.querySelector('#templateid').value;
-let a=document.querySelector('#chooseaccount').value;
-if(t=='')
+let t=document.querySelector('#templateid');
+let a=document.querySelector('#chooseaccount');
+let title=document.querySelector('#crontitle').value;
+if(t.value=='')
         {
             setvalidate((validate)=>({...validate,status:true,message:'Please Choose Email format'}));
         }
-        else if(a=='')
+        else if(a.value=='')
         {
             setvalidate((validate)=>({...validate,status:true,message:'Please Choose Account'}));
 
         }
+        else if(title=='')
+        {
+            setvalidate((validate)=>({...validate,status:true,message:'Please Enter Title'}));
+
+        }
         else{
-const res =await emailformat(t,a,emailsdata);
+const res =await emailformat(t.value,a.value,emailsdata,title,t.options[t.selectedIndex].text,a.options[a.selectedIndex].text);
 if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true,modalstatus:false, message: res.data.message,color:'success',icon:'success' })) }
 else {setvalidate((validate)=>({...validate,status:true,modalstatus:true,message:res.data.errors.error}));}
 setTimeout(()=>{closeemailsendbox(false)},1000);
@@ -82,6 +92,7 @@ return (
  <th><div className="headers">DEADLINE - 30 mth</div></th>
  <th><div className="headers">Email-id</div></th>
  <th><div className="headers">APPLICANT NAME</div></th>
+ <th><div className="headers">Contact Person NAME</div></th>
         </tr>
       )}
       itemContent={(index, user) => (
@@ -89,18 +100,26 @@ return (
  <td  className="column-value">{user[2]}</td>
  <td  className="column-value">{user[1]}</td>
  <td  className="column-value">{user[5]}</td>
- <td  className="column-value">{user[10]}</td>
  <td  className="column-value">{user[11]}</td>
+ <td  className="column-value">{user[7]}</td>
+ <td  className="column-value">{user[10]}</td>
  </>
       )} 
       
     />
     </Suspense>
     <div className="mb-3 text-center d-md-flex align-items-center mt-3  align-content-md-between gap-3">
+    <input type="text" class="form-control" id="crontitle" placeholder="Enter Tile"/>
     <select id="templateid" className="form-select">
                               <option value="">Choose Format</option>
                                 <option value="1">First Email</option>
                                 <option value="2">Agent First Email</option>
+                                <option value="3">Agent First Email Reminder</option>
+                                <option value="4">Agent Duple Email</option>
+                                <option value="5">Individual Duple Email</option>
+                                <option value="6">Individual Email Reminder</option>
+                                <option value="7">Old Individual First Email</option>
+                                <option value="8">Old Individual Third Reminder Email</option>
                               </select>
                               <select id="chooseaccount" className="form-select">
                               <option value="">Choose Account</option>

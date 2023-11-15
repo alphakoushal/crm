@@ -17,7 +17,7 @@ import { styled } from '@mui/system';
 import commentprocess from "../services/commentservice";
 import Addmodal from "./modals/addmodal";
 
-const Header = React.memo(({showmailbox,clearfilters,refreshdata,formdatas,showcurrencies}) =>{
+const Header = React.memo(({showmailbox,showcronbox,clearfilters,refreshdata,formdatas,showcurrencies}) =>{
   const navigate=useNavigate(); 
   let auth= localStorage.getItem("user"); 
   auth =(auth!='' ? JSON.parse(auth) : '')
@@ -383,28 +383,33 @@ clientObject[e.value] = {
                   <i className="ti ti-align-justified fs-7"></i>
                 </a>
                 <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-center">
-               <li onClick={()=>showmailbox()} className="nav-item">
+               <li title="Add Cron Task" onClick={()=>showmailbox()} className="nav-item">
                     <a className="nav-link notify-badge nav-icon-hover" href="javascript:void(0)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-mail"></i>               
                     </a>
                   </li>
-                <li onClick={()=>clearfilters()} className="nav-item">
+                  <li title="Cron job status" onClick={()=>showcronbox()} className="nav-item">
+                    <a className="nav-link notify-badge nav-icon-hover" href="javascript:void(0)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                        <i  className="ti ti-calendar-time"></i>               
+                    </a>
+                  </li>
+                <li title="Clear Filter" onClick={()=>clearfilters()} className="nav-item">
                     <a className="nav-link notify-badge nav-icon-hover" href="javascript:void(0)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-eraser"></i>               
                     </a>
                   </li>
 
-                <li onClick={()=>showcurrencies()} className="nav-item">
+                <li title="Show currencies" onClick={()=>showcurrencies()} className="nav-item">
                     <a className="nav-link notify-badge nav-icon-hover" href="javascript:void(0)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-zoom-money"></i>               
                     </a>
                   </li>
-                  <li onClick={()=>showsidebar()} className="nav-item">
+                  <li title="Open sidebar" onClick={()=>showsidebar()} className="nav-item">
                     <a className="nav-link notify-badge nav-icon-hover" href="javascript:void(0)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-menu-2"></i>               
                     </a>
                   </li>
-                  <li onClick={()=>refreshdata(formdatas)} className="nav-item">
+                  <li title="Refresh Data" onClick={()=>refreshdata(formdatas)} className="nav-item">
                     <a className="nav-link notify-badge nav-icon-hover" href="javascript:void(0)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-refresh"></i>               
                     </a>

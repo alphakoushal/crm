@@ -18,6 +18,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Sidebarprofile from "../component/modals/Sidebarprofile";
 import Emailbox from "../component/modals/Emailprocess";
+import Cronlist from "../component/modals/cron-list";
 import { constant } from "lodash";
 function Loading() {
     return <h2>🌀 Loading...</h2>;
@@ -27,10 +28,14 @@ const Dashboard =() =>{
     const [d,sd]=useState([]); const [d2,gd]=useState([]);
      const [profilebar,setprofilebar] =useState({status:false,email:''});
     const [sortDown, setSortDown] = useState(true); 
-    const [emailstatusdata,setemail]=useState([]);const [callstatusdata,setcall]=useState([]);
+    const [emailstatusdata,setemail]=useState([]);
+    const [applicantstatusdata,setapplicant]=useState([]);
+    const [ciodata,setcio]=useState([]);
+    const [callstatusdata,setcall]=useState([]);
     const [showcurrencytab,setcurrency]=useState(false);
     const [showeditmodal, updateeditmodal] = useState({state:false,data:{}}); 
     const [opensendmailbox, setsendmailbox] = useState(false);
+    const [opencronbox, setcronbox] = useState(false);
     //const ref=useRef(false); 
     const auth= JSON.parse(localStorage.getItem("user")); 
     const valued=useSelector((state)=>state.userdata.value);
@@ -74,6 +79,12 @@ let formdata =useMemo(()=>{return formdata1},[formdata1])
    const showmailbox = () =>{
     setsendmailbox(true);
   }
+  const showcronbox = () =>{
+    setcronbox(true);
+  }
+  const closecronbox = () =>{
+    setcronbox(false);
+  }
   const closeemailsendbox = () =>{
     setsendmailbox(false);
   }
@@ -83,7 +94,7 @@ function returndata(collection,value,key)
 let t=-1;
     for(let i=0;i<collection.length;i++)
     {
-        if(key==23 || key==24)
+        if(key==23 || key==24 || key==9)
         {
             if(value==collection[i])
     {
@@ -179,7 +190,7 @@ async function pickvalue(e,i)
 {
     if(e.detail==1)
     {
-        console.log(e.target.childNodes[0].data);
+       // console.log(e.target.childNodes[0]);
     document.querySelector('.cell-name').value=document.querySelectorAll('.custom-table table thead tr th')[i].querySelector('.headers').innerText;
     document.querySelector('.cell-value').value=e.target.innerHTML;
     }
@@ -267,6 +278,8 @@ const names = [
 {'key':'9','value':'Dupe'},
 {'key':'10','value':'Exhausted'},
   ];
+  const applicantstatus = [{'key':'small','value':'Small'},{'key':'large','value':'Large'}];
+  const contactinfostatus = [{'key':'agent','value':'Agent'},{'key':'individual','value':'Individual'},{'key':'Both - Individual & Agent','value':'Both - Individual & Agent'}];
   const callnames = [{'key':'1','value':'Ni'},
   {'key':'2','value':'Lb'},
   {'key':'3','value':'Voice mail'},
@@ -280,6 +293,14 @@ const names = [
    setemail(e.target.value)
    filterdata(23,e.target.value.toString())
   }
+  const handlecio = (e) =>{
+    setcio(e.target.value)
+    filterdata(9,e.target.value.toString())
+   }
+  const handleapplicant = (e) =>{
+    setapplicant(e.target.value)
+    filterdata(8,e.target.value.toString())
+   }
   const handlecallchange = (e) =>{
     setcall(e.target.value);
     filterdata(24,e.target.value.toString())
@@ -314,8 +335,9 @@ const names = [
 {showeditmodal.state==true ? <Editmodal show={showeditmodal} fn={editinfo}></Editmodal> : <></> }
     <Commentmodal/>
     <Style></Style>
-    <Header showmailbox={showmailbox}  clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
+    <Header showmailbox={showmailbox} showcronbox={showcronbox}  clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
     {opensendmailbox ? <Emailbox closeemailsendbox={closeemailsendbox} emailsdata={d} fn={closeemailsendbox}></Emailbox> : <></>}
+    {opencronbox ? <Cronlist closecronbox={closecronbox}></Cronlist> : <></>}
     <div className="container-fluid bootstrap-table">
         <div className="fixed-table-container fixed-height d-flex">
         <ul style={{'width': '100%','left': '0','zIndex':'9','background':'white'}} className="breadcrumb">
@@ -340,9 +362,56 @@ const names = [
 <th style={{  background: 'white' }}><div className="headers">DEADLINE - 30 mth<i className="ti ti-sort-ascending" onClick={()=>{sortdata(5)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(5,e.target.value)} type='text'></input></th>
 <th style={{  background: 'white' }}><div className="headers">DEADLINE - 31 mth<i className="ti ti-sort-ascending" onClick={()=>{sortdata(6)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(6,e.target.value)} type='text'></input></th>
 <th style={{  background: 'white' }}><div className="headers">APPLICANT NAME<i className="ti ti-sort-ascending" onClick={()=>{sortdata(7)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(7,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Applicant Status<i className="ti ti-sort-ascending" onClick={()=>{sortdata(8)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(8,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">CONTACT INFO OF<i className="ti ti-sort-ascending" onClick={()=>{sortdata(9)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(9,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">CONTACT PERSON<i className="ti ti-sort-ascending" onClick={()=>{sortdata(10)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(10,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Applicant Status<i className="ti ti-sort-ascending" onClick={()=>{sortdata(8)}}></i> </div>
+
+<FormControl sx={{ m: 0, width: 100 }}>
+    
+        <Select
+          labelId="demo-multiple-name-label"
+          id="demo-multiple-name"
+          multiple
+          value={applicantstatusdata}
+          onChange={handleapplicant}
+          input={<OutlinedInput label="Name" />}
+          MenuProps={MenuProps}
+        >
+          {applicantstatus.map((name) => (
+            <MenuItem
+              key={name.key}
+              value={name.key}
+            >
+              {name.value}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+</th>
+<th style={{  background: 'white' }}><div className="headers">CONTACT INFO OF<i className="ti ti-sort-ascending" onClick={()=>{sortdata(9)}}></i> </div>
+
+<FormControl sx={{ m: 0, width: 100 }}>
+    
+        <Select
+          labelId="demo-multiple-name-label"
+          id="demo-multiple-name"
+          multiple
+          value={ciodata}
+          onChange={handlecio}
+          input={<OutlinedInput label="Name" />}
+          MenuProps={MenuProps}
+        >
+          {contactinfostatus.map((name) => (
+            <MenuItem
+              key={name.key}
+              value={name.key}
+            >
+              {name.value}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+</th><th style={{  background: 'white' }}><div className="headers">CONTACT PERSON<i className="ti ti-sort-ascending" onClick={()=>{sortdata(10)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(10,e.target.value)} type='text'></input></th>
 <th style={{  background: 'white' }}><div className="headers">EMAIL ID<i className="ti ti-sort-ascending" onClick={()=>{sortdata(11)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(11,e.target.value)} type='text'></input></th>
 <th style={{  background: 'white' }}><div className="headers">Domain<i className="ti ti-sort-ascending" onClick={()=>{sortdata(12)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(12,e.target.value)} type='text'></input></th>
 <th style={{  background: 'white' }}><div className="headers">PH. NO.<i className="ti ti-sort-ascending" onClick={()=>{sortdata(13)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(13,e.target.value)} type='text'></input></th>

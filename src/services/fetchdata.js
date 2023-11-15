@@ -14,6 +14,15 @@ const fetchdata = (data) => {
        return response;
       });
 };
+const fetchcrondata = (data) =>{
+return axios({
+method :"POST",
+headers :axiosConfig,
+url: API_URL+'employee/auth/reactauth/fetchcrondata',
+data :data
+}).then((response)=> {return response})
+}
+
 const Analyticdata = (data) => {
   return axios({
       method: 'POST',
@@ -42,7 +51,7 @@ url: API_URL+'employee/auth/',
   }).then((response)=>{return response;})
 }
 const Fetchdata = {
-  fetchdata,geteditdata,fetchhistory,Analyticdata
+  fetchdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata
 }
 
 export default Fetchdata;
