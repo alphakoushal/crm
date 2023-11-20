@@ -251,7 +251,7 @@ const clearfilter =useCallback(()=>
     })
     sd(d2);
     dispatch(userprofileupdate(d2.length));
-},[showcurrencytab]);
+},[d]);
 const showcurrency = useCallback(()=>
 {
    setcurrency((prev)=>(prev ? false : true));

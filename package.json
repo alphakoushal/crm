@@ -25,6 +25,7 @@
     "react-scripts": "5.0.1",
     "react-virtuoso": "^4.4.0",
     "redux-thunk": "^2.4.2",
+    "smtp-protocol": "^2.4.7",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
