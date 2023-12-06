@@ -23,11 +23,9 @@ const Editmodal = function ({ show, fn }) {
            }, 1000);
         }
     },[])
-    function handleClose() {
-        updatedata(()=>({ ...validate, status: false }));
-    }
     function updatestate(value, key) {
-        updatedata({ ...data, [key]: value });
+      //  updatedata({ ...data, [key]: value });
+        updatedata((data)=>({...data,[key]: value}));
         console.log(data);
     }
     function validatedata(e,app)
@@ -48,7 +46,7 @@ const Editmodal = function ({ show, fn }) {
             setvalidate((validate)=>({...validate,status:true,message:'Enter isr'}));
         }
         else if(data.drawing=='')
-        {setvalidate((validate)=>({...validate,status:true,message:'Enter drawing'}));}
+        {setvalidate((prev)=>({...prev,status:true,message:'Enter drawings'}));}
         else if(data.priority=='')
         {setvalidate((validate)=>({...validate,status:true,message:'Enter priority'}));}
         else if(data.claim=='')
@@ -63,7 +61,7 @@ const Editmodal = function ({ show, fn }) {
         {setvalidate((validate)=>({...validate,status:true,message:'Enter agent name'}));}
         else if(data.p_h_n=='')
         {setvalidate((validate)=>({...validate,status:true,message:'Enter phone number'}));}
-        else if(data.company_name=='')
+        else if(data.company_name=='' && data.c_i_o!='Individual')
         {setvalidate((validate)=>({...validate,status:true,message:'Enter company number'}));}
         else if(data.c_p_f=='')
         {setvalidate((validate)=>({...validate,status:true,message:'Enter contact person first name'}));}
@@ -107,7 +105,7 @@ document.querySelector('#d31').value=moment(v).add(31, 'M').subtract(1, 'd').for
 }
     return (
         <>
-            <Snackbar open={validate.status} autoHideDuration={1000} onClose={handleClose}>
+            <Snackbar open={validate.status} autoHideDuration={1000}>
 
                 <MuiAlert elevation={6} variant="filled" color={validate.color} severity={validate.icon}>{validate.message}</MuiAlert>
             </Snackbar>
@@ -171,7 +169,7 @@ document.querySelector('#d31').value=moment(v).add(31, 'M').subtract(1, 'd').for
                                                                 <select onChange={(e)=>{updatestate(e.target.value,'applicant_status')}} className="form-control restrictedinput validate-field" id="APPLICANT_STATUS" name="APPLICANT_STATUS">
                                                                     <option value="">APPLICANT STATUS</option>
                                                                     <option selected={ data.applicant_status=='small' ? true: false } value="small">small</option>
-                                                                    <option selected={ data.applicant_status=='large' ? true: false } value="large">large</option>                                                    </select>
+                                                                    <option selected={ data.applicant_status.toLowerCase()=='large' ? true: false } value="large">large</option>                                                    </select>
                                                             </div>
                                                         </div>
 

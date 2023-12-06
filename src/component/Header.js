@@ -1,4 +1,4 @@
-import React,{useState,memo } from "react";
+import React,{useState,memo,useEffect } from "react";
 import { useDispatch,useSelector } from "react-redux";
 import { BrowserRouter, Routes, Route,Link,useNavigate, json } from "react-router-dom";
 import Button from '@mui/material/Button';
@@ -16,17 +16,18 @@ import TextareaAutosize from '@mui/base/TextareaAutosize';
 import { styled } from '@mui/system';
 import commentprocess from "../services/commentservice";
 import Addmodal from "./modals/addmodal";
-
-const Header = React.memo(({showmailbox,showcronbox,clearfilters,refreshdata,formdatas,showcurrencies}) =>{
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
+const Header = React.memo(({alldata,showmailbox,showdupemailbox,showcronbox,clearfilters,refreshdata,formdatas,showcurrencies}) =>{
   const navigate=useNavigate(); 
   let auth= localStorage.getItem("user"); 
   auth =(auth!='' ? JSON.parse(auth) : '')
-  const [openemailbox, setOpen] = useState(false);
-  const [opencallbox, setOpencall] = useState(false);const [openfollowbox, setOpenfollow] = useState(false);
+  const [openemailbox, setOpen] = useState({status:false,type:'',title:''});
+  const [openfollowbox, setOpenfollow] = useState(false);
   const [openaddbox, setaddbox] = useState(false);
-
+  const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:'',inprocess:false});
 const [status,setstatus] =useState();
-const [callstatus,setcallstatus] =useState();
+
 const StyledTextarea = styled(TextareaAutosize)(
   ({ theme }) => `
   width: 100%;
@@ -41,29 +42,27 @@ const StyledTextarea = styled(TextareaAutosize)(
 const addentry = ()=>{
   setaddbox(true);
 }
+useEffect(()=>{
+  return()=>{ 
+     setTimeout(() => {
+      setvalidate(()=>({...validate,status:false}));
+      //show.state=false;
+     }, 1000);
+  }
+},[])
 const closeaddbox = ()=>{
   setaddbox(false);
 }
-  const handleClickOpen = function (e) {
+  const handleClickOpen = function (e,type,title) {
     e.preventDefault();
-    setOpen(true);
-  };
-  const callboxevent = function (e) {
-    e.preventDefault();
-    setOpencall(true);
+    setOpen({status:true,type:type,title:title});
   };
   const followboxevent = function (e) {
     e.preventDefault();
     setOpenfollow(true);
   };
   const handleClose = () => {
-    setOpen(false);
-  };
-  const handleClosecall = () => {
-    setOpencall(false);
-  };
-  const handleClosefollow = () => {
-    setOpenfollow(false);
+    setOpen({status:false,type:'',title:''});
   };
 
     const valued=useSelector((state)=>state.userdata.value);
@@ -78,25 +77,51 @@ localStorage.setItem('user','')
 navigate("/");
 window.location.reload();
     }
-    async function submitemailform()
+    async function submitemailform(type)
     {
       let clientObject={};
-      let appno=document.querySelectorAll('.appno');
+     // let appno=document.querySelectorAll('.appno');
+      let commentdate=document.querySelector('#name').value;
+      let commenttext=document.querySelector('#textarea').value;
+      let appno=document.querySelector('#allapp').value.split(',');
+      if(validate.inprocess)
+      {
+          setvalidate((validate)=>({...validate,status:true,message:'Request In process'}));
+      }
+      else if(status=='' || typeof(status)=='undefined')
+      {
+          setvalidate((validate)=>({...validate,status:true,message:'Choose Status'}));
+      }
+      else if(appno=='' || typeof(appno)=='undefined' || appno.length<=0)
+      {
+          setvalidate((validate)=>({...validate,status:true,message:'Add Applications'}));
+      }
+      else if(commentdate=='' || typeof(commentdate)=='undefined')
+      {
+          setvalidate((validate)=>({...validate,status:true,message:'Choose Date'}));
+      }
+      else if(commenttext=='' || typeof(commenttext)=='undefined')
+      {
+          setvalidate((validate)=>({...validate,status:true,message:appno.length}));
+      }
+      else
+      {
       appno.forEach((e,index)=>{
-        if(e.checked)
+        let getdata=alldata.filter((fv)=>{return fv[2]==e});
+        if(getdata.length>0)
         {
-clientObject[e.value] = {
+clientObject[e] = {
   "index": index,
-  "firstemail": e.closest('tr').querySelectorAll('td')[20].innerText,
-  "followup": e.closest('tr').querySelectorAll('td')[21].innerText,
-  "date": document.querySelector('#name').value,
+  "firstemail": getdata[0][20],//document.querySelector(`.appno[value='${e}']`).closest('tr').querySelectorAll('td')[21].innerText,
+  "followup": getdata[0][21],//document.querySelector(`.appno[value='${e}']`).closest('tr').querySelectorAll('td')[22].innerText,
+  "date": commentdate,
   "status": status,
-  "comment": document.querySelector('#textarea').value,
-  "domain":e.closest('tr').querySelectorAll('td')[12].innerText,
-  "email":e.closest('tr').querySelectorAll('td')[11].innerText,
-  "status_type": 'email'
+  "comment": commenttext,
+  "domain":getdata[0][12],//document.querySelector(`.appno[value='${e}']`).closest('tr').querySelectorAll('td')[13].innerText,
+  "email":getdata[0][11],//document.querySelector(`.appno[value='${e}']`).closest('tr').querySelectorAll('td')[12].innerText,
+  "status_type": type
 };
-        }
+      }
       })
 
       var salesdata = {
@@ -105,48 +130,24 @@ clientObject[e.value] = {
     };
     if(Object.keys(clientObject).length>=1)
     {
-   let res= await commentprocess.updatecomments(salesdata).then((response)=>{return response});
-   console.log(res);
-    }
-    else
-    {
-      console.log('choose row');
-    }
-    }
-    async function submitcallform()
-    {
-      let clientObject={};
-      let appno=document.querySelectorAll('.appno');
-      appno.forEach((e,index)=>{
-        if(e.checked)
-        {
-clientObject[e.value] = {
-  "index": index,
-  "firstemail": e.closest('tr').querySelectorAll('td')[20].innerText,
-  "followup": e.closest('tr').querySelectorAll('td')[21].innerText,
-  "date": document.querySelector('#calldate').value,
-  "status": callstatus,
-  "comment": document.querySelector('#calltextarea').value,
-  "domain":e.closest('tr').querySelectorAll('td')[12].innerText,
-  "email":e.closest('tr').querySelectorAll('td')[11].innerText,
-  "status_type": 'call'
-};
-        }
-      })
+      setvalidate((validate)=>({...validate,inprocess:true}));
+   let status= await commentprocess.updatecomments(salesdata).then((response)=>{return response});
+   if (status.data.success) { setvalidate((prev)=>({ ...prev, status: true,inprocess:false, message: status.data.message,color:'success',icon:'success' }));
+   setOpen({status:false,type:'',title:''}); 
+   
+  }
+   else
+   {
+  setvalidate((prev)=>({ ...prev, status: true,inprocess:false, message: status.data.errors.error,color:'error',icon:'error' }))     
+   }
 
-      var salesdata = {
-        "call_comment_data": JSON.stringify(clientObject),
-        "type": 'call_comment_react'
-    };
-    if(Object.keys(clientObject).length>=1)
-    {
-   let res= await commentprocess.updatecomments(salesdata).then((response)=>{return response});
-   console.log(res);
     }
     else
     {
-      console.log('choose row');
+      setvalidate((prev)=>({ ...prev, status: true,inprocess:false, message: 'PLease add Applications',color:'error',icon:'error' }))     
+
     }
+  }
     }
 
     const showuserprofile = () =>{
@@ -155,14 +156,19 @@ clientObject[e.value] = {
     }
     return(
         <>
+                    <Snackbar open={validate.status} autoHideDuration={1000}>
+
+<MuiAlert elevation={6} variant="filled" color={validate.color} severity={validate.icon}>{validate.message}</MuiAlert>
+</Snackbar>
         {openaddbox ? <Addmodal fn={closeaddbox}></Addmodal> : <></>}
        
-         <Dialog open={openemailbox} onClose={handleClose}>
-        <DialogTitle>Email Comments</DialogTitle>
+         <Dialog open={openemailbox.status} onClose={handleClose}>
+        <DialogTitle>{openemailbox.title}</DialogTitle>
         <DialogContent>
           <div className="row pt-3">
             <div className="col-md-6">
         <FormControl fullWidth>
+  {openemailbox.type=='email' ? <>
   <InputLabel id="demo-simple-select-label">Email status</InputLabel>
   <Select
     labelId="demo-simple-select-label"
@@ -182,6 +188,27 @@ clientObject[e.value] = {
     <MenuItem value={9}>Dupe</MenuItem>
     <MenuItem value={10}>Exhausted</MenuItem>
   </Select>
+  </> :  
+  <>
+   <InputLabel id="demo-simple-select-label">Call status</InputLabel>
+  <Select
+    labelId="demo-simple-select-label"
+    id="demo-simple-select"
+    value={status}
+    label="Call status"
+    onChange={(event)=>setstatus(event.target.value)}
+  >
+    <MenuItem value={1}>Ni</MenuItem>
+    <MenuItem value={2}>Lb</MenuItem>
+    <MenuItem value={3}>Voice mail</MenuItem>
+    <MenuItem value={4}>Invalid no</MenuItem>
+    <MenuItem value={5}>Email sent</MenuItem>
+    <MenuItem value={6}>Cb</MenuItem>
+    <MenuItem value={7}>Ringing</MenuItem>
+    <MenuItem value={8}>Dnc</MenuItem>
+    <MenuItem value={9}>Dupe</MenuItem>
+    <MenuItem value={10}>Exhausted</MenuItem>
+  </Select></>}
 </FormControl>
 </div>
 <div className="col-md-6">
@@ -195,71 +222,22 @@ clientObject[e.value] = {
           />
           </div>
           <div className="col-md-12 pt-3">
-              <StyledTextarea
+              <textarea
       aria-label="Description"
-      minRows={3}
-      id="textarea"
-      placeholder="Description"
+      rows={3}
+      className="textarea"
+      id="allapp"
+      placeholder="Add comma Separated Application Number."
     />
+    </div>
+          <div className="col-md-12 pt-3">
+              <textarea aria-label="Description" rows={3} className="textarea" id="textarea" placeholder="Description" />
     </div>
     </div>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={submitemailform}>Submit</Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog open={opencallbox} onClose={handleClosecall}>
-        <DialogTitle>Call Comments</DialogTitle>
-        <DialogContent>
-          <div className="row pt-3">
-            <div className="col-md-6">
-        <FormControl fullWidth>
-  <InputLabel id="demo-simple-select-label">Call status</InputLabel>
-  <Select
-    labelId="demo-simple-select-label"
-    id="demo-simple-select"
-    value={callstatus}
-    label="Email status"
-    onChange={(event)=>setcallstatus(event.target.value)}
-  >
-    <MenuItem value={1}>Ni</MenuItem>
-    <MenuItem value={2}>Lb</MenuItem>
-    <MenuItem value={3}>Voice mail</MenuItem>
-    <MenuItem value={4}>Invalid no</MenuItem>
-    <MenuItem value={5}>Email sent</MenuItem>
-    <MenuItem value={6}>Cb</MenuItem>
-    <MenuItem value={7}>Ringing</MenuItem>
-    <MenuItem value={8}>Dnc</MenuItem>
-    <MenuItem value={9}>Dupe</MenuItem>
-    <MenuItem value={10}>Exhausted</MenuItem>
-  </Select>
-</FormControl>
-</div>
-<div className="col-md-6">
-          <TextField
-            autoFocus
-            margin="dense"
-            id="calldate"
-            type="date"
-            fullWidth
-            variant="standard"
-          />
-          </div>
-          <div className="col-md-12 pt-3">
-              <StyledTextarea
-      aria-label="Description"
-      minRows={3}
-      id="calltextarea"
-      placeholder="Description"
-    />
-    </div>
-    </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClosecall}>Cancel</Button>
-          <Button onClick={submitcallform}>Submit</Button>
+          <Button onClick={()=>{submitemailform(openemailbox.type)}}>Submit</Button>
         </DialogActions>
       </Dialog>
 
@@ -322,7 +300,7 @@ clientObject[e.value] = {
                           <div className="row">
                             <div className="col-6">
                               <div className="position-relative">
-                                <a onClick={(e)=>handleClickOpen(e)} href="#" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                <a onClick={(e)=>handleClickOpen(e,'email','Email Comments')} href="#" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div  class="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
                                     <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-dd-chat.svg" alt="" class="img-fluid" width="24" height="24"/>
                                   </div>
@@ -331,7 +309,7 @@ clientObject[e.value] = {
                                     <span class="fs-2 d-block text-dark">Add New Email Comment</span>
                                   </div>
                                 </a>
-                                <a onClick={(e)=>callboxevent(e)} href="#" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                <a onClick={(e)=>handleClickOpen(e,'call','Call Comments')} href="#" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div  class="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
                                     <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-dd-chat.svg" alt="" class="img-fluid" width="24" height="24"/>
                                   </div>
@@ -377,12 +355,18 @@ clientObject[e.value] = {
                 <i className="ti ti-dots fs-7"></i>
               </span>
             </button>
-            <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <div className="collapse navbar-collapse justify-content-end show" id="navbarNav">
               <div className="d-flex align-items-center justify-content-between">
                 <a href="javascript:void(0)" className="nav-link d-flex d-lg-none align-items-center justify-content-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobilenavbar" aria-controls="offcanvasWithBothOptions">
                   <i className="ti ti-align-justified fs-7"></i>
                 </a>
                 <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-center">
+              <li><input id='totalsending'/></li>
+              <li title="Add Dupe Cron Task" onClick={()=>showdupemailbox()} className="nav-item">
+                    <a className="nav-link notify-badge nav-icon-hover" href="javascript:void(0)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                        <i  className="ti ti-mail-fast"></i>               
+                    </a>
+                  </li>
                <li title="Add Cron Task" onClick={()=>showmailbox()} className="nav-item">
                     <a className="nav-link notify-badge nav-icon-hover" href="javascript:void(0)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-mail"></i>               

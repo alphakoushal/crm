@@ -16,7 +16,7 @@ const Cronlist = ({closecronbox})=>{
         return <h2>🌀 Loading...</h2>;
       }
  async function getcrondata(){
-    let crond = await Fetchdata.fetchcrondata().then((response)=>{return response});
+    let crond = await Fetchdata.fetchcrondata(auth).then((response)=>{return response});
    // console.log(crondata.data.data.length);
     setcrondata(crond.data.data);
     console.log(crond.data.data[0]);
@@ -54,6 +54,7 @@ return (
  <th><div className="headers">User</div></th>
  <th><div className="headers">Cron Title</div></th>
  <th><div className="headers">Total Record</div></th>
+ <th><div className="headers">Sent Email</div></th>
  <th><div className="headers">Template Name</div></th>
  <th><div className="headers">Account Name</div></th>
  <th><div className="headers">Schedule On</div></th>
@@ -65,34 +66,34 @@ return (
         <>
                             <td class="ps-0">
                               <div class="d-flex align-items-center">
-                                <div class="me-2 pe-1">
-                                  <img src="../crm/assets/images/profile/user-1.jpg" class="rounded-circle" width="40" height="40" alt=""/>
-                                </div>
                                 <div>
-                                  <h6 class="fw-semibold mb-1">{JSON.parse(user.P_INFO).f_name}</h6>
-                                  <p class="fs-2 mb-0 text-muted">
-                                  {designation[JSON.parse(user.P_INFO).emp_designation]}
+                                  <h6 class="fw-semibold mb-1">{user[0]}</h6>
+                                  <p class="fs-1 mb-0 text-muted">
+                                  {designation[user[1]]}
                                   </p>
                                 </div>
                               </div>
                             </td>
                             <td>
-                              <p class="mb-0 fs-3">{JSON.parse(user.other_details).title}</p>
+                              <p class="mb-0 fs-1">{user[2]}</p>
                             </td>
                             <td>
-                              <p class="mb-0 fs-3">{JSON.parse(user.other_details).totalapp}</p>
+                              <p class="mb-0 fs-1">{user[3]}</p>
                             </td>
                             <td>
-                              <p class="mb-0 fs-3">{JSON.parse(user.other_details).template}</p>
+                              <p class="mb-0 fs-1">{user[7]}</p>
                             </td>
                             <td>
-                              <p class="mb-0 fs-3">{JSON.parse(user.other_details).account}</p>
+                              <p class="mb-0 fs-1">{user[4]}</p>
                             </td>
                             <td>
-                              <p class="fs-3 text-dark mb-0">{moment(JSON.parse(user.other_details).scheduleon).format('lll')}</p>
+                              <p class="mb-0 fs-1">{user[5]}</p>
                             </td>
                             <td>
-                              <span class="badge fw-semibold py-1 w-85 bg-primary-subtle text-primary">Low</span>
+                              <p class="fs-1 text-dark mb-0">{moment(user[6]).format('lll')}</p>
+                            </td>
+                            <td>
+                              <span className={`badge fw-semibold py-1 w-85 bg-${(user[3]==user[7] ? 'success' : 'danger')}-subtle text-${(user[3]==user[7] ? 'success' : 'danger')}`}>{(user[3]==user[7] ? 'Completed' : 'Pending')}</span>
                             </td>
                             
  </>

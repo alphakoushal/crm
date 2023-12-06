@@ -54441,5 +54441,13 @@ ul {
     position: fixed;
     z-index: 999;
 }
-.hiddencol{display:none}#demo-multiple-name,#call-name{padding:0 !important}
+.textarea{
+    width: 100%;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 12px;
+    border-radius: 12px 12px 0 12px;
+}
+.hiddencol{display:none}#demo-multiple-name,#up-multiple-name,#call-name{padding:0 !important}
 .fixed-table-container{height:91vh;flex-direction: column;} .fixed-table-container .breadcrumb{height:auto}.fixed-table-container .breadcrumb>div{height:100%}
