@@ -32,6 +32,7 @@ const Dashboard =() =>{
     const [emailstatusdata,setemail]=useState([]);
     const [applicantstatusdata,setapplicant]=useState([]);
     const [dupedata,setdupe]=useState([]);const [countrydata,setcountry]=useState([]);
+    const [monthdata,setmonth]=useState([]);
     const [gendata,setgen]=useState([]);
     const [ciodata,setcio]=useState([]);
     const [callstatusdata,setcall]=useState([]);
@@ -41,6 +42,7 @@ const Dashboard =() =>{
     const [opendupesendmailbox, setdupesendmailbox] = useState(false);
     const [opencronbox, setcronbox] = useState(false);
     const countries=useRef([]); 
+    const months=useRef([]); 
     const auth= JSON.parse(localStorage.getItem("user")); 
     const valued=useSelector((state)=>state.userdata.value);
     const dispatch=useDispatch();
@@ -78,6 +80,7 @@ let formdata =useMemo(()=>{return formdata1},[formdata1])
        gd(datas);
       
        countries.current=data.data.country;
+       months.current=data.data.monthdata;
      //  console.log(countries);
        dispatch(userprofileupdate(data.length));
         document.querySelector('table').classList.add("table","table-bordered","table-hover");
@@ -356,6 +359,24 @@ else
 }
 
    }
+   const handlemonthdata = (e) =>{
+    if(e.target.value.includes('all'))
+    {
+        setmonth(months.current)
+        filterdata(55,months.current.toString())
+    }
+    else if(e.target.value.includes('unall'))
+    {
+      setmonth([])
+        filterdata(55,[].toString())
+    }
+    else
+    {
+      setmonth(e.target.value)
+        filterdata(55,e.target.value.toString())
+    }
+    
+       }
    const handlegen = (e) =>{
     setgen(e.target.value)
     filterdata(54,e.target.value.toString())
@@ -641,7 +662,40 @@ else
 <th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">VN<i className="ti ti-sort-ascending" onClick={()=>{sortdata(49)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(49,e.target.value)} type='text'></input></th>
 <th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">SG<i className="ti ti-sort-ascending" onClick={()=>{sortdata(50)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(50,e.target.value)} type='text'></input></th>
 <th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">CO<i className="ti ti-sort-ascending" onClick={()=>{sortdata(51)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(51,e.target.value)} type='text'></input></th>
-
+<th  style={{  background: 'white' }}><div className="headers">Month <i className="ti ti-sort-ascending" onClick={()=>{sortdata(55)}}></i> </div>
+<FormControl sx={{ m: 0, width: 100 }}>
+    
+        <Select
+          labelId="up-multiple-name-label"
+          id="up-multiple-name"
+          value={monthdata}
+          multiple
+          onChange={handlemonthdata}
+          label="Age"
+        >
+           <MenuItem
+              key='all'
+              value='all'
+            >
+             Check All
+            </MenuItem>
+            <MenuItem
+              key='unall'
+              value='unall'
+            >
+             Uncheck All
+            </MenuItem>
+          {months.current.map((name) => (
+            <MenuItem
+              key={name}
+              value={name}
+            >
+              {name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+</th>
 
         </tr>
       )}
@@ -702,6 +756,7 @@ else
 <td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,49,51)}}  style={{  }}>{user[49]}</td>
 <td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,50,52)}}  style={{  }}>{user[50]}</td>
 <td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,51,53)}}  style={{  }}>{user[51]}</td>
+<td  onClick={(e)=>{pickvalue(e,52,55)}} className="column-value" style={{  }}>{user[55]}</td>
         </>
       )} 
       

@@ -96,7 +96,7 @@ window.location.reload();
       {
           setvalidate((validate)=>({...validate,status:true,message:'Add Applications'}));
       }
-      else if(commentdate=='' || typeof(commentdate)=='undefined')
+      else if((commentdate=='' || typeof(commentdate)=='undefined') && type=='email_comment_react')
       {
           setvalidate((validate)=>({...validate,status:true,message:'Choose Date'}));
       }
@@ -126,7 +126,7 @@ clientObject[e] = {
 
       var salesdata = {
         "email_comment_data": JSON.stringify(clientObject),
-        "type": 'email_comment_react'
+        "type": type
     };
     if(Object.keys(clientObject).length>=1)
     {
@@ -300,7 +300,7 @@ clientObject[e] = {
                           <div className="row">
                             <div className="col-6">
                               <div className="position-relative">
-                                <a onClick={(e)=>handleClickOpen(e,'email','Email Comments')} href="#" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                <a onClick={(e)=>handleClickOpen(e,'email_comment_react','Email Comments')} href="#" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div  class="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
                                     <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-dd-chat.svg" alt="" class="img-fluid" width="24" height="24"/>
                                   </div>
@@ -309,7 +309,7 @@ clientObject[e] = {
                                     <span class="fs-2 d-block text-dark">Add New Email Comment</span>
                                   </div>
                                 </a>
-                                <a onClick={(e)=>handleClickOpen(e,'call','Call Comments')} href="#" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                <a onClick={(e)=>handleClickOpen(e,'call_comment_react','Call Comments')} href="#" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div  class="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
                                     <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-dd-chat.svg" alt="" class="img-fluid" width="24" height="24"/>
                                   </div>
