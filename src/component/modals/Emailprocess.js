@@ -3,7 +3,9 @@ import { TableVirtuoso } from "react-virtuoso";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Uploaddata from "../../services/uploaddata";
+import Fetchdata from "../../services/fetchdata";
 const Emailbox = ({fn,emailsdata,closeemailsendbox})=>{
+  const [templatelist,settemplate]=useState([]);
   let auth= localStorage.getItem("user"); 
   console.log(emailsdata);
  let accounts={'191214150648429653':[{name:'Meenu',account:4},{name:'Kim',account:5},{name:'Ojas',account:6},{name:'Naina',account:7}],'231220121357187063':[{name:'Mohini',account:8},{name:'Eva',account:9},{name:'Nancy',account:10}],'191220121357187063':[{name:'Amy',account:11},{name:'Anu',account:12},{name:'Neha',account:13},{name:'Ria',account:14},{name:'Divi',account:15},{name:'Priya',account:16}]}
@@ -11,6 +13,11 @@ const Emailbox = ({fn,emailsdata,closeemailsendbox})=>{
 
   auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
     const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:'',modalstatus:true});
+    const fetchlist = async (type) =>{
+      let data=await Fetchdata.fetchtemplate({'type':type}).then((response)=>{ return response});
+      settemplate(data.data.data);
+        }
+
     async function emailformat(t,a,emailsdata,title,template,account)
     {
       let appno=document.querySelectorAll('.appno'); let apppush=[];
@@ -24,10 +31,11 @@ const Emailbox = ({fn,emailsdata,closeemailsendbox})=>{
         'userid':auth.userid,
         'a':a,
         'totalapp':emailsdata.length,
-        'apps':JSON.stringify(emailsdata.map((val)=>{return [val[0],val[1],val[11],val[5],val[7],val[2],val[10],val[6]]}))
+        'apps':JSON.stringify(emailsdata.map((val)=>{return {'weblink':val[0],'title':val[1],'email_id':val[11],'deadline_30_month':val[5],'applicant_name':val[7],'application_no':val[2],'contact_person':val[10],'deadline_30_month':val[5],'deadline_31_month':val[6]}}))
       }
      return Uploaddata.emailformat(formdata).then((resposne)=>{return resposne});
      }
+     
     function Loading() {
         return <h2>🌀 Loading...</h2>;
       }
@@ -63,6 +71,7 @@ setTimeout(()=>{closeemailsendbox(false)},1000);
       }
       useEffect(()=>{
         document.querySelector('table').classList.add("table","table-bordered","table-hover");
+        fetchlist('1');
       },[])
       
 return (
@@ -93,9 +102,10 @@ return (
  <th><div className="headers">APPLN.NO.</div></th>
  <th><div className="headers">Title</div></th>
  <th><div className="headers">DEADLINE - 30 mth</div></th>
+ <th><div className="headers">DEADLINE - 31 mth</div></th>
  <th><div className="headers">Email-id</div></th>
  <th><div className="headers">APPLICANT NAME</div></th>
- <th><div className="headers">Contact Person NAME</div></th>
+ <th><div className="headers">Contact Person Name</div></th>
         </tr>
       )}
       itemContent={(index, user) => (
@@ -104,6 +114,7 @@ return (
  <td  className="column-value">{user[2]}</td>
  <td  className="column-value">{user[1]}</td>
  <td  className="column-value">{user[5]}</td>
+ <td  className="column-value">{user[6]}</td>
  <td  className="column-value">{user[11]}</td>
  <td  className="column-value">{user[7]}</td>
  <td  className="column-value">{user[10]}</td>
@@ -116,12 +127,16 @@ return (
     <input type="text" class="form-control" id="crontitle" placeholder="Enter Tile"/>
     <select id="templateid" className="form-select">
                               <option value="">Choose Format</option>
+                              {templatelist.map((item,index)=>{
+                                return(
+                                  <option value={item['id']}>{item['title']}</option>
+                                )
+                              })}
                                 <option value="1">First Email</option>
                                 <option value="2">Agent First Email</option>
                                 <option value="3">Agent First Email Reminder</option>
                                 <option value="6">Individual Email Reminder</option>
-                                <option value="7">Old Individual First Email</option>
-                                <option value="8">Old Individual Third Reminder Email</option>
+                                <option value="transfer">Transfer</option>
                               </select>
                               <select multiple id="chooseaccount" className="form-select">
                               <option value="">Choose Account</option>

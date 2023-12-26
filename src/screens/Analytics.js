@@ -252,7 +252,7 @@ const ITEM_PADDING_TOP = 5;
 <div className={"body-wrapper1 custom-table "}>
     <Style></Style>
 
-    <Header clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
+    <Header except={true} clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
    
     <div className="container-fluid bootstrap-table">
         <div className="fixed-table-container fixed-height d-flex">

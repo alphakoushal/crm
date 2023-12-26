@@ -1,3 +1,4 @@
+import { responsiveFontSizes } from "@mui/material";
 import axios from "axios";
 import { method } from "lodash";
 
@@ -76,13 +77,30 @@ const emailformat = (data) =>{
         data : data
     }).then(response => { return response});
 }
+
+const mailtemplate =(data) =>{
+    return axios({
+        method :'POST',
+        headers : axiosConfig,
+        url: "https://www.anuation.com/oldcrm/employee/auth/reactauth/mailtemplate.php",
+        data : data
+    }).then(response =>{ return response})
+}
+const sendtome =(data) =>{
+    return axios({
+        method :'POST',
+        headers : axiosConfig,
+        url: "https://www.anuation.com/oldcrm/employee/auth/reactauth/sendtome.php",
+        data : data
+    }).then(response =>{ return response})
+}
 const updateinfo = function(formdata)
 {
     return axios({method :"POST",data:formdata,url:API_URL+'/employee/auth/',headers:axiosConfig}).then((response)=>{return response});
 }
 
 const Uploaddata = {
-  uploaddata,fetchcomment,assignsheet,updateinfo,addpct,createssheet,updatepct,uploadanalyticdata,emailformat
+  uploaddata,fetchcomment,assignsheet,updateinfo,addpct,createssheet,updatepct,uploadanalyticdata,emailformat,mailtemplate,sendtome
 }
 
 export default Uploaddata;

@@ -54441,6 +54441,7 @@ ul {
     position: fixed;
     z-index: 999;
 }
+.ck-editor__editable{width:1100px;height:400px;max-height: 400px;}
 .textarea{
     width: 100%;
     font-size: 0.875rem;

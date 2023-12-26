@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route,Link } from "react-router-dom";
 import { TableVirtuoso } from "react-virtuoso";
 import { useDispatch,useSelector } from "react-redux";
 import { userprofileupdate } from "../reducers/Userdata";
+import moment from "moment";
 import Uploadsidebar from "../component/Uploadsidebar";
 import Commentmodal from "../component/modals/comments";
 import Uploaddata from "../services/uploaddata";
@@ -137,7 +138,16 @@ let t=-1;
        t= 0;
        
     }
-  
+    else if(collection[i].indexOf('!')>-1 && value!=collection[i].split('!')[1])
+    {
+       t= 0;
+       
+    }
+    // else if(collection[i].indexOf('!')>-1 && value.indexOf(collection[i].split('!')[1])>-1)
+    // {
+    //    t= 1;
+       
+    // }
     }
 }
 
@@ -415,7 +425,7 @@ else
 {showeditmodal.state==true ? <Editmodal show={showeditmodal} fn={editinfo}></Editmodal> : <></> }
     <Commentmodal/>
     <Style></Style>
-    <Header alldata={d} showmailbox={showmailbox} showdupemailbox={showdupemailbox} showcronbox={showcronbox}  clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
+    <Header  except={true} alldata={d} showmailbox={showmailbox} showdupemailbox={showdupemailbox} showcronbox={showcronbox}  clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
     {opensendmailbox ? <Emailbox closeemailsendbox={closeemailsendbox} emailsdata={d.slice(0, document.querySelector('#totalsending').value)} fn={closeemailsendbox}></Emailbox> : <></>}
     {opendupesendmailbox ? <Dupeemailprocess closedupeemailsendbox={closedupeemailsendbox} emailsdata={d} fn={closedupeemailsendbox}></Dupeemailprocess> : <></>}
     {opencronbox ? <Cronlist closecronbox={closecronbox}></Cronlist> : <></>}
@@ -696,6 +706,8 @@ else
         </Select>
       </FormControl>
 </th>
+<th style={{  background: 'white' }}><div className="headers">Sent on<i className="ti ti-sort-ascending" onClick={()=>{sortdata(56)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(56,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Cron Status<i className="ti ti-sort-ascending" onClick={()=>{sortdata(57)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(57,e.target.value)} type='text'></input></th>
 
         </tr>
       )}
@@ -757,6 +769,9 @@ else
 <td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,50,52)}}  style={{  }}>{user[50]}</td>
 <td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,51,53)}}  style={{  }}>{user[51]}</td>
 <td  onClick={(e)=>{pickvalue(e,52,55)}} className="column-value" style={{  }}>{user[55]}</td>
+<td  onClick={(e)=>{pickvalue(e,53,56)}} className="column-value" style={{  }}>{user[56]}</td>
+<td  onClick={(e)=>{pickvalue(e,54,57)}} className="column-value" style={{  }}>{user[57]}</td>
+
         </>
       )} 
       

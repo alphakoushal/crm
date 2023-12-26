@@ -41,6 +41,22 @@ headers:axiosConfig,
 url: API_URL+'employee/auth/reactauth/fetch-history',
   }).then((response)=>{ return response})
 }
+const fetchtemplate = (data) =>{
+  return axios({
+    method :"POST",
+headers :axiosConfig,
+url: API_URL+'employee/auth/reactauth/fetchtemplatedata',
+data :data
+}).then((response)=> {return response})
+}
+const fetchtemp = (data) =>{
+  return axios({
+    method :"POST",
+headers :axiosConfig,
+url: API_URL+'employee/auth/reactauth/fetchtemps',
+data :data
+}).then((response)=> {return response})
+}
 const geteditdata = function(formdata)
 {
   return axios({
@@ -51,7 +67,7 @@ url: API_URL+'employee/auth/',
   }).then((response)=>{return response;})
 }
 const Fetchdata = {
-  fetchdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata
+  fetchdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchtemp,fetchtemplate
 }
 
 export default Fetchdata;

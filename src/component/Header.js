@@ -168,7 +168,7 @@ clientObject[e] = {
           <div className="row pt-3">
             <div className="col-md-6">
         <FormControl fullWidth>
-  {openemailbox.type=='email' ? <>
+  {openemailbox.type=='email_comment_react' ? <>
   <InputLabel id="demo-simple-select-label">Email status</InputLabel>
   <Select
     labelId="demo-simple-select-label"
@@ -253,35 +253,34 @@ clientObject[e] = {
                       <div className=" ps-7 pt-7">
                         <div className="border-bottom">
                           <div className="row">
-                            <div className="col-6">
-                              <div className="position-relative">
-                                <Link to="./dashboard" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                            <div className="col-3">
+                            <div className="position-relative">
+                                
+                                <Link to="/dashboard" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Patent</h6>
-                                    <span className="fs-2 d-block text-dark">New messages arrived</span>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
-                              </div>
-                            </div>
-                            <div className="col-6">
-                              <div className="position-relative">
-                                <Link to="./analytic" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                <Link to="/analytic" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Analytic</h6>
-                                    <span className="fs-2 d-block text-dark">New messages arrived</span>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                <Link to="/templates" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Templates</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                <Link to="/templates-list" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Templates List</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
                               </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="row align-items-center py-3">
-                          <div className="col-8">
-                            <a className="fw-semibold text-dark d-flex align-items-center lh-1 text-decoration-none" href="#"><i className="ti ti-help fs-6 me-2"></i>Frequently Asked Questions</a>
-                          </div>
-                          <div className="col-4">
-                            <div className="d-flex justify-content-end pe-4">
-                              <button className="btn btn-primary">Check {d}</button>
                             </div>
                           </div>
                         </div>
