@@ -9,16 +9,18 @@ const Emailbox = ({fn,emailsdata,closeemailsendbox})=>{
   let auth= localStorage.getItem("user"); 
   console.log(emailsdata);
  let accounts={'191214150648429653':[{name:'Meenu',account:4},{name:'Kim',account:5},{name:'Ojas',account:6},{name:'Naina',account:7}],'231220121357187063':[{name:'Mohini',account:8},{name:'Eva',account:9},{name:'Nancy',account:10}],'191220121357187063':[{name:'Amy',account:11},{name:'Anu',account:12},{name:'Neha',account:13},{name:'Ria',account:14},{name:'Divi',account:15},{name:'Priya',account:16}]}
-
+ let accountstwo=[{name:'Meenu',account:4},{name:'Kim',account:5},{name:'Ojas',account:6},{name:'Naina',account:7},{name:'Mohini',account:8},{name:'Eva',account:9},{name:'Nancy',account:10},{name:'Amy',account:11},{name:'Anu',account:12},{name:'Neha',account:13},{name:'Ria',account:14},{name:'Divi',account:15},{name:'Priya',account:16}];
 
   auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
+  accounts =(accounts[auth.userid]!==undefined ? accounts[auth.userid] :accountstwo);
+  console.log(accounts);
     const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:'',modalstatus:true});
     const fetchlist = async (type) =>{
       let data=await Fetchdata.fetchtemplate({'type':type}).then((response)=>{ return response});
       settemplate(data.data.data);
         }
 
-    async function emailformat(t,a,emailsdata,title,template,account)
+    async function emailformat(t,a,emailsdata,title,template,account,type)
     {
       let appno=document.querySelectorAll('.appno'); let apppush=[];
       let formdata={
@@ -26,6 +28,7 @@ const Emailbox = ({fn,emailsdata,closeemailsendbox})=>{
         'data':'',
         't':t,
         'templatename':template,
+        'preview':type,
         'account':account,
         'title':title,
         'userid':auth.userid,
@@ -43,7 +46,7 @@ const Emailbox = ({fn,emailsdata,closeemailsendbox})=>{
 {
    
 }
-      async function choosetype(e){
+      async function choosetype(e,type){
         e.preventDefault();
 let t=document.querySelector('#templateid');
 let a=document.querySelector('#chooseaccount');
@@ -63,10 +66,13 @@ if(t.value=='')
 
         }
         else{
-const res =await emailformat(t.value,a.value,emailsdata,title,t.options[t.selectedIndex].text,a.options[a.selectedIndex].text);
+const res =await emailformat(t.value,a.value,emailsdata,title,t.options[t.selectedIndex].text,a.options[a.selectedIndex].text,type);
 if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true,modalstatus:false, message: res.data.message,color:'success',icon:'success' })) }
 else {setvalidate((validate)=>({...validate,status:true,modalstatus:true,message:res.data.errors.error}));}
+if(type=='send')
+{
 setTimeout(()=>{closeemailsendbox(false)},1000);
+}
     }
       }
       useEffect(()=>{
@@ -138,17 +144,20 @@ return (
                                 <option value="6">Individual Email Reminder</option>
                                 <option value="transfer">Transfer</option>
                               </select>
-                              <select multiple id="chooseaccount" className="form-select">
+                              <select id="chooseaccount" className="form-select">
                               <option value="">Choose Account</option>
                               {
-                                accounts[auth.userid].map((e,i)=>{
+                                accounts.map((e,i)=>{
                                  return <option value={e.account}>{e.name}</option>;
                                 })
                               }
 
                               </select>
-                                  <button onClick={(e)=>choosetype(e)} className="btn btn-light-info text-info font-medium" type="submit">
+                                  <button onClick={(e)=>choosetype(e,'send')} className="btn btn-light-info text-info font-medium" type="submit">
                                     Submit
+                                  </button>
+                                  <button onClick={(e)=>choosetype(e,'preview')} className="btn btn-light-info text-info font-medium" type="submit">
+                                    Preview
                                   </button>
                                 </div>
 </div>

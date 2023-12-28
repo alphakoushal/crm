@@ -19,6 +19,9 @@ const Editemailemplate =() =>{
       const data = editor.getData();
       setEditorData(data);
     };
+    function updatestate(value, key) {
+        setrestdata((data)=>({...data,[key]: value}));
+      }
     const fetchtemps = async (id) =>{
         let data= await Fetchdata.fetchtemp({'id':id}).then((response)=>{ return response});
         data=data.data.data;
@@ -102,19 +105,19 @@ setTimeout(()=>{},1000);
                     <div className="row">
                     <div className="col-md-3">
                         <div className="form-floating mb-3">
-                          <input type="text" className="form-control" id="emailtitle" value={restdata.title} placeholder="Enter Name here"/>
+                          <input type="text" className="form-control" id="emailtitle" onChange={(e) => (updatestate(e.target.value, 'title'))} value={restdata.title} placeholder="Enter Name here"/>
                           <label htmlFor="tb-fname">Title</label>
                         </div>
                       </div>
                       <div className="col-md-3">
                         <div className="form-floating mb-3">
-                          <input type="text" className="form-control" id="emailsubject" value={restdata.subject} placeholder="Enter Name here"/>
+                          <input type="text" className="form-control" id="emailsubject" onChange={(e) => (updatestate(e.target.value, 'subject'))} value={restdata.subject} placeholder="Enter Name here"/>
                           <label htmlFor="tb-fname">Email Subject</label>
                         </div>
                       </div>
                       <div className="col-md-3">
                         <div className="form-floating mb-3">
-                        <select className="form-select mr-sm-2" id="clienttype">
+                        <select onChange={(e) => (updatestate(e.target.value, 'clienttype'))} className="form-select mr-sm-2" id="clienttype">
                         <option selected="">Choose...</option>
                         <option selected={restdata.clienttype=='1' ? 'selected' : ''} value="1">Agent</option>
                         <option selected={restdata.clienttype=='2' ? 'selected' : ''} value="2">Individual</option>
@@ -126,7 +129,7 @@ setTimeout(()=>{},1000);
                       </div>
                       <div className="col-md-3">
                         <div className="form-floating">
-                        <select className="form-select mr-sm-2" id="templatetype">
+                        <select onChange={(e) => (updatestate(e.target.value, 'templatetype'))} className="form-select mr-sm-2" id="templatetype">
                         <option selected="">Choose...</option>
                         <option selected={restdata.templatetype=='1' ? 'selected' : ''} value="1">Individual</option>
                         <option selected={restdata.templatetype=='2' ? 'selected' : ''} value="2">Dupe</option>
