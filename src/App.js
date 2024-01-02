@@ -13,7 +13,7 @@ function App() {
   auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
   return (
     <div className="page-wrapper" id="main-wrapper" data-theme="blue_theme" data-layout="vertical" data-sidebartype="" data-sidebar-position="fixed" data-header-position="">
-     <BrowserRouter basename={process.env.PUBLIC_URL}>
+     <HashRouter basename={process.env.PUBLIC_URL}>
       
       {auth?.userid ? ( <Routes path="/" ><Route path="*" element={<Dashboard />} /><Route path="/dashboard" element={<Dashboard />} /><Route path='/analytic' element={<Analytic/>}></Route><Route path='/templates' element={<Emailemplate/>}></Route><Route path='/templates-list' element={<TemplateList/>}></Route><Route path='/edit-template' element={<Editemailemplate/>}></Route></Routes>)
       :
@@ -21,7 +21,7 @@ function App() {
    
       
       
-    </BrowserRouter>
+    </HashRouter>
     
     </div>
   );

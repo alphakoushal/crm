@@ -154,10 +154,10 @@ return (
 
                               </select>
                                   <button onClick={(e)=>choosetype(e,'send')} className="btn btn-light-info text-info font-medium" type="submit">
-                                    Submit
+                                  <i id='send' class="ti ti-refresh hide"></i>Submit
                                   </button>
                                   <button onClick={(e)=>choosetype(e,'preview')} className="btn btn-light-info text-info font-medium" type="submit">
-                                    Preview
+                                  <i id='preview' class="ti ti-refresh hide"></i> Preview
                                   </button>
                                 </div>
 </div>
