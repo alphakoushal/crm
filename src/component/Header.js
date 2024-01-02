@@ -84,6 +84,8 @@ window.location.reload();
       let commentdate=document.querySelector('#name').value;
       let commenttext=document.querySelector('#textarea').value;
       let appno=document.querySelector('#allapp').value.split(',');
+            //   let newarray=alldata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[1]:commenttext,[23]:status} : item) });
+      // changedata(newarray);
       if(validate.inprocess)
       {
           setvalidate((validate)=>({...validate,status:true,message:'Request In process'}));
