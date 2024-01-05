@@ -4,16 +4,14 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Uploaddata from "../../services/uploaddata";
 import Fetchdata from "../../services/fetchdata";
-const Emailbox = ({fn,emailsdata,closeemailsendbox})=>{
+const Emailbox = ({fn,emailsdata,closeemailsendbox,changedata,alldata})=>{
   const [templatelist,settemplate]=useState([]);
   let auth= localStorage.getItem("user"); 
-  console.log(emailsdata);
  let accounts={'191214150648429653':[{name:'Meenu',account:4},{name:'Kim',account:5},{name:'Ojas',account:6},{name:'Naina',account:7}],'231220121357187063':[{name:'Mohini',account:8},{name:'Eva',account:9},{name:'Nancy',account:10}],'191220121357187063':[{name:'Amy',account:11},{name:'Anu',account:12},{name:'Neha',account:13},{name:'Ria',account:14},{name:'Divi',account:15},{name:'Priya',account:16}]}
  let accountstwo=[{name:'Meenu',account:4},{name:'Kim',account:5},{name:'Ojas',account:6},{name:'Naina',account:7},{name:'Mohini',account:8},{name:'Eva',account:9},{name:'Nancy',account:10},{name:'Amy',account:11},{name:'Anu',account:12},{name:'Neha',account:13},{name:'Ria',account:14},{name:'Divi',account:15},{name:'Priya',account:16}];
 
   auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
   accounts =(accounts[auth.userid]!==undefined ? accounts[auth.userid] :accountstwo);
-  console.log(accounts);
     const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:'',modalstatus:true});
     const fetchlist = async (type) =>{
       let data=await Fetchdata.fetchtemplate({'type':type}).then((response)=>{ return response});
@@ -47,6 +45,8 @@ const Emailbox = ({fn,emailsdata,closeemailsendbox})=>{
    
 }
       async function choosetype(e,type){
+        
+        let appno = emailsdata.map((item)=> {return item[2]});
         e.preventDefault();
 let t=document.querySelector('#templateid');
 let a=document.querySelector('#chooseaccount');
@@ -67,7 +67,10 @@ if(t.value=='')
         }
         else{
 const res =await emailformat(t.value,a.value,emailsdata,title,t.options[t.selectedIndex].text,a.options[a.selectedIndex].text,type);
-if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true,modalstatus:false, message: res.data.message,color:'success',icon:'success' })) }
+if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true,modalstatus:false, message: res.data.message,color:'success',icon:'success' }));
+        let newarray=alldata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[57]:'sent'} : item) });
+        changedata(newarray);
+}
 else {setvalidate((validate)=>({...validate,status:true,modalstatus:true,message:res.data.errors.error}));}
 if(type=='send')
 {
@@ -116,7 +119,6 @@ return (
       )}
       itemContent={(index, user) => (
         <>
-               {console.log(index)}
  <td  className="column-value">{user[2]}</td>
  <td  className="column-value">{user[1]}</td>
  <td  className="column-value">{user[5]}</td>

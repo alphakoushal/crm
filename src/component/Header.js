@@ -18,7 +18,7 @@ import commentprocess from "../services/commentservice";
 import Addmodal from "./modals/addmodal";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
-const Header = React.memo(({alldata,showmailbox,showdupemailbox,showcronbox,clearfilters,refreshdata,formdatas,showcurrencies}) =>{
+const Header = React.memo(({alldata,changedata,showmailbox,showdupemailbox,showcronbox,clearfilters,refreshdata,formdatas,showcurrencies}) =>{
   const navigate=useNavigate(); 
   let auth= localStorage.getItem("user"); 
   auth =(auth!='' ? JSON.parse(auth) : '')
@@ -84,6 +84,7 @@ window.location.reload();
       let commentdate=document.querySelector('#name').value;
       let commenttext=document.querySelector('#textarea').value;
       let appno=document.querySelector('#allapp').value.split(',');
+
       if(validate.inprocess)
       {
           setvalidate((validate)=>({...validate,status:true,message:'Request In process'}));
@@ -134,7 +135,17 @@ clientObject[e] = {
    let status= await commentprocess.updatecomments(salesdata).then((response)=>{return response});
    if (status.data.success) { setvalidate((prev)=>({ ...prev, status: true,inprocess:false, message: status.data.message,color:'success',icon:'success' }));
    setOpen({status:false,type:'',title:''}); 
-   
+   if(type=='email_comment_react')
+   {
+    let newarray=alldata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[25]:item[25]+"="+commenttext,[21]:commentdate,[23]:status,[22]:""} : item) });
+    changedata(newarray);
+   }
+   else
+   {
+    let newarray=alldata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[25]:item[25]+"="+commenttext,[21]:commentdate,[24]:status} : item) });
+    changedata(newarray);
+   }
+
   }
    else
    {
@@ -187,6 +198,7 @@ clientObject[e] = {
     <MenuItem value={8}>Dnc</MenuItem>
     <MenuItem value={9}>Dupe</MenuItem>
     <MenuItem value={10}>Exhausted</MenuItem>
+    <MenuItem value={12}>Email Sent</MenuItem>
   </Select>
   </> :  
   <>

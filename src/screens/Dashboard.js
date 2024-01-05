@@ -13,7 +13,7 @@ import Uploaddata from "../services/uploaddata";
 import Style from "../component/style/style";
 import Editmodal from "../component/modals/Editmodal";
 import OutlinedInput from '@mui/material/OutlinedInput';
-import { callstatus, emailstatus} from '../constant/Constant.js';
+import { callstatus, emailstatus,costs} from '../constant/Constant.js';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -72,6 +72,11 @@ const Dashboard =() =>{
     }
 
 let formdata =useMemo(()=>{return formdata1},[formdata1])
+
+async function changedata(data){
+  sd(data);
+  gd(data);
+}
     async function loaddata(formdata)
     {
         document.querySelector('.ti-refresh').classList.add('rotate');document.querySelector('.body-wrapper1').classList.add('loader');
@@ -233,7 +238,11 @@ async function pickvalue(e,i,ni)
     {
        // console.log(e.target.childNodes[0]);
     document.querySelector('.cell-name').value=document.querySelectorAll('.custom-table table thead tr th')[ni].querySelector('.headers').innerText;
-    document.querySelector('.cell-value').value=e.target.innerHTML;
+    document.querySelector('.cell-value').value=(i=='11' ? e.target.getElementsByTagName('span')[0].innerHTML : (i=='2' && e.target.tagName=='TD' ? e.target.getElementsByTagName('a')[0].innerHTML : e.target.innerHTML));
+    }
+    else if(e.detail==2 && i=='11')
+    {
+      showprofilesidebar(e,e.target.getElementsByTagName('span')[0].innerHTML);
     }
     else
     {
@@ -320,6 +329,7 @@ const names = [
 {'key':'8','value':'Dnc'},
 {'key':'9','value':'Dupe'},
 {'key':'10','value':'Exhausted'},
+{'key':'12','value':'Email Sent'},
   ];
   
   const dupestatus = [{'key':'Unique','value':'Unique'},{'key':'Dupe','value':'Dupe'}];
@@ -418,6 +428,75 @@ else
    comments.shift();
    return comments.filter((c,i,a)=>{return (a.indexOf(c)==i && c!='')}).join('\r\n\r\n');
 }
+
+const standard={'IN':{'Small':22,'other':110},'CA':{'Small':1160,'other':1320},'CN':{'other':1210},'JP':{'other':1340},'AU':{'other':1300},'BR':{'other':1200},'US':{'Small':1240,'other':1380},'KR':{'other':1080},'EP':{'other':715+700+400+1825},'RU':{'other':1130},'MX':{'other':1630},'MY':{'other':900},'PH':{'other':800},'TH':{'other':900},'ID':{'other':850},'NZ':{'other':1200},'ZA':{'other':900},'VN':{'other':655},'SG':{'other':1100},'CO':{'other':1650}};
+function pagescost(as,pages)
+{
+  let ocosts=0;
+  if(as=="Small")
+  {
+    if(pages>30)
+    {
+      ocosts=ocosts+3*(pages-30);
+    }
+  }
+  else
+  {
+    if(pages>30)
+    {
+      ocosts=ocosts+12*(pages-30);
+    }
+  }
+  return ocosts;
+}
+function claimcost(as,claim)
+{
+  let ocosts=0;
+  if(as=="Small")
+  {
+    if(claim>10)
+    {
+      ocosts=ocosts+5*(claim-10);
+    }
+  }
+  else
+  {
+    if(claim>10)
+    {
+      ocosts=ocosts+22*(claim-10);
+    }
+  }
+  return ocosts;
+}
+function prioritycost(as,priority)
+{
+  let ocosts=0;
+  if(as=="Small")
+{
+  if(priority>1)
+  {
+    ocosts=ocosts+22*(priority-1);
+  }
+}
+else
+{
+  if(priority>1)
+  {
+    ocosts=ocosts+110*(priority-1);
+  }
+}
+return ocosts;
+}
+function cost(c,info)
+{
+  let {as,ci,pages,claim,priority,co}=info;
+ let ocosts=0; let pcosts=0;
+ ocosts= standard[c].hasOwnProperty('Small') ? standard[c]['Small'] : standard[c]['other'];
+ ocosts=ocosts+pagescost(as,pages);
+ ocosts=ocosts+claimcost(as,claim);
+ ocosts=ocosts+prioritycost(as,priority);
+return ocosts;
+}
     return( 
 <>
  
@@ -425,9 +504,9 @@ else
 {showeditmodal.state==true ? <Editmodal show={showeditmodal} fn={editinfo}></Editmodal> : <></> }
     <Commentmodal/>
     <Style></Style>
-    <Header  except={true} alldata={d} showmailbox={showmailbox} showdupemailbox={showdupemailbox} showcronbox={showcronbox}  clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
-    {opensendmailbox ? <Emailbox closeemailsendbox={closeemailsendbox} emailsdata={d.slice(0, document.querySelector('#totalsending').value)} fn={closeemailsendbox}></Emailbox> : <></>}
-    {opendupesendmailbox ? <Dupeemailprocess closedupeemailsendbox={closedupeemailsendbox} emailsdata={d} fn={closedupeemailsendbox}></Dupeemailprocess> : <></>}
+    <Header changedata={changedata}  except={true} alldata={d} showmailbox={showmailbox} showdupemailbox={showdupemailbox} showcronbox={showcronbox}  clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
+    {opensendmailbox ? <Emailbox alldata={d} changedata={changedata} closeemailsendbox={closeemailsendbox} emailsdata={d.slice(0, document.querySelector('#totalsending').value)} fn={closeemailsendbox}></Emailbox> : <></>}
+    {opendupesendmailbox ? <Dupeemailprocess alldata={d} changedata={changedata} closedupeemailsendbox={closedupeemailsendbox} emailsdata={d} fn={closedupeemailsendbox}></Dupeemailprocess> : <></>}
     {opencronbox ? <Cronlist closecronbox={closecronbox}></Cronlist> : <></>}
     <div className="container-fluid bootstrap-table">
         <div className="fixed-table-container fixed-height d-flex">
@@ -714,7 +793,7 @@ else
       itemContent={(index, user) => (
         
         <>
- <td  className="column-value" style={{  background: 'white', position: 'sticky', left: 0, zIndex: 1 }}><input className='appno' value={user[2]} onClick={(event)=>pushdata(event,user[2])} style={{'position':"absolute",'top':'18px','left':'0'}} type='checkbox'></input><a onClick={(e)=>{pickvalue(e,2,0)}} target="blank" href={"https://patentscope.wipo.int/search/en/detail.jsf?docId="+user[0]}>{user[2]}</a><i onClick={()=>{editinfo(true,user[2])}} style={{'position': 'absolute','top': '1px','right': '5px','background': '#5d87ff','width': '14px','height': '14px','display': 'flex','lineHeight': '14px','borderRadius': '50%','color': 'white','justifyContent': 'center'}} className="ti ti-edit"></i></td>
+ <td onClick={(e)=>{pickvalue(e,2,0)}} className="column-value" style={{  background: 'white', position: 'sticky', left: 0, zIndex: 1 }}><input className='appno' value={user[2]} onClick={(event)=>pushdata(event,user[2])} style={{'position':"absolute",'top':'18px','left':'0'}} type='checkbox'></input><a target="blank" href={"https://patentscope.wipo.int/search/en/detail.jsf?docId="+user[0]}>{user[2]}</a><i onClick={()=>{editinfo(true,user[2])}} style={{'position': 'absolute','top': '1px','right': '5px','background': '#5d87ff','width': '14px','height': '14px','display': 'flex','lineHeight': '14px','borderRadius': '50%','color': 'white','justifyContent': 'center'}} className="ti ti-edit"></i></td>
 <td onClick={(e)=>{pickvalue(e,1,1)}} className="column-value" style={{  }}>{user[1]}</td>
 <td onClick={(e)=>{pickvalue(e,3,2)}} className="column-value small" style={{  }}>{user[3]}</td>
 <td onClick={(e)=>{pickvalue(e,4,3)}} className="column-value" style={{  }}>{user[4]}</td>
@@ -726,7 +805,7 @@ else
 <td onClick={(e)=>{pickvalue(e,8,9)}} className="column-value" style={{  }}>{user[8]}</td>
 <td onClick={(e)=>{pickvalue(e,9,10)}} className="column-value" style={{  }}>{user[9]}</td> 
 <td onClick={(e)=>{pickvalue(e,10,11)}} className="column-value" style={{  }}>{user[10]}</td>
-<td  onClick={(e)=>{showprofilesidebar(e,user[11])}} className="cursor-pointer text-decoration-underline text-primary column-value d-flex align-items-center" style={{  }}><i class="ti ti-refresh rotate hide profilefetch"></i>{user[11]}</td>
+<td  onClick={(e)=>{pickvalue(e,11,12)}} className="cursor-pointer text-primary column-value d-flex align-items-center" style={{  }}><i class="ti ti-refresh rotate hide profilefetch"></i><span>{user[11]}</span></td>
 <td  onClick={(e)=>{pickvalue(e,12,13)}} className="column-value" style={{  }}>{user[12]}</td>
 <td  onClick={(e)=>{pickvalue(e,13,14)}} className="column-value" style={{  }}>{user[13]}</td>
 <td  onClick={(e)=>{pickvalue(e,14,15)}} className="column-value small" style={{  }}>{user[14]}</td>
@@ -748,29 +827,30 @@ else
 <td  onClick={(e)=>{pickvalue(e,29,31)}} className="column-value" style={{  }}>{user[29]}</td>
 <td  onClick={(e)=>{pickvalue(e,30,32)}} className="column-value" style={{  }}>{user[30]}</td>
 <td  onClick={(e)=>{pickvalue(e,31,33)}} className="column-value" style={{  }}>{user[31]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,32,34)}}  style={{  }}>{user[32]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,33,35)}}  style={{  }}>{user[33]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,34,36)}}  style={{  }}>{user[34]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,35,37)}}  style={{  }}>{user[35]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,36,38)}}  style={{  }}>{user[36]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,37,39)}}  style={{  }}>{user[37]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,38,40)}}  style={{  }}>{user[38]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,39,41)}}  style={{  }}>{user[39]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,40,42)}}  style={{  }}>{user[40]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,41,43)}}  style={{  }}>{user[41]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,42,44)}}  style={{  }}>{user[42]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,43,45)}}  style={{  }}>{user[43]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,44,46)}}  style={{  }}>{user[44]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,45,47)}}  style={{  }}>{user[45]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,46,48)}}  style={{  }}>{user[46]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,47,49)}}  style={{  }}>{user[47]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,48,50)}}  style={{  }}>{user[48]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,49,51)}}  style={{  }}>{user[49]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,50,52)}}  style={{  }}>{user[50]}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,51,53)}}  style={{  }}>{user[51]}</td>
-<td  onClick={(e)=>{pickvalue(e,52,55)}} className="column-value" style={{  }}>{user[55]}</td>
-<td  onClick={(e)=>{pickvalue(e,53,56)}} className="column-value" style={{  }}>{user[56]}</td>
-<td  onClick={(e)=>{pickvalue(e,54,57)}} className="column-value" style={{  }}>{user[57]}</td>
+
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,32,34)}}  style={{  }}>{costs.IN.apply({'c':'IN','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,33,35)}}  style={{  }}>{costs.CA.apply({'c':'CA','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,34,36)}}  style={{  }}>{costs.CN.apply({'c':'CN','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,35,37)}}  style={{  }}>{costs.JP.apply({'c':'JP','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,36,38)}}  style={{  }}>{costs.AU.apply({'c':'AU','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,37,39)}}  style={{  }}>{costs.BR.apply({'c':'BR','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,38,40)}}  style={{  }}>{costs.US.apply({'c':'US','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,39,41)}}  style={{  }}>{costs.KR.apply({'c':'KR','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,40,42)}}  style={{  }}>{costs.EP.apply({'c':'EP','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,41,43)}}  style={{  }}>{costs.RU.apply({'c':'RU','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,42,44)}}  style={{  }}>{costs.MX.apply({'c':'MX','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,43,45)}}  style={{  }}>{costs.MY.apply({'c':'MY','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,44,46)}}  style={{  }}>{costs.PH.apply({'c':'PH','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,45,47)}}  style={{  }}>{costs.TH.apply({'c':'TH','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,46,48)}}  style={{  }}>{costs.ID.apply({'c':'ID','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,47,49)}}  style={{  }}>{costs.NZ.apply({'c':'NZ','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,48,50)}}  style={{  }}>{costs.ZA.apply({'c':'ZA','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,49,51)}}  style={{  }}>{costs.VN.apply({'c':'VN','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,50,52)}}  style={{  }}>{costs.SG.apply({'c':'SG','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,51,53)}}  style={{  }}>{costs.CO.apply({'c':'CO','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td  onClick={(e)=>{pickvalue(e,52,54)}} className="column-value" style={{  }}>{user[55]}</td>
+<td  onClick={(e)=>{pickvalue(e,53,55)}} className="column-value" style={{  }}>{user[56]}</td>
+<td  onClick={(e)=>{pickvalue(e,54,56)}} className="column-value" style={{  }}>{user[57]}</td>
 
         </>
       )} 

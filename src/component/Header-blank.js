@@ -69,25 +69,25 @@ window.location.reload();
                                 <Link to="/dashboard" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Patent</h6>
-                                    <span className="fs-2 d-block text-dark">New messages arrived</span>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
                                 <Link to="/analytic" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Analytic</h6>
-                                    <span className="fs-2 d-block text-dark">New messages arrived</span>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
                                 <Link to="/templates" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Templates</h6>
-                                    <span className="fs-2 d-block text-dark">New messages arrived</span>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
                                 <Link to="/templates-list" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Templates List</h6>
-                                    <span className="fs-2 d-block text-dark">New messages arrived</span>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
                               </div>

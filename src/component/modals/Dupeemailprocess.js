@@ -4,7 +4,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Uploaddata from "../../services/uploaddata";
 import Fetchdata from "../../services/fetchdata";
-const Dupeemailprocess = ({fn,emailsdata,closedupeemailsendbox})=>{
+const Dupeemailprocess = ({fn,emailsdata,closedupeemailsendbox,changedata,alldata})=>{
   let auth= localStorage.getItem("user"); 
   const [newdupedata,setdupedata]=useState([]);
   const [templatelist,settemplate]=useState([]);
@@ -64,11 +64,10 @@ const Dupeemailprocess = ({fn,emailsdata,closedupeemailsendbox})=>{
       }
     }
     })
-    setdupedata(dupedata);
+    setdupedata(dupedata.slice(0,document.querySelector('#totalsending').value));
  }
   auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
   accounts =(accounts[auth.userid]!==undefined ? accounts[auth.userid] :accountstwo);
-  console.log(accounts);
     const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:'',modalstatus:true});
     async function emailformat(t,a,emailsdata,title,template,account,type)
     {
@@ -98,6 +97,7 @@ const Dupeemailprocess = ({fn,emailsdata,closedupeemailsendbox})=>{
    
 }
       async function choosetype(e,type){
+     let appno =newdupedata.reduce((all,item)=> {return all.concat(item[2].split(',,'));},[]);
         e.preventDefault();
 let t=document.querySelector('#templateid');
 let a=document.querySelector('#chooseaccount');
@@ -117,8 +117,11 @@ if(t.value=='')
 
         }
         else{
-const res =await emailformat(t.value,a.value,newdupedata.slice(0,document.querySelector('#totalsending').value),title,t.options[t.selectedIndex].text,a.options[a.selectedIndex].text,type);
-if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true,modalstatus:false, message: res.data.message,color:'success',icon:'success' })) }
+const res =await emailformat(t.value,a.value,newdupedata,title,t.options[t.selectedIndex].text,a.options[a.selectedIndex].text,type);
+if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true,modalstatus:false, message: res.data.message,color:'success',icon:'success' })) 
+        let newarray=alldata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[57]:'sent'} : item) });
+        changedata(newarray);
+}
 else {setvalidate((validate)=>({...validate,status:true,modalstatus:true,message:res.data.errors.error}));}
 if(type=='send')
 {
@@ -143,7 +146,7 @@ return (
             <form className="form-horizontal filing-form_data">
             <div className="modal-header d-flex align-items-center">
                                 <h4 className="modal-title" id="myLargeModalLabel">
-                                  Total Filtered Record {newdupedata.slice(0,document.querySelector('#totalsending').value).length}
+                                  Total Filtered Record {newdupedata.length}
                                 </h4>
                                 <button onClick={()=>{fn(false)}} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                               </div>
@@ -152,7 +155,7 @@ return (
                                     <TableVirtuoso 
       components={{className:"koushal"}}
       style={{ height: 300 }}
-      data={newdupedata.slice(0,document.querySelector('#totalsending').value)}
+      data={newdupedata}
       fixedHeaderContent={() => (
         <tr> 
 
