@@ -4,13 +4,9 @@ const API_URL = "https://www.anuation.com/oldcrm/";
 let axiosConfig = { 'content-type': 'application/x-www-form-urlencoded' };
 
 
-const fetchdata = (data) => {
-    return axios({
-        method: 'POST',
-        headers: axiosConfig,
-        url: API_URL+'employee/auth/reactauth/currentdata',
-        data: data
-      }).then((response) => {
+const fetchdata = (data,signal) => {
+  axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
+    return axios.post(API_URL+'employee/auth/reactauth/currentdata',data,{signal}).then((response) => {
        return response;
       });
 };

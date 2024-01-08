@@ -17,6 +17,7 @@ const Editemailemplate =() =>{
     auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
     const handleEditorChange = (event, editor) => {
       const data = editor.getData();
+      console.log(data);
       setEditorData(data);
     };
     function updatestate(value, key) {

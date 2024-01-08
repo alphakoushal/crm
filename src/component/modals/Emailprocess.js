@@ -4,6 +4,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Uploaddata from "../../services/uploaddata";
 import Fetchdata from "../../services/fetchdata";
+import { costs,standard } from "../../constant/Constant";
 const Emailbox = ({fn,emailsdata,closeemailsendbox,changedata,alldata})=>{
   const [templatelist,settemplate]=useState([]);
   let auth= localStorage.getItem("user"); 
@@ -32,7 +33,7 @@ const Emailbox = ({fn,emailsdata,closeemailsendbox,changedata,alldata})=>{
         'userid':auth.userid,
         'a':a,
         'totalapp':emailsdata.length,
-        'apps':JSON.stringify(emailsdata.map((val)=>{return {'weblink':val[0],'title':val[1],'email_id':val[11],'deadline_30_month':val[5],'applicant_name':val[7],'application_no':val[2],'contact_person':val[10],'deadline_30_month':val[5],'deadline_31_month':val[6]}}))
+        'apps':JSON.stringify(emailsdata.map((val)=>{return {'weblink':val[0],'title':val[1],'email_id':val[11],'deadline_30_month':val[5],'applicant_name':val[7],'application_no':val[2],'contact_person':val[10],'deadline_30_month':val[5],'deadline_31_month':val[6],'incost':costs.IN.apply({'c':'IN','as':val[8],'ci':val[9],'pages':val[14],'claim':val[15],'priority':val[16],'co':val[3],'isa':val[18],'standard':standard})}}))
       }
      return Uploaddata.emailformat(formdata).then((resposne)=>{return resposne});
      }
