@@ -1,19 +1,98 @@
 const callstatus={'1':'NI','2':'lb','3':'Voice mail','4':'Invalid no','5':'Email sent','6':'Cb','7':'Ringing','8':'Dnc','9':'Other'};
 const emailstatus = {'1':'Pipeline','2':'Failed','3':'Rejection','4':'Reciprocity','5':'Ooo','6':'Converted','7':'Response','8':'Dnc','9':'Dupe','10':'Exhausted','11':'Other','12':'Email Sent'};
 const standard={'IN':{'Small':22,'other':110},'CA':{'Small':1160,'other':1320},'CN':{'other':1210},'JP':{'other':1340},'AU':{'other':1300},'BR':{'other':1200},'US':{'Small':1240,'other':1380},'KR':{'other':1080},'EP':{'other':715+700+400+1825},'RU':{'other':1130},'MX':{'other':1630},'MY':{'other':900},'PH':{'other':800},'TH':{'other':900},'ID':{'other':850},'NZ':{'other':1200},'ZA':{'other':900},'VN':{'other':655},'SG':{'other':1100},'CO':{'other':1650}};
+const defaultvalue = {
+  names : [
+    {'key':'_blank','value':'Blank'},
+    {'key':'1','value':'Pipeline'},
+    {'key':'2','value':'Failed'},
+    {'key':'3','value':'Rejection'},
+    {'key':'4','value':'Reciprocity'},
+    {'key':'5','value':'Ooo'},
+    {'key':'6','value':'Converted'},
+    {'key':'7','value':'Response'},
+    {'key':'8','value':'Dnc'},
+    {'key':'9','value':'Dupe'},
+    {'key':'10','value':'Exhausted'},
+    {'key':'12','value':'Email Sent'},
+      ],
+      dupestatus : [{'key':'Unique','value':'Unique'},{'key':'Dupe','value':'Dupe'}],
+      genstatus : [{'key':'email','value':'Email'},{'key':'domain','value':'Domain'}],
+      applicantstatus : [{'key':'small','value':'Small'},{'key':'large','value':'Large'}],
+      contactinfostatus : [{'key':'agent','value':'Agent'},{'key':'individual','value':'Individual'},{'key':'Both - Individual & Agent','value':'Both - Individual & Agent'}],
+      callnames : [{'key':'_blank','value':'Blank'},{'key':'1','value':'Ni'},
+      {'key':'2','value':'Lb'},
+      {'key':'3','value':'Voice mail'},
+      {'key':'4','value':'Invalid no'},
+      {'key':'5','value':'Email sent'},
+      {'key':'6','value':'Cb'},
+      {'key':'7','value':'Ringing'},
+      {'key':'8','value':'Dnc'}
+        ],
+        accounts:{'191214150648429653':[{name:'Meenu',account:4},{name:'Kim',account:5},{name:'Ojas',account:6},{name:'Naina',account:7}],'231220121357187063':[{name:'Mohini',account:8},{name:'Eva',account:9},{name:'Nancy',account:10}],'191220121357187063':[{name:'Amy',account:11},{name:'Anu',account:12},{name:'Neha',account:13},{name:'Ria',account:14},{name:'Divi',account:15},{name:'Priya',account:16}]}
 
+};
+const tablesetting = {
+  countred:function(email,numbermatch,d)
+{
+    return (d.filter((e1)=>{return e1[numbermatch].trim()===email}).length>=2 ? true : false);
+},
+returndata: function(collection,value,key)
+{
+  value=(value!='' && value !=null ? value: '');
+  value = typeof(value)=='number' ? value : value.toLowerCase();
+
+let t=-1;
+    for(let i=0;i<collection.length;i++)
+    {
+      collection[i] = (collection[i]=='_blank' && key=='23' ? '' : collection[i]);
+        if(key==23 || key==24 || key==9 || key==3)
+        {
+            if(value==collection[i])
+    {
+       t= 0;
+    } 
+        }
+        else
+        {
+    if(value.indexOf(collection[i])>-1)
+    {
+       t= 0;
+       
+    }
+    else if(collection[i]=='_blank' && value=='')
+    {
+       t= 0;
+       
+    }
+    else if(collection[i]=='!n/a' && value!='n/a')
+    {
+       t= 0;
+       
+    }
+    else if(collection[i].indexOf('!')>-1 && value!=collection[i].split('!')[1])
+    {
+       t= 0;
+       
+    }
+    }
+}
+
+    return t;
+}
+}
 const costs ={
     standardcall:function(standard,c,as) {
         return standard[c].hasOwnProperty(as) ? standard[c]['Small'] : standard[c]['other'];
     },
     roundup :function(number,num_digit)
-{
-let n = number.toString().split('.')[0].split('');
-let g =n.slice(0,num_digit).join('');
-g =g+''+(parseInt(n[g.length])+1);
-let zero= '0'.repeat(n.length-g.length);
-return parseInt(g)+zero;
-},
+    {
+    let n = number.toString().split('.')[0].split('');
+    let g =n.slice(0,num_digit).join('');
+    g =g+''+(parseInt(n[g.length])+1);
+    let zero= '0'.repeat(n.length-g.length);
+    return parseInt(g)+zero;
+    },
     pagerouncall:function(info)
     {
         let cost=0;
@@ -187,8 +266,7 @@ return parseInt(g)+zero;
     },
     EP:function()
     {
-       // return 1.12 * (costs.standardcall(this.standard,this.c,this.as) + costs.pagescall({'as':this.as,'pages':this.pages,'smallcost':15,'largecost':0,'pageslimit':35}) + costs.claimcall({'as':'','claim':this.claim,'smallcost':235,'largecost':0,'claimlimit':15,'claimlimittwo':50,'claimlimittwocost':580}) + costs.prioritycall({'as':'','priority':this.priority,'smallcost':100,'largecost':0,'prioritylimit':1})) + costs.isacall({'as':this.as,'isa':this.isa,'smallcost':1456,'largecost':0,'c':this.c});
-        return (1.12 * (costs.standardcall(this.standard,this.c,this.as) + costs.pagescall({'as':this.as,'pages':this.pages,'smallcost':15,'largecost':0,'pageslimit':35}) + costs.claimcall({'as':'','claim':this.claim,'smallcost':235,'largecost':0,'claimlimit':15,'claimlimittwo':50,'claimlimittwocost':580}) + costs.prioritycall({'as':'','priority':this.priority,'smallcost':100,'largecost':0,'prioritylimit':1}) + costs.isacall({'as':this.as,'isa':this.isa,'smallcost':1456,'largecost':0,'c':this.c})));
+        return costs.roundup(1.12 * (costs.standardcall(this.standard,this.c,this.as) + costs.pagescall({'as':this.as,'pages':this.pages,'smallcost':15,'largecost':0,'pageslimit':35}) + costs.claimcall({'as':'','claim':this.claim,'smallcost':235,'largecost':0,'claimlimit':15,'claimlimittwo':50,'claimlimittwocost':580}) + costs.prioritycall({'as':'','priority':this.priority,'smallcost':100,'largecost':0,'prioritylimit':1})) + costs.isacall({'as':this.as,'isa':this.isa,'smallcost':1456,'largecost':0,'c':this.c}),-2);
     },
     RU:function()
     {
@@ -235,4 +313,4 @@ return parseInt(g)+zero;
         return costs.standardcall(this.standard,this.c,this.as) + costs.pagescall({'as':this.as,'pages':this.pages,'smallcost':0,'largecost':0,'pageslimit':0}) + costs.claimcall({'as':'','claim':this.claim,'smallcost':20,'largecost':0,'claimlimit':10}) + costs.prioritycall({'as':'','priority':this.priority,'smallcost':100,'largecost':0,'prioritylimit':1});
     }
 }
-export { callstatus, emailstatus,costs,standard};
+export { callstatus, emailstatus,costs,standard,tablesetting,defaultvalue};

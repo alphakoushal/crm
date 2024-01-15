@@ -4,12 +4,12 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Uploaddata from "../../services/uploaddata";
 import Fetchdata from "../../services/fetchdata";
+import { costs,standard,defaultvalue } from "../../constant/Constant";
+
 const Dupeemailprocess = ({fn,emailsdata,closedupeemailsendbox,changedata,alldata})=>{
   let auth= localStorage.getItem("user"); 
   const [newdupedata,setdupedata]=useState([]);
   const [templatelist,settemplate]=useState([]);
- let accounts={'191214150648429653':[{name:'Meenu',account:4},{name:'Kim',account:5},{name:'Ojas',account:6},{name:'Naina',account:7}],'231220121357187063':[{name:'Mohini',account:8},{name:'Eva',account:9},{name:'Nancy',account:10}],'191220121357187063':[{name:'Amy',account:11},{name:'Anu',account:12},{name:'Neha',account:13},{name:'Ria',account:14},{name:'Divi',account:15},{name:'Priya',account:16}]}
- let accountstwo=[{name:'Meenu',account:4},{name:'Kim',account:5},{name:'Ojas',account:6},{name:'Naina',account:7},{name:'Mohini',account:8},{name:'Eva',account:9},{name:'Nancy',account:10},{name:'Amy',account:11},{name:'Anu',account:12},{name:'Neha',account:13},{name:'Ria',account:14},{name:'Divi',account:15},{name:'Priya',account:16}];
 
  useEffect(()=>{
     getdupedata(emailsdata);
@@ -18,12 +18,15 @@ const Dupeemailprocess = ({fn,emailsdata,closedupeemailsendbox,changedata,alldat
   let data=await Fetchdata.fetchtemplate({'type':type}).then((response)=>{ return response});
   settemplate(data.data.data);
     }
+
  function getdupedata(emailsdata){
     let dupedata=[];
     let res = emailsdata.map((e)=>{
+      let incost = costs.IN.apply({'c':'IN','as':e[8],'ci':e[9],'pages':e[14],'claim':e[15],'priority':e[16],'co':e[3],'isa':e[18],'standard':standard});
+
         if(e[12]!=='' && e[12]!='n/a')
         {
-          if(e[54]=='Email')
+          if(e[54]=='Email')//FOR GENERIC DATA
           {
             let find=dupedata.findIndex((e1)=>{return e1[7].trim()===e[11].trim()});
             if(find>-1)
@@ -37,12 +40,14 @@ const Dupeemailprocess = ({fn,emailsdata,closedupeemailsendbox,changedata,alldat
                 dupedata[find][6]=`${e[10]},,${dupedata[find][6]}`//contact person name
                 dupedata[find][5]=`${e[5]},,${dupedata[find][5]}`//Deadline
                 dupedata[find][8]=`${e[6]},,${dupedata[find][8]}`//Deadline 31
+                dupedata[find][9]=`${incost},,${dupedata[find][9]}`//in cost
+
               }
               else{}
             }
             else if(emailsdata.filter((e1)=>{return e1[11].trim()===e[11].trim()}).length>1)
             {
-                dupedata.push([e[12].trim(),e[11].trim(),e[2].trim(),e[1].trim(),e[7].trim(),e[5].trim(),e[10].trim(),e[11].trim(),e[6].trim()]);
+                dupedata.push([e[12].trim(),e[11].trim(),e[2].trim(),e[1].trim(),e[7].trim(),e[5].trim(),e[10].trim(),e[11].trim(),e[6].trim(),incost]);
             }
           }
           else{
@@ -56,10 +61,11 @@ const Dupeemailprocess = ({fn,emailsdata,closedupeemailsendbox,changedata,alldat
             dupedata[find][6]=`${e[10]},,${dupedata[find][6]}`//contact person name
             dupedata[find][5]=`${e[5]},,${dupedata[find][5]}`//Deadline
             dupedata[find][8]=`${e[6]},,${dupedata[find][8]}`//Deadline
+            dupedata[find][9]=`${incost},,${dupedata[find][9]}`//in cost
         }
         else if(emailsdata.filter((e1)=>{return e1[12]===e[12]}).length>1)
         {
-            dupedata.push([e[12],e[11],e[2],e[1],e[7],e[5],e[10],e[11],e[6]]);
+            dupedata.push([e[12],e[11],e[2],e[1],e[7],e[5],e[10],e[11],e[6],incost]);
         }
       }
     }
@@ -67,7 +73,7 @@ const Dupeemailprocess = ({fn,emailsdata,closedupeemailsendbox,changedata,alldat
     setdupedata(dupedata.slice(0,document.querySelector('#totalsending').value));
  }
   auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
-  accounts =(accounts[auth.userid]!==undefined ? accounts[auth.userid] :accountstwo);
+  let accounts =(defaultvalue.accounts[auth.userid]!==undefined ? defaultvalue.accounts[auth.userid] : Object.values(defaultvalue.accounts).flat());
     const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:'',modalstatus:true});
     async function emailformat(t,a,emailsdata,title,template,account,type)
     {
@@ -84,7 +90,7 @@ const Dupeemailprocess = ({fn,emailsdata,closedupeemailsendbox,changedata,alldat
         'dupeprocess':'yes',
         'a':a,
         'totalapp':emailsdata.length,
-        'apps':JSON.stringify(emailsdata.map((val)=>{return {'domain':val[0],'email_id':val[1],'application_no':val[2],'title':val[3],'contact_person':val[6],'deadline_30_month':val[5],'deadline_31_month':val[8],'applicant_name':val[4]}}))
+        'apps':JSON.stringify(emailsdata.map((val)=>{return {'domain':val[0],'email_id':val[1],'application_no':val[2],'title':val[3],'contact_person':val[6],'deadline_30_month':val[5],'deadline_31_month':val[8],'applicant_name':val[4],'incost':val[9]}}))
 
       }
      return Uploaddata.emailformat(formdata).then((resposne)=>{return resposne});
@@ -120,7 +126,7 @@ if(t.value=='')
 const res =await emailformat(t.value,a.value,newdupedata,title,t.options[t.selectedIndex].text,a.options[a.selectedIndex].text,type);
 if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true,modalstatus:false, message: res.data.message,color:'success',icon:'success' })) 
         let newarray=alldata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[57]:'sent'} : item) });
-        changedata(newarray);
+     //   changedata(newarray);
 }
 else {setvalidate((validate)=>({...validate,status:true,modalstatus:true,message:res.data.errors.error}));}
 if(type=='send')
@@ -166,6 +172,7 @@ return (
  <th className="small"><div className="headers">Title</div></th>
  <th className="small"><div className="headers">Deadline 30</div></th>
  <th className="small"><div className="headers">Deadline 31</div></th>
+ <th className="small"><div className="headers">In cost</div></th>
         </tr>
       )}
       itemContent={(index, user) => (
@@ -177,6 +184,7 @@ return (
         <td  className="column-value small text-break">{user[3]}</td>
         <td  className="column-value small text-break">{user[5]}</td>
         <td  className="column-value small text-break">{user[8]}</td>
+        <td  className="column-value small text-break">{user[9]}</td>
  </>
       )} 
       
@@ -194,6 +202,7 @@ return (
                                 <option value="5">Individual Dupe Email</option>
                                 <option value="9">Individual Dupe Reminder Email</option>
                                 <option value="transfer">Transfer</option>
+                                <option value="assigned">Assigned</option>
                               </select>
                               <select id="chooseaccount" className="form-select">
                               <option value="">Choose Account</option>

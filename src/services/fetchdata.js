@@ -10,6 +10,12 @@ const fetchdata = (data,signal) => {
        return response;
       });
 };
+const freshdata = (data,signal) => {
+  axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
+    return axios.post(API_URL+'employee/auth/reactauth/freshdata',data,{signal}).then((response) => {
+       return response;
+      });
+};
 const fetchcrondata = (data) =>{
 return axios({
 method :"POST",
@@ -63,7 +69,7 @@ url: API_URL+'employee/auth/',
   }).then((response)=>{return response;})
 }
 const Fetchdata = {
-  fetchdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchtemp,fetchtemplate
+  freshdata,fetchdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchtemp,fetchtemplate
 }
 
 export default Fetchdata;

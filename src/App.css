@@ -54443,7 +54443,7 @@ ul {
 }
 .email-id{ pointer-events: none;}
 .ck.ck-editor__editable.ck-editor__editable_inline{width:1100px;height:400px;max-height: 400px;}
-
+.red-dupe{background:#ff000029 !important;color:black !important;--bs-table-bg-state:none !important}
 .textarea{
     width: 100%;
     font-size: 0.875rem;

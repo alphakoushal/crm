@@ -4,15 +4,12 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Uploaddata from "../../services/uploaddata";
 import Fetchdata from "../../services/fetchdata";
-import { costs,standard } from "../../constant/Constant";
+import { costs,standard,defaultvalue } from "../../constant/Constant";
 const Emailbox = ({fn,emailsdata,closeemailsendbox,changedata,alldata})=>{
   const [templatelist,settemplate]=useState([]);
   let auth= localStorage.getItem("user"); 
- let accounts={'191214150648429653':[{name:'Meenu',account:4},{name:'Kim',account:5},{name:'Ojas',account:6},{name:'Naina',account:7}],'231220121357187063':[{name:'Mohini',account:8},{name:'Eva',account:9},{name:'Nancy',account:10}],'191220121357187063':[{name:'Amy',account:11},{name:'Anu',account:12},{name:'Neha',account:13},{name:'Ria',account:14},{name:'Divi',account:15},{name:'Priya',account:16}]}
- let accountstwo=[{name:'Meenu',account:4},{name:'Kim',account:5},{name:'Ojas',account:6},{name:'Naina',account:7},{name:'Mohini',account:8},{name:'Eva',account:9},{name:'Nancy',account:10},{name:'Amy',account:11},{name:'Anu',account:12},{name:'Neha',account:13},{name:'Ria',account:14},{name:'Divi',account:15},{name:'Priya',account:16}];
-
   auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
-  accounts =(accounts[auth.userid]!==undefined ? accounts[auth.userid] :accountstwo);
+  let accounts =(defaultvalue.accounts[auth.userid]!==undefined ? defaultvalue.accounts[auth.userid] :Object.values(defaultvalue.accounts).flat());
     const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:'',modalstatus:true});
     const fetchlist = async (type) =>{
       let data=await Fetchdata.fetchtemplate({'type':type}).then((response)=>{ return response});
@@ -70,7 +67,7 @@ if(t.value=='')
 const res =await emailformat(t.value,a.value,emailsdata,title,t.options[t.selectedIndex].text,a.options[a.selectedIndex].text,type);
 if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true,modalstatus:false, message: res.data.message,color:'success',icon:'success' }));
         let newarray=alldata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[57]:'sent'} : item) });
-        changedata(newarray);
+     //   changedata(newarray);
 }
 else {setvalidate((validate)=>({...validate,status:true,modalstatus:true,message:res.data.errors.error}));}
 if(type=='send')
@@ -146,6 +143,7 @@ return (
                                 <option value="3">Agent First Email Reminder</option>
                                 <option value="6">Individual Email Reminder</option>
                                 <option value="transfer">Transfer</option>
+                                <option value="assigned">Assigned</option>
                               </select>
                               <select id="chooseaccount" className="form-select">
                               <option value="">Choose Account</option>

@@ -18,10 +18,12 @@ import commentprocess from "../services/commentservice";
 import Addmodal from "./modals/addmodal";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { defaultvalue } from "../constant/Constant";
 const Header = React.memo(({alldata,changedata,showmailbox,showdupemailbox,showcronbox,clearfilters,refreshdata,formdatas,showcurrencies}) =>{
   const navigate=useNavigate(); 
   let auth= localStorage.getItem("user"); 
-  auth =(auth!='' ? JSON.parse(auth) : '')
+  auth =(auth!='' ? JSON.parse(auth) : '');
+  let accounts =(defaultvalue.accounts[auth.userid]!==undefined ? defaultvalue.accounts[auth.userid] :Object.values(defaultvalue.accounts).flat());
   const [openemailbox, setOpen] = useState({status:false,type:'',title:''});
   const [openfollowbox, setOpenfollow] = useState(false);
   const [openaddbox, setaddbox] = useState(false);
@@ -83,8 +85,8 @@ window.location.reload();
      // let appno=document.querySelectorAll('.appno');
       let commentdate=document.querySelector('#name').value;
       let commenttext=document.querySelector('#textarea').value;
+      let a=document.querySelector('#chooseaccount');
       let appno=document.querySelector('#allapp').value.split(',');
-
       if(validate.inprocess)
       {
           setvalidate((validate)=>({...validate,status:true,message:'Request In process'}));
@@ -93,17 +95,21 @@ window.location.reload();
       {
           setvalidate((validate)=>({...validate,status:true,message:'Choose Status'}));
       }
-      else if(appno=='' || typeof(appno)=='undefined' || appno.length<=0)
-      {
-          setvalidate((validate)=>({...validate,status:true,message:'Add Applications'}));
-      }
       else if((commentdate=='' || typeof(commentdate)=='undefined') && type=='email_comment_react')
       {
           setvalidate((validate)=>({...validate,status:true,message:'Choose Date'}));
       }
+      else if(a.value=='' || typeof(a)=='undefined')
+      {
+          setvalidate((validate)=>({...validate,status:true,message:'Choose Account type'}));
+      }
+      else if(appno=='' || typeof(appno)=='undefined' || appno.length<=0)
+      {
+          setvalidate((validate)=>({...validate,status:true,message:'Add Applications'}));
+      }
       else if(commenttext=='' || typeof(commenttext)=='undefined')
       {
-          setvalidate((validate)=>({...validate,status:true,message:appno.length}));
+          setvalidate((validate)=>({...validate,status:true,message:a}));
       }
       else
       {
@@ -117,6 +123,7 @@ clientObject[e] = {
   "followup": getdata[0][21],//document.querySelector(`.appno[value='${e}']`).closest('tr').querySelectorAll('td')[22].innerText,
   "date": commentdate,
   "status": status,
+  "addedby":a.options[a.selectedIndex].text,
   "comment": commenttext,
   "domain":getdata[0][12],//document.querySelector(`.appno[value='${e}']`).closest('tr').querySelectorAll('td')[13].innerText,
   "email":getdata[0][11],//document.querySelector(`.appno[value='${e}']`).closest('tr').querySelectorAll('td')[12].innerText,
@@ -132,24 +139,24 @@ clientObject[e] = {
     if(Object.keys(clientObject).length>=1)
     {
       setvalidate((validate)=>({...validate,inprocess:true}));
-   let status= await commentprocess.updatecomments(salesdata).then((response)=>{return response});
-   if (status.data.success) { setvalidate((prev)=>({ ...prev, status: true,inprocess:false, message: status.data.message,color:'success',icon:'success' }));
+   let cstatus= await commentprocess.updatecomments(salesdata).then((response)=>{return response});
+   if (cstatus.data.success) { setvalidate((prev)=>({ ...prev, status: true,inprocess:false, message: cstatus.data.message,color:'success',icon:'success' }));
    setOpen({status:false,type:'',title:''}); 
    if(type=='email_comment_react')
    {
-    let newarray=alldata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[25]:item[25]+"="+commenttext,[21]:commentdate,[23]:status,[22]:""} : item) });
+    let newarray=alldata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[25]:item[25]+"="+commenttext,[58]:a.options[a.selectedIndex].text,[21]:commentdate,[23]:status,[22]:""} : item) });
     changedata(newarray);
    }
    else
    {
-    let newarray=alldata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[25]:item[25]+"="+commenttext,[21]:commentdate,[24]:status} : item) });
+    let newarray=alldata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[25]:item[25]+"="+commenttext,[58]:a.options[a.selectedIndex].text,[21]:commentdate,[24]:status} : item) });
     changedata(newarray);
    }
 
   }
    else
    {
-  setvalidate((prev)=>({ ...prev, status: true,inprocess:false, message: status.data.errors.error,color:'error',icon:'error' }))     
+  setvalidate((prev)=>({ ...prev, status: true,inprocess:false, message: cstatus.data.errors.error,color:'error',icon:'error' }))     
    }
 
     }
@@ -158,6 +165,9 @@ clientObject[e] = {
       setvalidate((prev)=>({ ...prev, status: true,inprocess:false, message: 'PLease add Applications',color:'error',icon:'error' }))     
 
     }
+    setTimeout(() => {
+    setvalidate((prev)=>({...prev,status:false}));
+    }, 1000);
   }
     }
 
@@ -177,7 +187,7 @@ clientObject[e] = {
         <DialogTitle>{openemailbox.title}</DialogTitle>
         <DialogContent>
           <div className="row pt-3">
-            <div className="col-md-6">
+            <div className="col-md-4">
         <FormControl fullWidth>
   {openemailbox.type=='email_comment_react' ? <>
   <InputLabel id="demo-simple-select-label">Email status</InputLabel>
@@ -223,7 +233,7 @@ clientObject[e] = {
   </Select></>}
 </FormControl>
 </div>
-<div className="col-md-6">
+<div className="col-md-4">
           <TextField
             autoFocus
             margin="dense"
@@ -232,6 +242,17 @@ clientObject[e] = {
             fullWidth
             variant="standard"
           />
+          </div>
+          <div className="col-md-4">
+          <select id="chooseaccount" className="form-select">
+                              <option value="">Choose Account</option>
+                              {
+                                accounts.map((e,i)=>{
+                                 return <option value={e.account}>{e.name}</option>;
+                                })
+                              }
+
+                              </select>
           </div>
           <div className="col-md-12 pt-3">
               <textarea
@@ -410,7 +431,7 @@ clientObject[e] = {
                     </a>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link notify-badge nav-icon-hover" to="https://www.anuation.com/oldcrm/employee/auth/reactauth/export-excel.php">  <i className="ti ti-cloud-download"></i>  </Link>
+                    <Link className="nav-link notify-badge nav-icon-hover" to={`https://www.anuation.com/oldcrm/employee/auth/reactauth/export-excel.php?userid=${auth.userid}`}>  <i className="ti ti-cloud-download"></i>  </Link>
 
                   </li>
                   <li onClick={showuserprofile} className="nav-item dropdown">

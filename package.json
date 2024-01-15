@@ -17,6 +17,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.4.0",
     "bootstrap": "^5.3.0",
+    "export-xlsx": "^0.1.4",
     "faker": "^6.6.6",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",

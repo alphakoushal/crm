@@ -10,7 +10,7 @@ import Uploaddata from "../services/uploaddata";
 import Style from "../component/style/style";
 import Editmodal from "../component/modals/Editmodal";
 import OutlinedInput from '@mui/material/OutlinedInput';
-import { callstatus, emailstatus,costs,standard,tablesetting,defaultvalue} from '../constant/Constant.js';
+import { callstatus, emailstatus,costs,standard,tablesetting} from '../constant/Constant.js';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -18,11 +18,12 @@ import Sidebarprofile from "../component/modals/Sidebarprofile";
 import Emailbox from "../component/modals/Emailprocess";
 import Dupeemailprocess from "../component/modals/Dupeemailprocess";
 import Cronlist from "../component/modals/cron-list";
+import ExcelExport from 'export-xlsx';
 function Loading() {
     return <h2>🌀 Loading...</h2>;
   }
    let filtered=[];
-const Dashboard =() =>{
+const Freshdata =() =>{
     const [d,sd]=useState([]); const [d2,gd]=useState([]);
      const [profilebar,setprofilebar] =useState({status:false,email:''});
     const [sortDown, setSortDown] = useState(true); 
@@ -44,6 +45,7 @@ const Dashboard =() =>{
     const auth= JSON.parse(localStorage.getItem("user")); 
     const valued=useSelector((state)=>state.userdata.value);
     const dispatch=useDispatch();
+    const Width =useRef(160);
  useEffect(()=>{
     clearfilter();
  },[])
@@ -69,11 +71,11 @@ const Dashboard =() =>{
 
 let formdata =useMemo(()=>{return formdata1},[formdata1])
 
-const changedata =  useCallback ( (data) =>{
+async function changedata(data){
   sd(data);
   gd(data);
-})
-   const loaddata =  useCallback  ( async (formdata) =>
+}
+    async function loaddata(formdata)
     {
       let abortc= new AbortController();
       let {signal}=abortc;
@@ -84,7 +86,7 @@ const changedata =  useCallback ( (data) =>{
     processing.current=true;
      let datas={};
         document.querySelector('.ti-refresh').classList.add('rotate');document.querySelector('.body-wrapper1').classList.add('loader');
-        data = await Fetchdata.fetchdata(formdata,signal).then(response=>{return response;}).finally(()=>{document.querySelector('.ti-refresh').classList.remove('rotate');document.querySelector('.body-wrapper1').classList.remove('loader');});
+        data = await Fetchdata.freshdata(formdata,signal).then(response=>{return response;}).finally(()=>{document.querySelector('.ti-refresh').classList.remove('rotate');document.querySelector('.body-wrapper1').classList.remove('loader');});
         if(data.data.success)
         {
           datas =data.data.data;
@@ -101,7 +103,7 @@ const changedata =  useCallback ( (data) =>{
        gd(datas);
        dispatch(userprofileupdate(data.length));
         document.querySelector('table').classList.add("table","table-bordered","table-hover");
-    });
+    }
    useEffect(()=>{loaddata(formdata);},[]);
    const showmailbox = () =>{
     setsendmailbox(true);
@@ -121,11 +123,68 @@ const changedata =  useCallback ( (data) =>{
   const closedupeemailsendbox = () =>{
     setdupesendmailbox(false);
   }
+function returndata(collection,value,key)
+{
+  value=(value!='' && value !=null ? value: '');
+  value = typeof(value)=='number' ? value : value.toLowerCase();
 
+let t=-1;
+    for(let i=0;i<collection.length;i++)
+    {
+      collection[i] = (collection[i]=='_blank' && key=='23' ? '' : collection[i]);
+        if(key==23 || key==24 || key==9 || key==3)
+        {
+            if(value==collection[i])
+    {
+       t= 0;
+    } 
+        }
+        else
+        {
+    if(value.indexOf(collection[i])>-1)
+    {
+       t= 0;
+       
+    }
+    else if(collection[i]=='_blank' && value=='')
+    {
+       t= 0;
+       
+    }
+    else if(collection[i]=='!n/a' && value!='n/a')
+    {
+       t= 0;
+       
+    }
+    else if(collection[i].indexOf('!')>-1 && value!=collection[i].split('!')[1])
+    {
+       t= 0;
+       
+    }
+    // else if(collection[i].indexOf('!')>-1 && value.indexOf(collection[i].split('!')[1])>-1)
+    // {
+    //    t= 1;
+       
+    // }
+    }
+}
+
+    return t;
+}
 
 function filterdata(index,value)
 {
 let i=0;
+   // let sel='';
+    // if(typeof(value.value)=='array')
+    // {
+    //     for(let option of value.options)
+    //     {
+    //         sel +=(option.selected ? option.value+',' : '');
+       
+    //     }  
+    // }
+    //value=typeof(value.value)=='array' ? sel.slice(0,-1) : value;
 let filters=document.querySelectorAll('.filter');
 
 let obj={'key':index,'value':value};
@@ -179,7 +238,7 @@ else
 {
     sv=(sv!=='' ? sv.toLowerCase().split(',') : '');
     console.log(sv,'check');
-    copy=copy.filter((f)=>{return tablesetting.returndata(sv,f[e.key],e.key)>-1;});
+    copy=copy.filter((f)=>{return returndata(sv,f[e.key],e.key)>-1;});
 }
 i++;
 }) 
@@ -272,7 +331,34 @@ const MenuProps = {
     },
   },
 };
+const names = [
+{'key':'_blank','value':'Blank'},
+{'key':'1','value':'Pipeline'},
+{'key':'2','value':'Failed'},
+{'key':'3','value':'Rejection'},
+{'key':'4','value':'Reciprocity'},
+{'key':'5','value':'Ooo'},
+{'key':'6','value':'Converted'},
+{'key':'7','value':'Response'},
+{'key':'8','value':'Dnc'},
+{'key':'9','value':'Dupe'},
+{'key':'10','value':'Exhausted'},
+{'key':'12','value':'Email Sent'},
+  ];
   
+  const dupestatus = [{'key':'Unique','value':'Unique'},{'key':'Dupe','value':'Dupe'}];
+  const genstatus = [{'key':'email','value':'Email'},{'key':'domain','value':'Domain'}];
+  const applicantstatus = [{'key':'small','value':'Small'},{'key':'large','value':'Large'}];
+  const contactinfostatus = [{'key':'agent','value':'Agent'},{'key':'individual','value':'Individual'},{'key':'Both - Individual & Agent','value':'Both - Individual & Agent'}];
+  const callnames = [{'key':'_blank','value':'Blank'},{'key':'1','value':'Ni'},
+  {'key':'2','value':'Lb'},
+  {'key':'3','value':'Voice mail'},
+  {'key':'4','value':'Invalid no'},
+  {'key':'5','value':'Email sent'},
+  {'key':'6','value':'Cb'},
+  {'key':'7','value':'Ringing'},
+  {'key':'8','value':'Dnc'}
+    ];
   const handlechange = (e) =>{
    setemail(e.target.value)
    filterdata(23,e.target.value.toString())
@@ -356,6 +442,8 @@ else
    comments.shift();
    return comments.filter((c,i,a)=>{return (a.indexOf(c)==i && c!='')}).join('\r\n\r\n');
 }
+
+
     return( 
 <>
  
@@ -363,7 +451,7 @@ else
 {showeditmodal.state==true ? <Editmodal show={showeditmodal} fn={editinfo}></Editmodal> : <></> }
     <Commentmodal/>
     <Style></Style>
-    <Header changedata={changedata}  except={true} alldata={d} showmailbox={showmailbox} showdupemailbox={showdupemailbox} showcronbox={showcronbox}  clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
+    <Header  changedata={changedata}  except={true} alldata={d2} showmailbox={showmailbox} showdupemailbox={showdupemailbox} showcronbox={showcronbox}  clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
     {opensendmailbox ? <Emailbox alldata={d} changedata={changedata} closeemailsendbox={closeemailsendbox} emailsdata={d.slice(0, document.querySelector('#totalsending').value)} fn={closeemailsendbox}></Emailbox> : <></>}
     {opendupesendmailbox ? <Dupeemailprocess alldata={d} changedata={changedata} closedupeemailsendbox={closedupeemailsendbox} emailsdata={d} fn={closedupeemailsendbox}></Dupeemailprocess> : <></>}
     {opencronbox ? <Cronlist closecronbox={closecronbox}></Cronlist> : <></>}
@@ -437,7 +525,7 @@ else
           label="Age"
         >
           
-          {defaultvalue.dupestatus.map((name) => (
+          {dupestatus.map((name) => (
             <MenuItem
               key={name.key}
               value={name.key}
@@ -460,7 +548,7 @@ else
           multiple
           onChange={handlegen}
         >
-          {defaultvalue.genstatus.map((name) => (
+          {genstatus.map((name) => (
             <MenuItem
               key={name.key}
               value={name.key}
@@ -485,7 +573,7 @@ else
           input={<OutlinedInput label="Name" />}
           MenuProps={MenuProps}
         >
-          {defaultvalue.applicantstatus.map((name) => (
+          {applicantstatus.map((name) => (
             <MenuItem
               key={name.key}
               value={name.key}
@@ -510,7 +598,7 @@ else
           input={<OutlinedInput label="Name" />}
           MenuProps={MenuProps}
         >
-          {defaultvalue.contactinfostatus.map((name) => (
+          {contactinfostatus.map((name) => (
             <MenuItem
               key={name.key}
               value={name.key}
@@ -548,7 +636,7 @@ else
           input={<OutlinedInput label="Name" />}
           MenuProps={MenuProps}
         >
-          {defaultvalue.names.map((name) => (
+          {names.map((name) => (
             <MenuItem
               key={name.key}
               value={name.key}
@@ -572,7 +660,7 @@ else
           input={<OutlinedInput label="Name" />}
           MenuProps={MenuProps}
         >
-          {defaultvalue.callnames.map((name) => (
+          {callnames.map((name) => (
             <MenuItem
               key={name.key}
               value={name.key}
@@ -646,7 +734,6 @@ else
 </th>
 <th style={{  background: 'white' }}><div className="headers">Sent on<i className="ti ti-sort-ascending" onClick={()=>{sortdata(56)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(56,e.target.value)} type='text'></input></th>
 <th style={{  background: 'white' }}><div className="headers">Cron Status<i className="ti ti-sort-ascending" onClick={()=>{sortdata(57)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(57,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Assigned<i className="ti ti-sort-ascending" onClick={()=>{sortdata(58)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(58,e.target.value)} type='text'></input></th>
 
         </tr>
       )}
@@ -665,8 +752,8 @@ else
 <td onClick={(e)=>{pickvalue(e,8,9)}} className="column-value" style={{  }}>{user[8]}</td>
 <td onClick={(e)=>{pickvalue(e,9,10)}} className="column-value" style={{  }}>{user[9]}</td> 
 <td onClick={(e)=>{pickvalue(e,10,11)}} className="column-value" style={{  }}>{user[10]}</td>
-<td  onClick={(e)=>{pickvalue(e,11,12)}} className={`cursor-pointer text-primary column-value d-flex align-items-center ${(tablesetting.countred(user[11],11,d) ? 'red-dupe' : '')}`} style={{  }}><i class="ti ti-refresh rotate hide profilefetch"></i><span className="email-id">{user[11]}</span></td>
-<td  onClick={(e)=>{pickvalue(e,12,13)}} className="column-value" style={{  }}>{user[12]}</td>
+<td  onClick={(e)=>{pickvalue(e,11,12)}} className="cursor-pointer text-primary column-value d-flex align-items-center" style={{'background':(tablesetting.countred(user[11],11) ? '#ff000029' : ''),'color':'#000 !important','--bs-table-bg-state':'none'}}><i class="ti ti-refresh rotate hide profilefetch"></i><span className="email-id">{user[11]}</span></td>
+<td  onClick={(e)=>{pickvalue(e,12,13)}} className="column-value" style={{'background':(tablesetting.countred(user[12],12) ? '#ff000029' : ''),'color':'#000 !important','--bs-table-bg-state':'none'}}>{user[12]}</td>
 <td  onClick={(e)=>{pickvalue(e,13,14)}} className="column-value" style={{  }}>{user[13]}</td>
 <td  onClick={(e)=>{pickvalue(e,14,15)}} className="column-value small" style={{  }}>{user[14]}</td>
 <td  onClick={(e)=>{pickvalue(e,15,16)}} className="column-value small" style={{  }}>{user[15]}</td>
@@ -711,7 +798,6 @@ else
 <td  onClick={(e)=>{pickvalue(e,52,54)}} className="column-value" style={{  }}>{user[55]}</td>
 <td  onClick={(e)=>{pickvalue(e,53,55)}} className="column-value" style={{  }}>{user[56]}</td>
 <td  onClick={(e)=>{pickvalue(e,54,56)}} className="column-value" style={{  }}>{user[57]}</td>
-<td  onClick={(e)=>{pickvalue(e,55,57)}} className="column-value" style={{  }}>{user[58]}</td>
 
         </>
       )} 
@@ -728,4 +814,4 @@ else
     )
 }
 
-export default Dashboard;
+export default Freshdata;
