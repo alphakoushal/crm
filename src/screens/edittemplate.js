@@ -99,6 +99,7 @@ setTimeout(()=>{},1000);
             <small className="border rounded me-1 mb-1 bg-light p-1">@applicant_name@</small>
             <small className="border rounded me-1 mb-1 bg-light p-1">@deadline_30_month@</small>
             <small className="border rounded me-1 mb-1 bg-light p-1">@deadline_31_month@</small>
+            <small className="border rounded me-1 mb-1 bg-light p-1">@incost@</small>
             <small className="border rounded me-1 mb-1 bg-light p-1">@best@</small>
 
 

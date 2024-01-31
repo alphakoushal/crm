@@ -7,10 +7,10 @@ import { useFetcher } from "react-router-dom";
 const Editmodal = function ({ show, fn }) {
     let other=JSON.parse(show.data.otherdetail);
    
-    const [data, updatedata] = useState({ 'email': show.data.email_id, 'app': show.data.appno, 'status': false, 'message': '','ref_no': other.ref_no,'isr':other.isr,'drawing':other.drawing,'priority':other.priority,'claim':other.claim,'pages':other.pages,'a_p_h_n':other.a_p_h_n,'agent_email_id':other.agent_email_id,'agent_name':other.agent_name,'p_h_n':other.p_h_n,'company_name':other.company_name,'c_p_l':other.c_p_l,'c_p_f':other.c_p_f,'deadline_30_month':other.deadline_30_month,'deadline_31_month':other.deadline_30_month,'p_date':other.p_date,'APPLICANT_NAME':other.APPLICANT_NAME,'c_i_o':other.c_i_o,'applicant_status':other.applicant_status});
+    const [data, updatedata] = useState({ 'email': show.data.email_id, 'app': show.data.appno, 'status': false, 'message': '','ref_no': other.ref_no,'isr':other.isr,'color':'','drawing':other.drawing,'priority':other.priority,'claim':other.claim,'pages':other.pages,'a_p_h_n':other.a_p_h_n,'agent_email_id':other.agent_email_id,'agent_name':other.agent_name,'p_h_n':other.p_h_n,'company_name':other.company_name,'c_p_l':other.c_p_l,'c_p_f':other.c_p_f,'deadline_30_month':other.deadline_30_month,'deadline_31_month':other.deadline_30_month,'p_date':other.p_date,'APPLICANT_NAME':other.APPLICANT_NAME,'c_i_o':other.c_i_o,'applicant_status':other.applicant_status});
   const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:''});
     useEffect(() => {
-        updatedata({ 'email': show.data.email_id, 'app': show.data.appno, 'status': false, 'message': '','ref_no': other.ref_no,'isr':other.isr,'drawing':other.drawing,'priority':other.priority,'claim':other.claim,'pages':other.pages,'a_p_h_n':other.a_p_h_n,'agent_email_id':other.agent_email_id,'agent_name':other.agent_name,'p_h_n':other.p_h_n,'company_name':other.company_name,'c_p_l':other.c_p_l,'c_p_f':other.c_p_f,'deadline_30_month':other.deadline_30_month,'deadline_31_month':other.deadline_30_month,'p_date':other.p_date,'APPLICANT_NAME':other.APPLICANT_NAME,'c_i_o':other.c_i_o,'applicant_status':other.applicant_status});
+        updatedata({ 'email': show.data.email_id, 'app': show.data.appno, 'status': false, 'message': '','ref_no': other.ref_no,'isr':other.isr,'color':'','drawing':other.drawing,'priority':other.priority,'claim':other.claim,'pages':other.pages,'a_p_h_n':other.a_p_h_n,'agent_email_id':other.agent_email_id,'agent_name':other.agent_name,'p_h_n':other.p_h_n,'company_name':other.company_name,'c_p_l':other.c_p_l,'c_p_f':other.c_p_f,'deadline_30_month':other.deadline_30_month,'deadline_31_month':other.deadline_30_month,'p_date':other.p_date,'APPLICANT_NAME':other.APPLICANT_NAME,'c_i_o':other.c_i_o,'applicant_status':other.applicant_status});
     }, [show.data]);
     useEffect(()=>{
         console.log(data); 
@@ -31,6 +31,7 @@ const Editmodal = function ({ show, fn }) {
     function validatedata(e,app)
     {
         e.preventDefault();
+        console.log(data);
         if(data.email=='')
         {
             setvalidate((validate)=>({...validate,status:true,message:'Enter email1'}));
@@ -81,7 +82,7 @@ const Editmodal = function ({ show, fn }) {
         {setvalidate((validate)=>({...validate,status:true,message:'Enter applicant status'}));}
         else{
             setvalidate((validate)=>({...validate,status:false,message:''}));
-            console.log('HI');
+
             updateinfo(app); 
         }
 
@@ -286,10 +287,16 @@ document.querySelector('#d31').value=moment(v).add(31, 'M').subtract(1, 'd').for
                                                                 <input type="text" className="form-control restrictedinput validate-field" onChange={(e) => (updatestate(e.target.value, 'drawing'))} value={data.drawing} id="DRAWINGS" name="DRAWINGS" placeholder="DRAWINGS" />
                                                             </div>
                                                         </div>
-                                                        <div className="form-group col-md-2">
+                                                        <div className="form-group col-md-1">
                                                             <label className="col-sm-12" htmlFor="isr">ISR:</label>
                                                             <div className="col-sm-12 error_field_group" id="ISR-group">
                                                                 <input type="text" className="form-control restrictedinput validate-field" onChange={(e) => (updatestate(e.target.value, 'isr'))} value={data.isr} id="ISR" name="ISR" placeholder="__" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="form-group col-md-1">
+                                                            <label className="col-sm-12" htmlFor="color">Color:</label>
+                                                            <div className="col-sm-12 error_field_group" id="ISR-group">
+                                                                <input type="color" className="form-control restrictedinput validate-field" onChange={(e) => (updatestate(e.target.value, 'color'))} value={data.color} id="color" name="color" placeholder="color" />
                                                             </div>
                                                         </div>
                                                         <div className="form-group col-md-2 mb-3">

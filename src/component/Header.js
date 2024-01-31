@@ -19,7 +19,7 @@ import Addmodal from "./modals/addmodal";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import { defaultvalue } from "../constant/Constant";
-const Header = React.memo(({alldata,changedata,showmailbox,showdupemailbox,showcronbox,clearfilters,refreshdata,formdatas,showcurrencies}) =>{
+const Header = React.memo(({platform,alldata,changedata,showmailbox,showdupemailbox,showcronbox,clearfilters,refreshdata,formdatas,showcurrencies}) =>{
   const navigate=useNavigate(); 
   let auth= localStorage.getItem("user"); 
   auth =(auth!='' ? JSON.parse(auth) : '');
@@ -134,6 +134,7 @@ clientObject[e] = {
 
       var salesdata = {
         "email_comment_data": JSON.stringify(clientObject),
+        "platform":platform.current,
         "type": type
     };
     if(Object.keys(clientObject).length>=1)

@@ -5,7 +5,7 @@ import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Uploaddata from "../../services/uploaddata";
 import Fetchdata from "../../services/fetchdata";
 import { costs,standard,defaultvalue } from "../../constant/Constant";
-const Emailbox = ({fn,emailsdata,closeemailsendbox,changedata,alldata})=>{
+const Emailbox = ({platform,fn,emailsdata,closeemailsendbox,changedata,alldata})=>{
   const [templatelist,settemplate]=useState([]);
   let auth= localStorage.getItem("user"); 
   auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
@@ -26,6 +26,7 @@ const Emailbox = ({fn,emailsdata,closeemailsendbox,changedata,alldata})=>{
         'templatename':template,
         'preview':type,
         'account':account,
+        'platform':platform.current,
         'title':title,
         'userid':auth.userid,
         'a':a,
@@ -138,12 +139,12 @@ return (
                                   <option value={item['id']}>{item['title']}</option>
                                 )
                               })}
-                                <option value="1">First Email</option>
+                                {/* <option value="1">First Email</option>
                                 <option value="2">Agent First Email</option>
                                 <option value="3">Agent First Email Reminder</option>
                                 <option value="6">Individual Email Reminder</option>
                                 <option value="transfer">Transfer</option>
-                                <option value="assigned">Assigned</option>
+                                <option value="assigned">Assigned</option> */}
                               </select>
                               <select id="chooseaccount" className="form-select">
                               <option value="">Choose Account</option>

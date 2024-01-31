@@ -6,7 +6,7 @@ import Uploaddata from "../../services/uploaddata";
 import Fetchdata from "../../services/fetchdata";
 import { costs,standard,defaultvalue } from "../../constant/Constant";
 
-const Dupeemailprocess = ({fn,emailsdata,closedupeemailsendbox,changedata,alldata})=>{
+const Dupeemailprocess = ({page,platform,fn,emailsdata,closedupeemailsendbox,changedata,alldata})=>{
   let auth= localStorage.getItem("user"); 
   const [newdupedata,setdupedata]=useState([]);
   const [templatelist,settemplate]=useState([]);
@@ -29,9 +29,10 @@ const Dupeemailprocess = ({fn,emailsdata,closedupeemailsendbox,changedata,alldat
           if(e[54]=='Email')//FOR GENERIC DATA
           {
             let find=dupedata.findIndex((e1)=>{return e1[7].trim()===e[11].trim()});
+            console.log(page);
             if(find>-1)
             {
-              if(dupedata[find][2].split(',,').length<=1)
+              if(page=='freshdata' ? dupedata[find][2].split(',,').length>=1 : dupedata[find][2].split(',,').length<=1)
               {
                 dupedata[find][1]=`${e[11]},,${dupedata[find][1]}`//email
                 dupedata[find][2]=`${e[2]},,${dupedata[find][2]}`//app
@@ -70,6 +71,9 @@ const Dupeemailprocess = ({fn,emailsdata,closedupeemailsendbox,changedata,alldat
       }
     }
     })
+   
+    let pushh =dupedata.reduce((apps, item) => {apps.push(item[0]); return apps;},[]);
+console.log(pushh);
     setdupedata(dupedata.slice(0,document.querySelector('#totalsending').value));
  }
   auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
@@ -86,6 +90,7 @@ const Dupeemailprocess = ({fn,emailsdata,closedupeemailsendbox,changedata,alldat
         'templatename':template,
         'account':account,
         'title':title,
+        'platform':platform.current,
         'userid':auth.userid,
         'dupeprocess':'yes',
         'a':a,
@@ -199,10 +204,10 @@ return (
                                   <option value={item['id']}>{item['title']}</option>
                                 )
                               })}
-                                <option value="5">Individual Dupe Email</option>
+                                {/* <option value="5">Individual Dupe Email</option>
                                 <option value="9">Individual Dupe Reminder Email</option>
                                 <option value="transfer">Transfer</option>
-                                <option value="assigned">Assigned</option>
+                                <option value="assigned">Assigned</option> */}
                               </select>
                               <select id="chooseaccount" className="form-select">
                               <option value="">Choose Account</option>
