@@ -8,9 +8,10 @@ import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Uploaddata from "../services/uploaddata";
 import Fetchdata from "../services/fetchdata";
 import { useSearchParams } from "react-router-dom";
+import userEvent from "@testing-library/user-event";
 const Editemailemplate =() =>{
     const [editorData, setEditorData] = useState('');
-    const [restdata, setrestdata] = useState({'title':'','subject':'','clienttype':'','templatetype':''});
+    const [restdata, setrestdata] = useState({'loader':'hide','loadermessage':'Update','title':'','subject':'','clienttype':'','templatetype':''});
     const [searchParams, setSearchParams] = useSearchParams();
     const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:''});
     let auth= localStorage.getItem("user"); 
@@ -27,17 +28,23 @@ const Editemailemplate =() =>{
         let data= await Fetchdata.fetchtemp({'id':id}).then((response)=>{ return response});
         data=data.data.data;
         setEditorData(data.mail_body);
-        setrestdata({'title':data.title,'subject':data.subject,'templatetype':data.template_type,'clienttype':data.client_type});
+        setrestdata({'loader':'hide','loadermessage':'Update','title':data.title,'subject':data.subject,'templatetype':data.template_type,'clienttype':data.client_type});
           }
 useEffect(()=>{
-   fetchtemps(searchParams.get("id"));
+  setrestdata((data)=>({...data,'loader': 'block','loadermessage':'Fetching'}));
+  fetchtemps(searchParams.get("id"));
 },[])
     async function submittemplate()
     {
         let mail_subject=document.querySelector('#emailsubject').value;
         let template_type =document.querySelector('#templatetype').value; let client_type =document.querySelector('#clienttype').value;
        let title=document.querySelector('#emailtitle').value;
-       if(title=='')
+       if(restdata.loader=='block')
+       {
+        setvalidate((validate)=>({...validate,status:true,message:'In process'}));
+
+       }
+       else if(title=='')
        {
         setvalidate((validate)=>({...validate,status:true,message:'Please Enter title'}));
        }
@@ -55,11 +62,11 @@ useEffect(()=>{
        }
        else if(editorData=='')
        {
-        console.log(editorData);
         setvalidate((validate)=>({...validate,status:true,message:'Please Enter Mail body.'}));
        }
        else
        {
+        setrestdata((data)=>({...data,'loader': 'block','loadermessage':'Updating'}));
         let formdata={
             'mail_body':editorData,
             'mail_subject':mail_subject,
@@ -74,6 +81,7 @@ useEffect(()=>{
          if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true, message: res.data.message,color:'success',icon:'success' })) }
 else {setvalidate((validate)=>({...validate,status:true,message:res.data.errors.error,color:'error',icon:'error'}));}
 setTimeout(()=>{},1000);
+setrestdata((data)=>({...data,'loader': 'hide','loadermessage':'Update'}));
         }
     }
     return(
@@ -167,7 +175,9 @@ setTimeout(()=>{},1000);
                             <button type="submit" className="btn btn-info font-medium rounded-pill px-4">
                               <div onClick={()=>{submittemplate()}} className="d-flex align-items-center">
                                 <i className="ti ti-send me-2 fs-4"></i>
-                                Update
+                                
+                                {restdata.loadermessage} 
+                                <i className={`ti ti-refresh rotate ms-2 ${restdata.loader}`}></i>
                               </div>
                             </button>
                           </div>

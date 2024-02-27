@@ -64,33 +64,33 @@ return (
       itemContent={(index, user) => (
         
         <>
-                            <td class="ps-0">
-                              <div class="d-flex align-items-center">
+                            <td className="ps-0">
+                              <div className="d-flex align-items-center">
                                 <div>
-                                  <h6 class="fw-semibold mb-1">{user[0]}</h6>
-                                  <p class="fs-1 mb-0 text-muted">
+                                  <h6 className="fw-semibold mb-1">{user[0]}</h6>
+                                  <p className="fs-1 mb-0 text-muted">
                                   {designation[user[1]]}
                                   </p>
                                 </div>
                               </div>
                             </td>
                             <td>
-                              <p class="mb-0 fs-1">{user[2]}</p>
+                              <p className="mb-0 fs-1">{user[2]}</p>
                             </td>
                             <td>
-                              <p class="mb-0 fs-1">{user[3]}</p>
+                              <p className="mb-0 fs-1">{user[3]}</p>
                             </td>
                             <td>
-                              <p class="mb-0 fs-1">{user[7]}</p>
+                              <p className="mb-0 fs-1">{user[7]}</p>
                             </td>
                             <td>
-                              <p class="mb-0 fs-1">{user[4]}</p>
+                              <p className="mb-0 fs-1">{user[4]}</p>
                             </td>
                             <td>
-                              <p class="mb-0 fs-1">{user[5]}</p>
+                              <p className="mb-0 fs-1">{user[5]}</p>
                             </td>
                             <td>
-                              <p class="fs-1 text-dark mb-0">{moment(user[6]).format('lll')}</p>
+                              <p className="fs-1 text-dark mb-0">{moment(user[6]).format('lll')}</p>
                             </td>
                             <td>
                               <span className={`badge fw-semibold py-1 w-85 bg-${(user[3]==user[7] ? 'success' : 'danger')}-subtle text-${(user[3]==user[7] ? 'success' : 'danger')}`}>{(user[3]==user[7] ? 'Completed' : 'Pending')}</span>

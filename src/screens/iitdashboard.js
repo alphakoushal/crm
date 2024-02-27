@@ -397,7 +397,7 @@ const MenuProps = {
         <>
 <td onClick={(e)=>{pickvalue(e,1,0)}} className="column-value" style={{  }}>{user['w_id']}</td>
 <td onClick={(e)=>{pickvalue(e,2,1)}} className="column-value" style={{  }}>{user['cp']}</td>
-<td  onClick={(e)=>{pickvalue(e,4,3)}} className={`cursor-pointer text-primary column-value d-flex align-items-center ${(tablesetting.countred(user['email'],'email',d) ? 'red-dupe' : '')}`} style={{  }}><i class="ti ti-refresh rotate hide profilefetch"></i><span className="email-id">{user['email']}</span></td>
+<td  onClick={(e)=>{pickvalue(e,4,3)}} className={`cursor-pointer text-primary column-value d-flex align-items-center ${(tablesetting.countred(user['email'],'email',d) ? 'red-dupe' : '')}`} style={{  }}><i className="ti ti-refresh rotate hide profilefetch"></i><span className="email-id">{user['email']}</span></td>
 <td  onClick={(e)=>{pickvalue(e,5,4)}} className="column-value" style={{  }}>{user['domain']}</td>
 <td  onClick={(e)=>{pickvalue(e,6,5)}} className="column-value" style={{  }}>{user['p_h_n']}</td>
 <td  onClick={(e)=>{pickvalue(e,6,5)}} className="column-value" style={{  }}>{user['firstemail']}</td>

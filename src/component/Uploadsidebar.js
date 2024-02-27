@@ -165,6 +165,7 @@ const closebar = async() =>
                                 <option value="191214150648429653">Kim (A016)</option>
                                 <option value="191220121357187063">Ria (A007)</option>
                                 <option value="231220121357187063">Mohini (A109)</option>
+                                <option value="240120121357187064">Komal (A154)</option>
                               </select>
                     
                             </div>

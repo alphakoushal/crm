@@ -1,4 +1,4 @@
-import React,{Suspense,useEffect,useState,useContext} from "react";
+import React,{Suspense,useEffect,useState,useContext,useRef} from "react";
 import { TableVirtuoso } from "react-virtuoso";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
@@ -7,6 +7,7 @@ import Fetchdata from "../../services/fetchdata";
 import { costs,standard,defaultvalue } from "../../constant/Constant";
 const Emailbox = ({platform,fn,emailsdata,closeemailsendbox,changedata,alldata})=>{
   const [templatelist,settemplate]=useState([]);
+  const inprocess =useRef(false);
   let auth= localStorage.getItem("user"); 
   auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
   let accounts =(defaultvalue.accounts[auth.userid]!==undefined ? defaultvalue.accounts[auth.userid] :Object.values(defaultvalue.accounts).flat());
@@ -16,7 +17,7 @@ const Emailbox = ({platform,fn,emailsdata,closeemailsendbox,changedata,alldata})
       settemplate(data.data.data);
         }
 
-    async function emailformat(t,a,emailsdata,title,template,account,type)
+    async function emailformat(t,a,emailsdata,title,template,account,type,nextfollowup)
     {
       let appno=document.querySelectorAll('.appno'); let apppush=[];
       let formdata={
@@ -28,10 +29,11 @@ const Emailbox = ({platform,fn,emailsdata,closeemailsendbox,changedata,alldata})
         'account':account,
         'platform':platform.current,
         'title':title,
+        'nextfollowup':nextfollowup,
         'userid':auth.userid,
         'a':a,
         'totalapp':emailsdata.length,
-        'apps':JSON.stringify(emailsdata.map((val)=>{return {'weblink':val[0],'title':val[1],'email_id':val[11],'deadline_30_month':val[5],'applicant_name':val[7],'application_no':val[2],'contact_person':val[10],'deadline_30_month':val[5],'deadline_31_month':val[6],'incost':costs.IN.apply({'c':'IN','as':val[8],'ci':val[9],'pages':val[14],'claim':val[15],'priority':val[16],'co':val[3],'isa':val[18],'standard':standard})}}))
+        'apps':JSON.stringify(emailsdata.map((val)=>{return {'weblink':val[0],'title':val[1],'email_id':val[11],'agentemail_id':val[27],'deadline_30_month':val[5],'applicant_name':val[7],'application_no':val[2],'contact_person':val[10],'deadline_30_month':val[5],'deadline_31_month':val[6],'incost':costs.IN.apply({'c':'IN','as':val[8],'ci':val[9],'pages':val[14],'claim':val[15],'priority':val[16],'co':val[3],'isa':val[18],'standard':standard})}}))
       }
      return Uploaddata.emailformat(formdata).then((resposne)=>{return resposne});
      }
@@ -50,7 +52,12 @@ const Emailbox = ({platform,fn,emailsdata,closeemailsendbox,changedata,alldata})
 let t=document.querySelector('#templateid');
 let a=document.querySelector('#chooseaccount');
 let title=document.querySelector('#crontitle').value;
-if(t.value=='')
+let nextfollowup=document.querySelector('#nextfollowup').value;
+if(inprocess.current==true)
+{
+  setvalidate((validate)=>({...validate,status:true,message:'In process'}));
+}
+else if(t.value=='')
         {
             setvalidate((validate)=>({...validate,status:true,message:'Please Choose Email format'}));
         }
@@ -61,19 +68,29 @@ if(t.value=='')
         }
         else if(title=='')
         {
-            setvalidate((validate)=>({...validate,status:true,message:'Please Enter Title'}));
+            setvalidate((validate)=>({...validate,status:true,message:'Please Enter Comment'}));
+
+        }
+        else if(nextfollowup=='')
+        {
+            setvalidate((validate)=>({...validate,status:true,message:'Please Choose Date'}));
 
         }
         else{
-const res =await emailformat(t.value,a.value,emailsdata,title,t.options[t.selectedIndex].text,a.options[a.selectedIndex].text,type);
+          inprocess.current=true;
+const res =await emailformat(t.value,a.value,emailsdata,title,t.options[t.selectedIndex].text,a.options[a.selectedIndex].text,type,nextfollowup);
 if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true,modalstatus:false, message: res.data.message,color:'success',icon:'success' }));
-        let newarray=alldata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[57]:'sent'} : item) });
+     //   let newarray=alldata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[57]:'sent'} : item) });
      //   changedata(newarray);
 }
-else {setvalidate((validate)=>({...validate,status:true,modalstatus:true,message:res.data.errors.error}));}
+else {inprocess.current=false;setvalidate((validate)=>({...validate,status:true,modalstatus:true,message:res.data.errors.error}));}
 if(type=='send')
 {
 setTimeout(()=>{closeemailsendbox(false)},1000);
+}
+else
+{
+  inprocess.current=false;
 }
     }
       }
@@ -112,6 +129,7 @@ return (
  <th><div className="headers">DEADLINE - 30 mth</div></th>
  <th><div className="headers">DEADLINE - 31 mth</div></th>
  <th><div className="headers">Email-id</div></th>
+ <th><div className="headers">Agent Email-id</div></th>
  <th><div className="headers">APPLICANT NAME</div></th>
  <th><div className="headers">Contact Person Name</div></th>
         </tr>
@@ -123,6 +141,7 @@ return (
  <td  className="column-value">{user[5]}</td>
  <td  className="column-value">{user[6]}</td>
  <td  className="column-value">{user[11]}</td>
+ <td  className="column-value">{user[27]}</td>
  <td  className="column-value">{user[7]}</td>
  <td  className="column-value">{user[10]}</td>
  </>
@@ -131,7 +150,8 @@ return (
     />
     </Suspense>
     <div className="mb-3 text-center d-md-flex align-items-center mt-3  align-content-md-between gap-3">
-    <input type="text" class="form-control" id="crontitle" placeholder="Enter Tile"/>
+    <input type="text" className="form-control" id="crontitle" placeholder="Enter Comment"/>
+    <input type="date" className="form-control" id="nextfollowup" placeholder="Choose date"/>
     <select id="templateid" className="form-select">
                               <option value="">Choose Format</option>
                               {templatelist.map((item,index)=>{
@@ -145,6 +165,7 @@ return (
                                 <option value="6">Individual Email Reminder</option>
                                 <option value="transfer">Transfer</option>
                                 <option value="assigned">Assigned</option> */}
+                                <option value="assigned">Assigned</option>
                               </select>
                               <select id="chooseaccount" className="form-select">
                               <option value="">Choose Account</option>
@@ -156,10 +177,10 @@ return (
 
                               </select>
                                   <button onClick={(e)=>choosetype(e,'send')} className="btn btn-light-info text-info font-medium" type="submit">
-                                  <i id='send' class="ti ti-refresh hide"></i>Submit
+                                  <i id='send' className="ti ti-refresh hide"></i>Submit
                                   </button>
                                   <button onClick={(e)=>choosetype(e,'preview')} className="btn btn-light-info text-info font-medium" type="submit">
-                                  <i id='preview' class="ti ti-refresh hide"></i> Preview
+                                  <i id='preview' className="ti ti-refresh hide"></i> Preview
                                   </button>
                                 </div>
 </div>

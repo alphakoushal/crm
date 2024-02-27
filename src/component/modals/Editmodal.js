@@ -4,13 +4,13 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import moment from 'moment'
 import { useFetcher } from "react-router-dom";
-const Editmodal = function ({ show, fn }) {
+const Editmodal = function ({ show, fn ,changedata,alldata}) {
     let other=JSON.parse(show.data.otherdetail);
-   
-    const [data, updatedata] = useState({ 'email': show.data.email_id, 'app': show.data.appno, 'status': false, 'message': '','ref_no': other.ref_no,'isr':other.isr,'color':'','drawing':other.drawing,'priority':other.priority,'claim':other.claim,'pages':other.pages,'a_p_h_n':other.a_p_h_n,'agent_email_id':other.agent_email_id,'agent_name':other.agent_name,'p_h_n':other.p_h_n,'company_name':other.company_name,'c_p_l':other.c_p_l,'c_p_f':other.c_p_f,'deadline_30_month':other.deadline_30_month,'deadline_31_month':other.deadline_30_month,'p_date':other.p_date,'APPLICANT_NAME':other.APPLICANT_NAME,'c_i_o':other.c_i_o,'applicant_status':other.applicant_status});
+    other={...other,color:other?.color ?? "#ffffff"};
+    const [data, updatedata] = useState({ 'email': show.data.email_id, 'app': show.data.appno, 'status': false, 'message': '','ref_no': other.ref_no,'isr':other.isr,'color':other.color,'drawing':other.drawing,'priority':other.priority,'claim':other.claim,'pages':other.pages,'a_p_h_n':other.a_p_h_n,'agent_email_id':other.agent_email_id,'agent_name':other.agent_name,'p_h_n':other.p_h_n,'company_name':other.company_name,'c_p_l':other.c_p_l,'c_p_f':other.c_p_f,'deadline_30_month':other.deadline_30_month,'deadline_31_month':other.deadline_30_month,'p_date':other.p_date,'APPLICANT_NAME':other.APPLICANT_NAME,'c_i_o':other.c_i_o,'applicant_status':other.applicant_status});
   const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:''});
     useEffect(() => {
-        updatedata({ 'email': show.data.email_id, 'app': show.data.appno, 'status': false, 'message': '','ref_no': other.ref_no,'isr':other.isr,'color':'','drawing':other.drawing,'priority':other.priority,'claim':other.claim,'pages':other.pages,'a_p_h_n':other.a_p_h_n,'agent_email_id':other.agent_email_id,'agent_name':other.agent_name,'p_h_n':other.p_h_n,'company_name':other.company_name,'c_p_l':other.c_p_l,'c_p_f':other.c_p_f,'deadline_30_month':other.deadline_30_month,'deadline_31_month':other.deadline_30_month,'p_date':other.p_date,'APPLICANT_NAME':other.APPLICANT_NAME,'c_i_o':other.c_i_o,'applicant_status':other.applicant_status});
+        updatedata({ 'email': show.data.email_id, 'app': show.data.appno, 'status': false, 'message': '','ref_no': other.ref_no,'isr':other.isr,'color':other.color,'drawing':other.drawing,'priority':other.priority,'claim':other.claim,'pages':other.pages,'a_p_h_n':other.a_p_h_n,'agent_email_id':other.agent_email_id,'agent_name':other.agent_name,'p_h_n':other.p_h_n,'company_name':other.company_name,'c_p_l':other.c_p_l,'c_p_f':other.c_p_f,'deadline_30_month':other.deadline_30_month,'deadline_31_month':other.deadline_30_month,'p_date':other.p_date,'APPLICANT_NAME':other.APPLICANT_NAME,'c_i_o':other.c_i_o,'applicant_status':other.applicant_status});
     }, [show.data]);
     useEffect(()=>{
         console.log(data); 
@@ -90,7 +90,10 @@ const Editmodal = function ({ show, fn }) {
     async function updateinfo(app) {
         let email = document.querySelector('#Email_ID').value;
         let status = await Uploaddata.updateinfo({ ...data, 'type': 'updateinfo', 'app': app }).then((response) => { return response; })
-        if (status.data.success) { setvalidate((prev)=>({ ...prev, status: true, message: status.data.message,color:'success',icon:'success' })) }
+        if (status.data.success) { setvalidate((prev)=>({ ...prev, status: true, message: status.data.message,color:'success',icon:'success' }));
+    let newarray=alldata.map((item,index)=>{ return (app==item[2] ?  {...item,[60]:data.color} : item) });
+     changedata(newarray,'editmodal');
+     }
         else
         {
        setvalidate((prev)=>({ ...prev, status: true, message: status.data.errors.error,color:'error',icon:'error' }))     

@@ -64,23 +64,23 @@ settemplate(data.data.data);
         
         <>
                            <td>
-                              <p class="mb-0 fs-1">{user['title']}</p>
+                              <p className="mb-0 fs-1">{user['title']}</p>
                             </td>
                             <td>
-                              <p class="mb-0 fs-1">{user['subject']}</p>
+                              <p className="mb-0 fs-1">{user['subject']}</p>
                             </td>
                             <td>
-                              <p class="mb-0 fs-1">{clienttype[user['client_type']]}</p>
+                              <p className="mb-0 fs-1">{clienttype[user['client_type']]}</p>
                             </td>
                             <td>
-                              <p class="mb-0 fs-1">{templatetype[user['template_type']]}</p>
+                              <p className="mb-0 fs-1">{templatetype[user['template_type']]}</p>
                             </td>
                             <td>
-                              <p class="mb-0 fs-1"><Link to={"/edit-template?id="+user['id']}>Edit</Link></p>
+                              <p className="mb-0 fs-1"><Link to={"/edit-template?id="+user['id']}>Edit</Link></p>
                             </td>
                             <td>
-                              <p class="mb-0 fs-1"><a href="#" onClick={()=>{sendtome(user['id'])}} class="text-bg-light rounded py-1 px-8 d-flex align-items-center text-decoration-none">
-                        <i class="ti ti-message-2 fs-6 text-primary"></i>
+                              <p className="mb-0 fs-1"><a href="#" onClick={()=>{sendtome(user['id'])}} className="text-bg-light rounded py-1 px-8 d-flex align-items-center text-decoration-none">
+                        <i className="ti ti-message-2 fs-6 text-primary"></i>
                       </a></p>
                             </td>
  </>

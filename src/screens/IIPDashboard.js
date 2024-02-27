@@ -667,7 +667,7 @@ else
 <td onClick={(e)=>{pickvalue(e,8,9)}} className="column-value" style={{  }}>{user[8]}</td>
 <td onClick={(e)=>{pickvalue(e,9,10)}} className="column-value" style={{  }}>{user[9]}</td> 
 <td onClick={(e)=>{pickvalue(e,10,11)}} className="column-value" style={{  }}>{user[10]}</td>
-<td  onClick={(e)=>{pickvalue(e,11,12)}} className={`cursor-pointer text-primary column-value d-flex align-items-center ${(tablesetting.countred(user[11],11,d) ? 'red-dupe' : '')}`} style={{  }}><i class="ti ti-refresh rotate hide profilefetch"></i><span className="email-id">{user[11]}</span></td>
+<td  onClick={(e)=>{pickvalue(e,11,12)}} className={`cursor-pointer text-primary column-value d-flex align-items-center ${(tablesetting.countred(user[11],11,d) ? 'red-dupe' : '')}`} style={{  }}><i className="ti ti-refresh rotate hide profilefetch"></i><span className="email-id">{user[11]}</span></td>
 <td  onClick={(e)=>{pickvalue(e,12,13)}} className="column-value" style={{  }}>{user[12]}</td>
 <td  onClick={(e)=>{pickvalue(e,13,14)}} className="column-value" style={{  }}>{user[13]}</td>
 <td  onClick={(e)=>{pickvalue(e,14,15)}} className="column-value small" style={{  }}>{user[14]}</td>

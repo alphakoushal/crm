@@ -10,7 +10,7 @@ import Uploaddata from "../services/uploaddata";
 import Style from "../component/style/style";
 import Editmodal from "../component/modals/Editmodal";
 import OutlinedInput from '@mui/material/OutlinedInput';
-import { callstatus, emailstatus,costs,standard,tablesetting} from '../constant/Constant.js';
+import { callstatus, emailstatus,costs,standard,tablesetting,defaultvalue} from '../constant/Constant.js';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -18,35 +18,45 @@ import Sidebarprofile from "../component/modals/Sidebarprofile";
 import Emailbox from "../component/modals/Emailprocess";
 import Dupeemailprocess from "../component/modals/Dupeemailprocess";
 import Cronlist from "../component/modals/cron-list";
-import ExcelExport from 'export-xlsx';
+import ResizableColumn2 from "../component/Resize-two";
+import Dexie from 'dexie'
 function Loading() {
     return <h2>🌀 Loading...</h2>;
   }
    let filtered=[];
-const Freshdata =() =>{
+const Dashboard =() =>{
     const [d,sd]=useState([]); const [d2,gd]=useState([]);
-     const [profilebar,setprofilebar] =useState({status:false,email:''});
-    const [sortDown, setSortDown] = useState(true); 
-    const [emailstatusdata,setemail]=useState([]);
-    const [applicantstatusdata,setapplicant]=useState([]);
-    const [dupedata,setdupe]=useState([]);const [countrydata,setcountry]=useState([]);
-    const [monthdata,setmonth]=useState([]);
-    const [gendata,setgen]=useState([]);
-    const [ciodata,setcio]=useState([]);
-    const [callstatusdata,setcall]=useState([]);
-    const [showcurrencytab,setcurrency]=useState(false);
-    const [showeditmodal, updateeditmodal] = useState({state:false,data:{}}); 
-    const [opensendmailbox, setsendmailbox] = useState(false);
-    const [opendupesendmailbox, setdupesendmailbox] = useState(false);
-    const [opencronbox, setcronbox] = useState(false);
+    const [defaultdata,setdefaultdata]=useState({profilebar:{status:false,email:''},opencronbox:false,opendupesendmailbox:false,opensendmailbox:false,sortDown:true,showcurrencytab:false,countrydata:[],agentdupedata:[],dupedata:[],applicantstatusdata:[],cio:[],callstatus:[],emailstatus:[],agentgendata:[],gendata:[],monthdata:[]});
+      const [columns, setColumns] = useState([{"width":110,"css":"","type":"","key":"APPLN.NO."},{"width":110,"css":"","type":"","key":"Title"},{"width":110,"css":"","type":"select","key":"COUNTRY"},{"width":110,"css":"","type":"","key":"PRIOTITY DATE"},{"width":110,"css":"","type":"","key":"DEADLINE - 30 mth"},{"width":110,"css":"","type":"","key":"DEADLINE - 31 mth"},{"width":110,"css":"","type":"","key":"APPLICANT NAME"},{"width":110,"css":"","type":"","key":"Unique/Dupe"},{"width":110,"css":"","type":"","key":"Gen/Non Gen"},{"width":110,"css":"","type":"","key":"Applicant Status"},{"width":110,"css":"","type":"","key":"CONTACT INFO OF"},{"width":110,"css":"","type":"","key":"CONTACT PERSON"},{"width":110,"css":"","type":"","key":"EMAIL ID"},{"width":110,"css":"","type":"","key":"Domain"},{"width":110,"css":"","type":"","key":"PH. NO."},{"width":110,"css":"","type":"","key":"Pages"},{"width":110,"css":"","type":"","key":"Claim"},{"width":110,"css":"","type":"","key":"Priority"},{"width":110,"css":"","type":"","key":"Drawings"},{"width":110,"css":"","type":"","key":"ISR"},{"width":110,"css":"","type":"","key":"REF. NO."},{"width":110,"css":"","type":"","key":"First Email Date"},{"width":110,"css":"","type":"","key":"FollowUp date"},{"width":110,"css":"","type":"","key":"Next Follow Up"},{"width":110,"css":"","type":"","key":"Pct App Status"},{"width":110,"css":"","type":"","key":"Email Status"},{"width":110,"css":"","type":"","key":"Call Status"},{"width":110,"css":"","type":"","key":"Comment"},{"width":110,"css":"","type":"","key":"Agent name"},{"width":110,"css":"","type":"","key":"Agent Email Id"},{"width":110,"css":"","type":"","key":"Agent Domain"},{"width":110,"css":"","type":"","key":"Agent Phone"},{"width":110,"css":"","type":"","key":"Previous Email Status"},{"width":110,"css":"","type":"","key":"Company"},{"width":110,"css":"","type":"cost","key":"IN "},{"width":110,"css":"","type":"cost","key":"CA "},{"width":110,"css":"","type":"cost","key":"CN "},{"width":110,"css":"","type":"cost","key":"JP "},{"width":110,"css":"","type":"cost","key":"AU "},{"width":110,"css":"","type":"cost","key":"BR "},{"width":110,"css":"","type":"cost","key":"US "},{"width":110,"css":"","type":"cost","key":"KR "},{"width":110,"css":"","type":"cost","key":"EP "},{"width":110,"css":"","type":"cost","key":"RU "},{"width":110,"css":"","type":"cost","key":"MX "},{"width":110,"css":"","type":"cost","key":"MY "},{"width":110,"css":"","type":"cost","key":"PH "},{"width":110,"css":"","type":"cost","key":"TH "},{"width":110,"css":"","type":"cost","key":"ID "},{"width":110,"css":"","type":"cost","key":"NZ "},{"width":110,"css":"","type":"cost","key":"ZA "},{"width":110,"css":"","type":"cost","key":"VN "},{"width":110,"css":"","type":"cost","key":"SG "},{"width":110,"css":"","type":"cost","key":"CO "},{"width":110,"css":"","type":"","key":"Month"},{"width":110,"css":"","type":"","key":"Sent on"},{"width":110,"css":"","type":"","key":"Cron Status"},{"width":110,"css":"","type":"","key":"Assigned"},{"width":110,"css":"","type":"","key":"Agent Unique/Dupe"},{"width":110,"css":"","type":"","key":"Agent Gen/Non Gen"}]);
+       const handleResize = (index, width) => {
+        setColumns(prevColumns => {
+          const newColumns = [...prevColumns];
+          newColumns[index].width = width;
+          return newColumns;
+        });
+      };
+    // const [profilebar,setprofilebar] =useState({status:false,email:''});
+    //const [ciodata,setcio]=useState([]);
+   // const [callstatusdata,setcall]=useState([]);
+  // const [emailstatusdata,setemail]=useState([]);
+ // const [monthdata,setmonth]=useState([]);
+  //const [gendata,setgen]=useState([]);
+ // const [applicantstatusdata,setapplicant]=useState([]);
+ //    const [dupedata,setdupe]=useState([]);
+ //    const [countrydata,setcountry]=useState([]);
+   // const [defaultdata.showcurrencytab,setcurrency]=useState(false);
+   //    const [sortDown, setSortDown] = useState(true); 
+    // const [opensendmailbox, setsendmailbox] = useState(false);
+   // const [opendupesendmailbox, setdupesendmailbox] = useState(false);
+   // const [opencronbox, setcronbox] = useState(false);
+   const [showeditmodal, updateeditmodal] = useState({state:false,data:{}}); 
     const countries=useRef([]); 
     const processing =useRef(false);
     const months=useRef([]); 
+    const platform =useRef('anuation');
     const auth= JSON.parse(localStorage.getItem("user")); 
     const valued=useSelector((state)=>state.userdata.value);
-    const platform =useRef('anuation');
     const dispatch=useDispatch();
-    const Width =useRef(160);
  useEffect(()=>{
     clearfilter();
  },[])
@@ -61,8 +71,8 @@ const Freshdata =() =>{
 "accounttype":auth.type,
 "org":auth.org,
 "email": "",
-"platform":platform.current,
 "domain": "",
+"platform":platform.current,
 "company": "", 
 "phone": "",
 "c_p_f":"", 
@@ -73,11 +83,14 @@ const Freshdata =() =>{
 
 let formdata =useMemo(()=>{return formdata1},[formdata1])
 
-async function changedata(data){
+const changedata =  useCallback ( (data,modal='') =>{
   sd(data);
   gd(data);
-}
-    async function loaddata(formdata)
+  if(modal=='editmodal'){
+    updateeditmodal((prev)=>({...prev,state:false}));
+  }
+})
+   const loaddata =  useCallback  ( async (formdata,refreshmode='') =>
     {
       let abortc= new AbortController();
       let {signal}=abortc;
@@ -105,88 +118,34 @@ async function changedata(data){
        gd(datas);
        dispatch(userprofileupdate(data.length));
         document.querySelector('table').classList.add("table","table-bordered","table-hover");
-    }
+      
+    });
    useEffect(()=>{loaddata(formdata);},[]);
    const showmailbox = () =>{
-    setsendmailbox(true);
+    setdefaultdata((prev)=>({...prev,opensendmailbox:true}))
+
   }
   const showdupemailbox = () =>{
-    setdupesendmailbox(true);
+    setdefaultdata((prev)=>({...prev,opendupesendmailbox:true}))
   }
   const showcronbox = () =>{
-    setcronbox(true);
+    setdefaultdata((prev)=>({...prev,opencronbox:true}))
   }
   const closecronbox = () =>{
-    setcronbox(false);
+    setdefaultdata((prev)=>({...prev,opencronbox:false}))
   }
   const closeemailsendbox = () =>{
-    setsendmailbox(false);
+    setdefaultdata((prev)=>({...prev,opensendmailbox:false}))
   }
   const closedupeemailsendbox = () =>{
-    setdupesendmailbox(false);
+    setdefaultdata((prev)=>({...prev,opendupesendmailbox:false}))
   }
-function returndata(collection,value,key)
-{
-  value=(value!='' && value !=null ? value: '');
-  value = typeof(value)=='number' ? value : value.toLowerCase();
 
-let t=-1;
-    for(let i=0;i<collection.length;i++)
-    {
-      collection[i] = (collection[i]=='_blank' && key=='23' ? '' : collection[i]);
-        if(key==23 || key==24 || key==9 || key==3)
-        {
-            if(value==collection[i])
-    {
-       t= 0;
-    } 
-        }
-        else
-        {
-    if(value.indexOf(collection[i])>-1)
-    {
-       t= 0;
-       
-    }
-    else if(collection[i]=='_blank' && value=='')
-    {
-       t= 0;
-       
-    }
-    else if(collection[i]=='!n/a' && value!='n/a')
-    {
-       t= 0;
-       
-    }
-    else if(collection[i].indexOf('!')>-1 && value!=collection[i].split('!')[1])
-    {
-       t= 0;
-       
-    }
-    // else if(collection[i].indexOf('!')>-1 && value.indexOf(collection[i].split('!')[1])>-1)
-    // {
-    //    t= 1;
-       
-    // }
-    }
-}
-
-    return t;
-}
 
 function filterdata(index,value)
 {
+
 let i=0;
-   // let sel='';
-    // if(typeof(value.value)=='array')
-    // {
-    //     for(let option of value.options)
-    //     {
-    //         sel +=(option.selected ? option.value+',' : '');
-       
-    //     }  
-    // }
-    //value=typeof(value.value)=='array' ? sel.slice(0,-1) : value;
 let filters=document.querySelectorAll('.filter');
 
 let obj={'key':index,'value':value};
@@ -230,7 +189,7 @@ let copy = d2;//[...d2];
 filtered.forEach((e)=>{
 
     var sv=e.value; 
-     
+
 if(sv=='')
 {
     copy=copy.filter((f)=>{return f[e.key].toLowerCase().indexOf('')>-1});
@@ -238,26 +197,26 @@ if(sv=='')
 }
 else
 {
+ 
     sv=(sv!=='' ? sv.toLowerCase().split(',') : '');
-    console.log(sv,'check');
-    copy=copy.filter((f)=>{return returndata(sv,f[e.key],e.key)>-1;});
-}
-i++;
+    copy=copy.filter((f)=>{return tablesetting.returndata(sv,f[e.key],e.key)>-1;});
+  }
+  i++;
 }) 
 if(filtered.length==i){sd(copy);dispatch(userprofileupdate(copy.length));}
+
 }
 async function pickvalue(e,i,ni)
 {
   e.stopPropagation();
+
     if(e.detail==1)
     {
-       // console.log(e.target.childNodes[0]);
-    document.querySelector('.cell-name').value=document.querySelectorAll('.custom-table table thead tr th')[ni].querySelector('.headers').innerText;
+    document.querySelector('.cell-name').value=document.querySelectorAll('.custom-table table thead tr+tr th')[ni].querySelector('.headers').innerText;
     document.querySelector('.cell-value').value=(i=='11' && e.target.tagName=='TD'  ? e.target.getElementsByTagName('span')[0].innerHTML : (i=='2' && e.target.tagName=='TD' ? e.target.getElementsByTagName('a')[0].innerHTML : e.target.innerHTML));
     }
     else if(e.detail==2 && i=='11')
     {
-      console.log(e.target);
       showprofilesidebar(e,e.target.getElementsByTagName('span')[0].innerHTML);
     }
     else if(e.detail==2 && i=='25')
@@ -294,9 +253,8 @@ function pushdata(event,w)
 }
 function sortdata(index=0)
 {
-  console.log(index);
     const copy = [...d];
-if(sortDown)
+if(defaultdata.sortDown)
 {
 copy.sort((a, b) =>  -((typeof(a[index])=='number' ? a[index] : a[index].trim()) > (typeof(b[index])=='number' ? b[index] : b[index].trim()))); 
 }
@@ -305,24 +263,24 @@ else
     copy.sort((a, b) =>  -((typeof(a[index])=='number' ? a[index] : a[index].trim()) < (typeof(b[index])=='number' ? b[index] : b[index].trim())));
 
 }
-setSortDown((prev)=> !prev)
+setdefaultdata((prev)=> ({...prev,sortDown:!prev.sortDown}))
 sd(copy);
 }
 const clearfilter =useCallback(()=>
 {
     filtered=[]; 
     let d=document.querySelectorAll('.filter');
-    setemail([]);setcall([]);
     d.forEach((e)=>{
         e.value='';
     })
     sd(d2);
+    setdefaultdata({profilebar:{status:false,email:''},opencronbox:false,opendupesendmailbox:false,opensendmailbox:false,sortDown:true,showcurrencytab:false,countrydata:[],agentdupedata:[],dupedata:[],applicantstatusdata:[],cio:[],callstatus:[],emailstatus:[],agentgendata:[],gendata:[],monthdata:[]});
     dispatch(userprofileupdate(d2.length));
 },[d]);
 const showcurrency = useCallback(()=>
 {
-   setcurrency((prev)=>(prev ? false : true));
-},[showcurrencytab]);
+  setdefaultdata((prev)=>({...prev,showcurrencytab:(prev.showcurrencytab ? false : true)}))
+},[defaultdata.showcurrencytab]);
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 5;
 const MenuProps = {
@@ -333,64 +291,48 @@ const MenuProps = {
     },
   },
 };
-const names = [
-{'key':'_blank','value':'Blank'},
-{'key':'1','value':'Pipeline'},
-{'key':'2','value':'Failed'},
-{'key':'3','value':'Rejection'},
-{'key':'4','value':'Reciprocity'},
-{'key':'5','value':'Ooo'},
-{'key':'6','value':'Converted'},
-{'key':'7','value':'Response'},
-{'key':'8','value':'Dnc'},
-{'key':'9','value':'Dupe'},
-{'key':'10','value':'Exhausted'},
-{'key':'12','value':'Email Sent'},
-  ];
   
-  const dupestatus = [{'key':'Unique','value':'Unique'},{'key':'Dupe','value':'Dupe'}];
-  const genstatus = [{'key':'email','value':'Email'},{'key':'domain','value':'Domain'}];
-  const applicantstatus = [{'key':'small','value':'Small'},{'key':'large','value':'Large'}];
-  const contactinfostatus = [{'key':'agent','value':'Agent'},{'key':'individual','value':'Individual'},{'key':'Both - Individual & Agent','value':'Both - Individual & Agent'}];
-  const callnames = [{'key':'_blank','value':'Blank'},{'key':'1','value':'Ni'},
-  {'key':'2','value':'Lb'},
-  {'key':'3','value':'Voice mail'},
-  {'key':'4','value':'Invalid no'},
-  {'key':'5','value':'Email sent'},
-  {'key':'6','value':'Cb'},
-  {'key':'7','value':'Ringing'},
-  {'key':'8','value':'Dnc'}
-    ];
   const handlechange = (e) =>{
-   setemail(e.target.value)
+   //setemail(e.target.value)
+   setdefaultdata((prev)=>({...prev,emailstatus:e.target.value}))
    filterdata(23,e.target.value.toString())
   }
   const handlecio = (e) =>{
-    setcio(e.target.value)
+    setdefaultdata((prev)=>({...prev,cio:e.target.value}))
+    //setcio(e.target.value);
     filterdata(9,e.target.value.toString())
    }
   const handleapplicant = (e) =>{
-    setapplicant(e.target.value)
+   // setapplicant(e.target.value)
+    setdefaultdata((prev)=>({...prev,applicantstatusdata:e.target.value}))
     filterdata(8,e.target.value.toString())
    }
    const handledupe = (e) =>{
-    setdupe(e.target.value)
+    //setdupe(e.target.value)
+    setdefaultdata((prev)=>({...prev,dupedata:e.target.value}))
     filterdata(53,e.target.value.toString())
+   }
+   const handleagentdupe = (e) =>{
+    setdefaultdata((prev)=>({...prev,agentdupedata:e.target.value}))
+    filterdata(61,e.target.value.toString())
    }
    const handlecountry = (e) =>{
 if(e.target.value.includes('all'))
 {
-    setcountry(countries.current)
+    //setcountry(countries.current)
+    setdefaultdata((prev)=>({...prev,countrydata:e.target.value}))
     filterdata(3,countries.current.toString())
 }
 else if(e.target.value.includes('unall'))
 {
-    setcountry([])
+    //setcountry([])
+    setdefaultdata((prev)=>({...prev,countrydata:[]}))
     filterdata(3,[].toString())
 }
 else
 {
-  setcountry(e.target.value)
+  // setcountry(e.target.value)
+  setdefaultdata((prev)=>({...prev,countrydata:e.target.value}))
     filterdata(3,e.target.value.toString())
 }
 
@@ -398,27 +340,36 @@ else
    const handlemonthdata = (e) =>{
     if(e.target.value.includes('all'))
     {
-        setmonth(months.current)
+      //  setmonth(months.current)
+        setdefaultdata((prev)=>({...prev,monthdata:e.target.value}))
         filterdata(55,months.current.toString())
     }
     else if(e.target.value.includes('unall'))
     {
-      setmonth([])
+      //setmonth([])
+      setdefaultdata((prev)=>({...prev,monthdata:[]}))
         filterdata(55,[].toString())
     }
     else
     {
-      setmonth(e.target.value)
+    //  setmonth(e.target.value)
+      setdefaultdata((prev)=>({...prev,monthdata:e.target.value}))
         filterdata(55,e.target.value.toString())
     }
     
        }
    const handlegen = (e) =>{
-    setgen(e.target.value)
+    //setgen(e.target.value)
+    setdefaultdata((prev)=>({...prev,gendata:e.target.value}))
     filterdata(54,e.target.value.toString())
    }
+   const handleagentgen = (e) =>{
+    setdefaultdata((prev)=>({...prev,agentgendata:e.target.value}))
+    filterdata(62,e.target.value.toString())
+   }
   const handlecallchange = (e) =>{
-    setcall(e.target.value);
+   // setcall(e.target.value);
+    setdefaultdata((prev)=>({...prev,callstatus:e.target.value}))
     filterdata(24,e.target.value.toString())
    }
    const showprofilesidebar = (i,v) =>{
@@ -428,11 +379,13 @@ else
     }
     i.target.querySelector('i').classList.replace('hide','show')
    
-    setprofilebar((prev)=>( {...prev,status:true,email:v} ));
+    //setprofilebar((prev)=>( {...prev,status:true,email:v} ));
+    setdefaultdata((prev)=>({...prev,profilebar:{status:true,email:v}}))
    }
    const closebar = () =>{
-    
-    setprofilebar((prev)=>( {...prev,status:false,email:''} ));
+    setdefaultdata((prev)=>({...prev,profilebar:{status:false,email:''}}))
+
+    //setprofilebar((prev)=>( {...prev,status:false,email:''} ));
     if(document.querySelector('i.profilefetch.show'))
     {
       document.querySelector('i.profilefetch.show').classList.replace('show','hide')
@@ -444,19 +397,30 @@ else
    comments.shift();
    return comments.filter((c,i,a)=>{return (a.indexOf(c)==i && c!='')}).join('\r\n\r\n');
 }
+function getColumnLetter(columnNumber) {
+  let dividend = columnNumber;
+  let columnName = '';
+  let modulo;
 
+  while (dividend > 0) {
+      modulo = (dividend - 1) % 26;
+      columnName = String.fromCharCode(65 + modulo) + columnName;
+      dividend = Math.floor((dividend - modulo) / 26);
+  }
 
+  return columnName;
+}
     return( 
 <>
  
 <div className={" custom-table "}>
-{showeditmodal.state==true ? <Editmodal show={showeditmodal} fn={editinfo}></Editmodal> : <></> }
+{showeditmodal.state==true ? <Editmodal alldata={d2} changedata={changedata} show={showeditmodal} fn={editinfo}></Editmodal> : <></> }
     <Commentmodal/>
     <Style></Style>
-    <Header platform={platform} changedata={changedata}  except={true} alldata={d2} showmailbox={showmailbox} showdupemailbox={showdupemailbox} showcronbox={showcronbox}  clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
-    {opensendmailbox ? <Emailbox page='freshdata' platform={platform} alldata={d} changedata={changedata} closeemailsendbox={closeemailsendbox} emailsdata={d.slice(0, document.querySelector('#totalsending').value)} fn={closeemailsendbox}></Emailbox> : <></>}
-    {opendupesendmailbox ? <Dupeemailprocess page='freshdata' platform={platform} alldata={d} changedata={changedata} closedupeemailsendbox={closedupeemailsendbox} emailsdata={d} fn={closedupeemailsendbox}></Dupeemailprocess> : <></>}
-    {opencronbox ? <Cronlist closecronbox={closecronbox}></Cronlist> : <></>}
+    <Header platform={platform} changedata={changedata}  except={true} completedata={d2} alldata={d} showmailbox={showmailbox} showdupemailbox={showdupemailbox} showcronbox={showcronbox}  clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
+    {defaultdata.opensendmailbox ? <Emailbox page='ip' platform={platform} alldata={d} changedata={changedata} closeemailsendbox={closeemailsendbox} emailsdata={d.slice(0, document.querySelector('#totalsending').value)} fn={closeemailsendbox}></Emailbox> : <></>}
+    {defaultdata.opendupesendmailbox ? <Dupeemailprocess page='ip' platform={platform} alldata={d} changedata={changedata} closedupeemailsendbox={closedupeemailsendbox} emailsdata={d} fn={closedupeemailsendbox}></Dupeemailprocess> : <></>}
+    {defaultdata.opencronbox ? <Cronlist closecronbox={closecronbox}></Cronlist> : <></>}
     <div className="container-fluid bootstrap-table body-wrapper1">
         <div className="fixed-table-container fixed-height d-flex">
         <ul style={{'width': '100%','left': '0','zIndex':'9','background':'white'}} className="breadcrumb">
@@ -472,17 +436,33 @@ else
       components={{className:"koushal"}}
       data={d}
       fixedHeaderContent={() => (
+        <>
+         <tr>
+          {columns.map((column, index) => (
+                     <ResizableColumn2
+                     key={column.key}
+                     width={column.width}
+                     type={column.type}
+                     costtab={defaultdata.showcurrencytab}
+                     getColumnLetter={getColumnLetter}
+                     index ={index}
+                     onResize={width => handleResize(index, width)}
+                   >
+                     {column.key}
+                   </ResizableColumn2>
+          ))}
+        </tr>
         <tr> 
 
- <th style={{  background: 'white', position: 'sticky', left: 0, zindex: 1 }}><div className="headers">APPLN.NO. <i className="ti ti-sort-ascending" onClick={()=>{sortdata(2)}}></i></div><input className="filter" onKeyUp={(e)=>filterdata(2,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Title <i className="ti ti-sort-ascending" onClick={()=>{sortdata(1)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(1,e.target.value)} type='text'></input></th>
+ <th style={{background: 'white', position: 'sticky', left: 0, zindex: 1 }}><div  className="headers">APPLN.NO. <i className="ti ti-sort-ascending" onClick={()=>{sortdata(60)}}></i></div><input className="filter" onKeyUp={(e)=>filterdata(2,e.target.value)} type='text'></input></th>
+<th  style={{  background: 'white' }}><div  className="headers">Title <i className="ti ti-sort-ascending" onClick={()=>{sortdata(1)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(1,e.target.value)} type='text'></input></th>
 <th  style={{  background: 'white' }}><div className="headers">COUNTRY <i className="ti ti-sort-ascending" onClick={()=>{sortdata(3)}}></i> </div>
 <FormControl sx={{ m: 0, width: 100 }}>
     
         <Select
           labelId="up-multiple-name-label"
           id="up-multiple-name"
-          value={countrydata}
+          value={defaultdata.countrydata}
           multiple
           onChange={handlecountry}
           label="Age"
@@ -521,13 +501,13 @@ else
         <Select
           labelId="up-multiple-name-label"
           id="up-multiple-name"
-          value={dupedata}
+          value={defaultdata.dupedata}
           multiple
           onChange={handledupe}
           label="Age"
         >
           
-          {dupestatus.map((name) => (
+          {defaultvalue.dupestatus.map((name) => (
             <MenuItem
               key={name.key}
               value={name.key}
@@ -546,11 +526,11 @@ else
         <Select
           labelId="demo-multiple-name-label"
           id="demo-multiple-name"
-          value={gendata}
+          value={defaultdata.gendata}
           multiple
           onChange={handlegen}
         >
-          {genstatus.map((name) => (
+          {defaultvalue.genstatus.map((name) => (
             <MenuItem
               key={name.key}
               value={name.key}
@@ -570,12 +550,12 @@ else
           labelId="demo-multiple-name-label"
           id="demo-multiple-name"
           multiple
-          value={applicantstatusdata}
+          value={defaultdata.applicantstatusdata}
           onChange={handleapplicant}
           input={<OutlinedInput label="Name" />}
           MenuProps={MenuProps}
         >
-          {applicantstatus.map((name) => (
+          {defaultvalue.applicantstatus.map((name) => (
             <MenuItem
               key={name.key}
               value={name.key}
@@ -595,12 +575,12 @@ else
           labelId="demo-multiple-name-label"
           id="demo-multiple-name"
           multiple
-          value={ciodata}
+          value={defaultdata.cio}
           onChange={handlecio}
           input={<OutlinedInput label="Name" />}
           MenuProps={MenuProps}
         >
-          {contactinfostatus.map((name) => (
+          {defaultvalue.contactinfostatus.map((name) => (
             <MenuItem
               key={name.key}
               value={name.key}
@@ -633,12 +613,12 @@ else
           labelId="demo-multiple-name-label"
           id="demo-multiple-name"
           multiple
-          value={emailstatusdata}
+          value={defaultdata.emailstatus}
           onChange={handlechange}
           input={<OutlinedInput label="Name" />}
           MenuProps={MenuProps}
         >
-          {names.map((name) => (
+          {defaultvalue.names.map((name) => (
             <MenuItem
               key={name.key}
               value={name.key}
@@ -657,12 +637,12 @@ else
           labelId="call-name-label"
           id="call-name"
           multiple
-          value={callstatusdata}
+          value={defaultdata.callstatus}
           onChange={handlecallchange}
           input={<OutlinedInput label="Name" />}
           MenuProps={MenuProps}
         >
-          {callnames.map((name) => (
+          {defaultvalue.callnames.map((name) => (
             <MenuItem
               key={name.key}
               value={name.key}
@@ -680,33 +660,33 @@ else
 <th style={{  background: 'white' }}><div className="headers">Agent Phone<i className="ti ti-sort-ascending" onClick={()=>{sortdata(29)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(29,e.target.value)} type='text'></input></th>
 <th style={{  background: 'white' }}><div className="headers">Previous Email Status<i className="ti ti-sort-ascending" onClick={()=>{sortdata(30)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(30,e.target.value)} type='text'></input></th>
 <th style={{  background: 'white' }}><div className="headers">Company<i className="ti ti-sort-ascending" onClick={()=>{sortdata(31)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(31,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">IN<i className="ti ti-sort-ascending" onClick={()=>{sortdata(32)}}></i> </div><input className="filter"  onKeyUp={(e)=>filterdata(32,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">CA<i className="ti ti-sort-ascending" onClick={()=>{sortdata(33)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(33,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">CN<i className="ti ti-sort-ascending" onClick={()=>{sortdata(34)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(34,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">JP<i className="ti ti-sort-ascending" onClick={()=>{sortdata(35)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(35,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">AU<i className="ti ti-sort-ascending" onClick={()=>{sortdata(36)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(36,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">BR<i className="ti ti-sort-ascending" onClick={()=>{sortdata(37)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(37,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">US<i className="ti ti-sort-ascending" onClick={()=>{sortdata(38)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(38,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">KR<i className="ti ti-sort-ascending" onClick={()=>{sortdata(39)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(39,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">EP<i className="ti ti-sort-ascending" onClick={()=>{sortdata(40)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(40,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">RU<i className="ti ti-sort-ascending" onClick={()=>{sortdata(41)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(41,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">MX<i className="ti ti-sort-ascending" onClick={()=>{sortdata(42)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(42,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">MY<i className="ti ti-sort-ascending" onClick={()=>{sortdata(43)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(43,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">PH<i className="ti ti-sort-ascending" onClick={()=>{sortdata(44)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(44,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">TH<i className="ti ti-sort-ascending" onClick={()=>{sortdata(45)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(45,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">ID<i className="ti ti-sort-ascending" onClick={()=>{sortdata(46)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(46,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">NZ<i className="ti ti-sort-ascending" onClick={()=>{sortdata(47)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(47,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">ZA<i className="ti ti-sort-ascending" onClick={()=>{sortdata(48)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(48,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">VN<i className="ti ti-sort-ascending" onClick={()=>{sortdata(49)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(49,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">SG<i className="ti ti-sort-ascending" onClick={()=>{sortdata(50)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(50,e.target.value)} type='text'></input></th>
-<th className={(showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers">CO<i className="ti ti-sort-ascending" onClick={()=>{sortdata(51)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(51,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">IN<i className="ti ti-sort-ascending" onClick={()=>{sortdata(32)}}></i> </div><input className="filter"  onKeyUp={(e)=>filterdata(32,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">CA<i className="ti ti-sort-ascending" onClick={()=>{sortdata(33)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(33,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">CN<i className="ti ti-sort-ascending" onClick={()=>{sortdata(34)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(34,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">JP<i className="ti ti-sort-ascending" onClick={()=>{sortdata(35)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(35,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">AU<i className="ti ti-sort-ascending" onClick={()=>{sortdata(36)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(36,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">BR<i className="ti ti-sort-ascending" onClick={()=>{sortdata(37)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(37,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">US<i className="ti ti-sort-ascending" onClick={()=>{sortdata(38)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(38,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">KR<i className="ti ti-sort-ascending" onClick={()=>{sortdata(39)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(39,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">EP<i className="ti ti-sort-ascending" onClick={()=>{sortdata(40)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(40,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">RU<i className="ti ti-sort-ascending" onClick={()=>{sortdata(41)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(41,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">MX<i className="ti ti-sort-ascending" onClick={()=>{sortdata(42)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(42,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">MY<i className="ti ti-sort-ascending" onClick={()=>{sortdata(43)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(43,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">PH<i className="ti ti-sort-ascending" onClick={()=>{sortdata(44)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(44,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">TH<i className="ti ti-sort-ascending" onClick={()=>{sortdata(45)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(45,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">ID<i className="ti ti-sort-ascending" onClick={()=>{sortdata(46)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(46,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">NZ<i className="ti ti-sort-ascending" onClick={()=>{sortdata(47)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(47,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">ZA<i className="ti ti-sort-ascending" onClick={()=>{sortdata(48)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(48,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">VN<i className="ti ti-sort-ascending" onClick={()=>{sortdata(49)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(49,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">SG<i className="ti ti-sort-ascending" onClick={()=>{sortdata(50)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(50,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">CO<i className="ti ti-sort-ascending" onClick={()=>{sortdata(51)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(51,e.target.value)} type='text'></input></th>
 <th  style={{  background: 'white' }}><div className="headers">Month <i className="ti ti-sort-ascending" onClick={()=>{sortdata(55)}}></i> </div>
 <FormControl sx={{ m: 0, width: 100 }}>
     
         <Select
           labelId="up-multiple-name-label"
           id="up-multiple-name"
-          value={monthdata}
+          value={defaultdata.monthdata}
           multiple
           onChange={handlemonthdata}
           label="Age"
@@ -736,13 +716,61 @@ else
 </th>
 <th style={{  background: 'white' }}><div className="headers">Sent on<i className="ti ti-sort-ascending" onClick={()=>{sortdata(56)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(56,e.target.value)} type='text'></input></th>
 <th style={{  background: 'white' }}><div className="headers">Cron Status<i className="ti ti-sort-ascending" onClick={()=>{sortdata(57)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(57,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Assigned<i className="ti ti-sort-ascending" onClick={()=>{sortdata(58)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(58,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Agent Unique/Dupe<i className="ti ti-sort-ascending" onClick={()=>{sortdata(61)}}></i> </div>
 
+<FormControl sx={{ m: 0, width: 100 }}>
+    
+        <Select
+          labelId="up-multiple-name-label"
+          id="up-multiple-name"
+          value={defaultdata.agentdupedata}
+          multiple
+          onChange={handleagentdupe}
+          label="Age"
+        >
+          
+          {defaultvalue.dupestatus.map((name) => (
+            <MenuItem
+              key={name.key}
+              value={name.key}
+            >
+              {name.value}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+</th>
+<th style={{  background: 'white' }}><div className="headers">Agent Gen/Non Gen<i className="ti ti-sort-ascending" onClick={()=>{sortdata(62)}}></i> </div>
+
+<FormControl sx={{ m: 0, width: 100 }}>
+    
+        <Select
+          labelId="demo-multiple-name-label"
+          id="demo-multiple-name"
+          value={defaultdata.agentgendata}
+          multiple
+          onChange={handleagentgen}
+        >
+          {defaultvalue.genstatus.map((name) => (
+            <MenuItem
+              key={name.key}
+              value={name.key}
+            >
+              {name.value}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+</th>
         </tr>
+        </>
       )}
       itemContent={(index, user) => (
-        
         <>
- <td onClick={(e)=>{pickvalue(e,2,0)}} className="column-value" style={{  background: 'white', position: 'sticky', left: 0, zIndex: 1 }}><input className='appno' value={user[2]} onClick={(event)=>pushdata(event,user[2])} style={{'position':"absolute",'top':'18px','left':'0'}} type='checkbox'></input><a target="blank" href={"https://patentscope.wipo.int/search/en/detail.jsf?docId="+user[0]}>{user[2]}</a><i onClick={()=>{editinfo(true,user[2])}} style={{'position': 'absolute','top': '1px','right': '5px','background': '#5d87ff','width': '14px','height': '14px','display': 'flex','lineHeight': '14px','borderRadius': '50%','color': 'white','justifyContent': 'center'}} className="ti ti-edit"></i></td>
+<td onClick={(e)=>{pickvalue(e,2,0)}} className="column-value" style={{ background:user[60], position: 'sticky', left: 0, zIndex: 1 }}><input className='appno' value={user[2]} onClick={(event)=>pushdata(event,user[2])} style={{'position':"absolute",'top':'18px','left':'0'}} type='checkbox'></input><a target="blank" href={"https://patentscope.wipo.int/search/en/detail.jsf?docId="+user[0]}>{user[2]}</a><i onClick={()=>{editinfo(true,user[2])}} style={{'position': 'absolute','top': '1px','right': '5px','background': '#5d87ff','width': '14px','height': '14px','display': 'flex','lineHeight': '14px','borderRadius': '50%','color': 'white','justifyContent': 'center'}} className="ti ti-edit"></i></td>
 <td onClick={(e)=>{pickvalue(e,1,1)}} className="column-value" style={{  }}>{user[1]}</td>
 <td onClick={(e)=>{pickvalue(e,3,2)}} className="column-value small" style={{  }}>{user[3]}</td>
 <td onClick={(e)=>{pickvalue(e,4,3)}} className="column-value" style={{  }}>{user[4]}</td>
@@ -754,8 +782,8 @@ else
 <td onClick={(e)=>{pickvalue(e,8,9)}} className="column-value" style={{  }}>{user[8]}</td>
 <td onClick={(e)=>{pickvalue(e,9,10)}} className="column-value" style={{  }}>{user[9]}</td> 
 <td onClick={(e)=>{pickvalue(e,10,11)}} className="column-value" style={{  }}>{user[10]}</td>
-<td  onClick={(e)=>{pickvalue(e,11,12)}} className="cursor-pointer text-primary column-value d-flex align-items-center" style={{'background':(tablesetting.countred(user[11],11,d) ? '#ff000029' : ''),'color':'#000 !important','--bs-table-bg-state':'none'}}><i class="ti ti-refresh rotate hide profilefetch"></i><span className="email-id">{user[11]}</span></td>
-<td  onClick={(e)=>{pickvalue(e,12,13)}} className="column-value" style={{'background':(tablesetting.countred(user[12],12,d) ? '#ff000029' : ''),'color':'#000 !important','--bs-table-bg-state':'none'}}>{user[12]}</td>
+<td  onClick={(e)=>{pickvalue(e,11,12)}} className={`cursor-pointer text-primary column-value d-flex align-items-center ${(tablesetting.countred(user[11],11,d) ? 'red-dupe' : '')}`} style={{  }}><i className="ti ti-refresh rotate hide profilefetch"></i><span className="email-id">{user[11]}</span></td>
+<td  onClick={(e)=>{pickvalue(e,12,13)}} className="column-value" style={{  }}>{user[12]}</td>
 <td  onClick={(e)=>{pickvalue(e,13,14)}} className="column-value" style={{  }}>{user[13]}</td>
 <td  onClick={(e)=>{pickvalue(e,14,15)}} className="column-value small" style={{  }}>{user[14]}</td>
 <td  onClick={(e)=>{pickvalue(e,15,16)}} className="column-value small" style={{  }}>{user[15]}</td>
@@ -771,35 +799,37 @@ else
 <td  onClick={(e)=>{pickvalue(e,24,26)}} className="column-value" style={{  }}>{callstatus[user[24]] ?? ''}</td>
 <td onClick={(e)=>{pickvalue(e,25,27)}} className="column-value" style={{  }} dangerouslySetInnerHTML={{__html: removeduplicate(user[25])}} />
 <td  onClick={(e)=>{pickvalue(e,26,28)}} className="column-value" style={{  }}>{user[26]}</td>
-<td  onClick={(e)=>{pickvalue(e,27,29)}} className="column-value" style={{  }}>{user[27]}</td>
+<td  onClick={(e)=>{pickvalue(e,27,29)}} className={`column-value ${(tablesetting.countred(user[27],27,d) ? 'red-dupe' : '')}`} style={{  }}>{user[27]}</td>
 <td  onClick={(e)=>{pickvalue(e,28,30)}} className="column-value" style={{  }}>{user[28]}</td>
 <td  onClick={(e)=>{pickvalue(e,29,31)}} className="column-value" style={{  }}>{user[29]}</td>
 <td  onClick={(e)=>{pickvalue(e,30,32)}} className="column-value" style={{  }}>{user[30]}</td>
 <td  onClick={(e)=>{pickvalue(e,31,33)}} className="column-value" style={{  }}>{user[31]}</td>
-
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,32,34)}}  style={{  }}>{costs.IN.apply({'appno':user[2],'c':'IN','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,33,35)}}  style={{  }}>{costs.CA.apply({'appno':user[2],'c':'CA','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,34,36)}}  style={{  }}>{costs.CN.apply({'appno':user[2],'c':'CN','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,35,37)}}  style={{  }}>{costs.JP.apply({'appno':user[2],'c':'JP','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,36,38)}}  style={{  }}>{costs.AU.apply({'appno':user[2],'c':'AU','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,37,39)}}  style={{  }}>{costs.BR.apply({'appno':user[2],'c':'BR','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,38,40)}}  style={{  }}>{costs.US.apply({'appno':user[2],'c':'US','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,39,41)}}  style={{  }}>{costs.KR.apply({'appno':user[2],'c':'KR','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,40,42)}}  style={{  }}>{costs.EP.apply({'appno':user[2],'c':'EP','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,41,43)}}  style={{  }}>{costs.RU.apply({'appno':user[2],'c':'RU','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,42,44)}}  style={{  }}>{costs.MX.apply({'appno':user[2],'c':'MX','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,43,45)}}  style={{  }}>{costs.MY.apply({'appno':user[2],'c':'MY','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,44,46)}}  style={{  }}>{costs.PH.apply({'appno':user[2],'c':'PH','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,45,47)}}  style={{  }}>{costs.TH.apply({'appno':user[2],'c':'TH','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,46,48)}}  style={{  }}>{costs.ID.apply({'appno':user[2],'c':'ID','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,47,49)}}  style={{  }}>{costs.NZ.apply({'appno':user[2],'c':'NZ','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,48,50)}}  style={{  }}>{costs.ZA.apply({'appno':user[2],'c':'ZA','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,49,51)}}  style={{  }}>{costs.VN.apply({'appno':user[2],'c':'VN','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,50,52)}}  style={{  }}>{costs.SG.apply({'appno':user[2],'c':'SG','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
-<td className={"column-value"+(showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,51,53)}}  style={{  }}>{costs.CO.apply({'appno':user[2],'c':'CO','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,32,34)}}  style={{  }}>{costs.IN.apply({'appno':user[2],'c':'IN','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,33,35)}}  style={{  }}>{costs.CA.apply({'appno':user[2],'c':'CA','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,34,36)}}  style={{  }}>{costs.CN.apply({'appno':user[2],'c':'CN','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,35,37)}}  style={{  }}>{costs.JP.apply({'appno':user[2],'c':'JP','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,36,38)}}  style={{  }}>{costs.AU.apply({'appno':user[2],'c':'AU','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,37,39)}}  style={{  }}>{costs.BR.apply({'appno':user[2],'c':'BR','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,38,40)}}  style={{  }}>{costs.US.apply({'appno':user[2],'c':'US','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,39,41)}}  style={{  }}>{costs.KR.apply({'appno':user[2],'c':'KR','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,40,42)}}  style={{  }}>{costs.EP.apply({'appno':user[2],'c':'EP','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,41,43)}}  style={{  }}>{costs.RU.apply({'appno':user[2],'c':'RU','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,42,44)}}  style={{  }}>{costs.MX.apply({'appno':user[2],'c':'MX','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,43,45)}}  style={{  }}>{costs.MY.apply({'appno':user[2],'c':'MY','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,44,46)}}  style={{  }}>{costs.PH.apply({'appno':user[2],'c':'PH','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,45,47)}}  style={{  }}>{costs.TH.apply({'appno':user[2],'c':'TH','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,46,48)}}  style={{  }}>{costs.ID.apply({'appno':user[2],'c':'ID','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,47,49)}}  style={{  }}>{costs.NZ.apply({'appno':user[2],'c':'NZ','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,48,50)}}  style={{  }}>{costs.ZA.apply({'appno':user[2],'c':'ZA','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,49,51)}}  style={{  }}>{costs.VN.apply({'appno':user[2],'c':'VN','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,50,52)}}  style={{  }}>{costs.SG.apply({'appno':user[2],'c':'SG','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
+<td className={"column-value"+(defaultdata.showcurrencytab ? '' : ' hiddencol')}  onClick={(e)=>{pickvalue(e,51,53)}}  style={{  }}>{costs.CO.apply({'appno':user[2],'c':'CO','as':user[8],'ci':user[9],'pages':user[14],'claim':user[15],'priority':user[16],'co':user[3],'isa':user[18],'standard':standard})}</td>
 <td  onClick={(e)=>{pickvalue(e,52,54)}} className="column-value" style={{  }}>{user[55]}</td>
 <td  onClick={(e)=>{pickvalue(e,53,55)}} className="column-value" style={{  }}>{user[56]}</td>
 <td  onClick={(e)=>{pickvalue(e,54,56)}} className="column-value" style={{  }}>{user[57]}</td>
+<td  onClick={(e)=>{pickvalue(e,55,57)}} className="column-value" style={{  }}>{user[58]}</td>
+<td  onClick={(e)=>{pickvalue(e,56,58)}} className="column-value" style={{  }}>{user[61]}</td>
+<td  onClick={(e)=>{pickvalue(e,57,59)}} className="column-value" style={{  }}>{user[62]}</td>
 
         </>
       )} 
@@ -810,10 +840,10 @@ else
     </div>
     </div>
     <Uploadsidebar/>
-    {profilebar.status ? <Sidebarprofile closebar={closebar} email={profilebar.email}/> : <></>}
+    {defaultdata.profilebar.status ? <Sidebarprofile closebar={closebar} email={defaultdata.profilebar.email}/> : <></>}
 </div>
 </>
     )
 }
 
-export default Freshdata;
+export default Dashboard;

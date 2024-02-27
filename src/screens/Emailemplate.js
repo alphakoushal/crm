@@ -8,7 +8,7 @@ import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Uploaddata from "../services/uploaddata";
 const Emailemplate =() =>{
     const [editorData, setEditorData] = useState('');
-    const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:''});
+    const [validate,setvalidate]=useState({'loader':'hide','loadermessage':'Submit',status:false,color:'error',icon:'error',message:''});
     let auth= localStorage.getItem("user"); 
     auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
     const handleEditorChange = (event, editor) => {
@@ -22,7 +22,12 @@ const Emailemplate =() =>{
         let mail_subject=document.querySelector('#emailsubject').value;
         let template_type =document.querySelector('#templatetype').value; let client_type =document.querySelector('#clienttype').value;
        let title=document.querySelector('#emailtitle').value;
-       if(title=='')
+       if(validate.loader=='block')
+       {
+        setvalidate((validate)=>({...validate,status:true,message:'In process'}));
+
+       }
+       else if(title=='')
        {
         setvalidate((validate)=>({...validate,status:true,message:'Please Enter title'}));
        }
@@ -45,6 +50,7 @@ const Emailemplate =() =>{
        }
        else
        {
+        setvalidate((data)=>({...data,'loader': 'block','loadermessage':'Submitting'}));
         let formdata={
             'mail_body':editorData,
             'mail_subject':mail_subject,
@@ -55,9 +61,12 @@ const Emailemplate =() =>{
             
           }
          let res =await Uploaddata.mailtemplate(formdata).then((resposne)=>{return resposne});
-         if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true, message: res.data.message,color:'success',icon:'success' })) }
+         if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true, message: res.data.message,color:'success',icon:'success' })) 
+         document.querySelector('input').value='';
+        }
 else {setvalidate((validate)=>({...validate,status:true,message:res.data.errors.error,color:'error',icon:'error'}));}
 setTimeout(()=>{},1000);
+setvalidate((data)=>({...data,'loader': 'hide','loadermessage':'Submit'}));
         }
     }
     return(
@@ -75,7 +84,7 @@ setTimeout(()=>{},1000);
               <div className="card">
                 <div className="card-body">
                   <h5 className="mb-3">Email Template</h5>
-                  <div className="d-flex border p-2" style={{'flex-wrap': 'wrap'}}>
+                  <div className="d-flex border p-2" style={{'flexWrap': 'wrap'}}>
             <small className="border rounded me-1 mb-1 bg-light p-1">@contact_person@</small>
             <small className="border rounded me-1 mb-1 bg-light p-1">@title@</small>
             <small className="border rounded me-1 mb-1 bg-light p-1">@application_no@</small>
@@ -104,7 +113,7 @@ setTimeout(()=>{},1000);
                       <div className="col-md-3">
                         <div className="form-floating mb-3">
                         <select className="form-select mr-sm-2" id="clienttype">
-                        <option selected="">Choose...</option>
+                        <option defaultValue="">Choose...</option>
                         <option value="1">Agent</option>
                         <option value="2">Individual</option>
                         <option value="3">Both</option>
@@ -116,7 +125,7 @@ setTimeout(()=>{},1000);
                       <div className="col-md-3">
                         <div className="form-floating">
                         <select className="form-select mr-sm-2" id="templatetype">
-                        <option selected="">Choose...</option>
+                        <option defaultValue="">Choose...</option>
                         <option value="1">Individual</option>
                         <option value="2">Dupe</option>
                       </select>
@@ -151,7 +160,8 @@ setTimeout(()=>{},1000);
                             <button type="submit" className="btn btn-info font-medium rounded-pill px-4">
                               <div onClick={()=>{submittemplate()}} className="d-flex align-items-center">
                                 <i className="ti ti-send me-2 fs-4"></i>
-                                Submit
+                                {validate.loadermessage}
+                                <i className={`ti ti-refresh rotate ms-2 ${validate.loader}`}></i>
                               </div>
                             </button>
                           </div>

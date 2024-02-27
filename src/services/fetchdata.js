@@ -10,6 +10,12 @@ const fetchdata = (data,signal) => {
        return response;
       });
 };
+const fetchcomment = (data,signal) =>{
+  axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
+  return axios.post(API_URL+'employee/auth/reactauth/currentcommentdata',data,signal).then((response)=>{
+    return response;
+  });
+}
 const fetchitdata =(data,signal) =>{
   axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
 return axios.post(API_URL+'employee/auth/reactauth/it-currentdata',data,{signal}).then((response) =>{
@@ -75,7 +81,7 @@ url: API_URL+'employee/auth/',
   }).then((response)=>{return response;})
 }
 const Fetchdata = {
-  freshdata,fetchdata,fetchitdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchtemp,fetchtemplate
+  freshdata,fetchdata,fetchcomment,fetchitdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchtemp,fetchtemplate
 }
 
 export default Fetchdata;
