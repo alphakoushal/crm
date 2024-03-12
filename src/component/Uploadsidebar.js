@@ -134,8 +134,9 @@ const assignfile = async () =>{
 }
 }
 
-const closebar = async() =>
+const closebar = async(e) =>
 { 
+  e.preventDefault();
   let exit=document.querySelector('.body-wrapper1').classList.contains('loader');
     if(!exit){document.querySelector('.uploadsidebar').classList.remove('show')}
 }
@@ -148,7 +149,7 @@ const closebar = async() =>
 <div className="offcanvas offcanvas-end shopping-cart uploadsidebar" tabIndex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
       <div className="offcanvas-header py-4">
         <h5 className="offcanvas-title fs-5 fw-semibold" id="offcanvasRightLabel">Assignment</h5>
-        <a onClick={()=>closebar()} href="#" className="btn btn-outline-primary w-30">Close</a>
+        <a onClick={(e)=>closebar(e)} className="btn btn-outline-primary w-30">Close</a>
       </div>
       <div className="offcanvas-body h-100 px-4 pt-0" data-simplebar>
         {auth.type=='2' ? <>

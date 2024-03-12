@@ -1,5 +1,6 @@
 import React, { useState,useEffect } from "react";
 import Uploaddata from "../../services/uploaddata";
+import Fetchdata from "../../services/fetchdata";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import moment from "moment";
@@ -26,6 +27,31 @@ function updatestate(value,key)
 {
 
 } 
+async function checkexist(e)
+{
+    e.preventDefault();
+    let app=document.querySelector('#Aplication_number').value;
+    if(app=='')
+        {
+            setvalidate((validate)=>({...validate,status:true,message:'Enter Application Number'}));
+        }
+        else
+        {
+    let formdata ={'app':app};
+    let fetched=await Fetchdata.fetchapp(formdata).then((response)=>{ return response});
+let d=document.querySelector('.app-check').classList;
+    if(fetched.data.success)
+{
+    setvalidate((validate)=>({...validate,color:'error',icon:'error' ,status:true,message:'Application Number Already in record.'}));
+    d.remove('BRX');d.add('ARK');
+}
+else
+{
+d.remove('ARK');d.add('BRX');
+setvalidate((prev)=>({ ...prev,status:true, message: 'Available to add',color:'success',icon:'success' }))
+}
+}
+}
 async function adddata(e)
 {
     e.preventDefault();
@@ -142,8 +168,8 @@ if(web=='')
                                             </div>
                                             <div className="form-group col-md-4">
                                                 <label className="col-sm-12" htmlFor="Aplication_number">Application No:</label>
-                                                <div className="col-sm-12 error_field_group" id="Aplication_number-group">
-                                                    <input type="text" className="date form-control Aplication_number validate-field" id="Aplication_number" name="Aplication_number" placeholder="Aplication number"/>
+                                                <div className="col-sm-12 error_field_group position-relative" id="Aplication_number-group">
+                                                    <input type="text" className="date form-control Aplication_number validate-field" id="Aplication_number" name="Aplication_number" placeholder="Aplication number"/> <i style={{'top':'12px','right':'-20px'}} onClick={(e)=>{checkexist(e)}} class="ti ti-check position-absolute app-check fw-bolder"></i>
                                                 </div>
                                             </div>
                                            <div className="form-group col-md-4">

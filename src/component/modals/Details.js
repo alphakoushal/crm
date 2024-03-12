@@ -1,9 +1,11 @@
 import React,{useState} from "react";
 import moment from "moment";
+import { emailstatus } from "../../constant/Constant";
 const Details = ({data}) =>{
-const userdetails= JSON.parse(data[3]);
-let comments= (data[2]!=null ? JSON.parse(data[2])['freshcomment']: []);
+const userdetails= JSON.parse(data['other']);
+let comments= (data['comment']!=null ? JSON.parse(data['comment'])['freshcomment']: []);
 
+comments.sort((a,b)=> {return b.comment_added_date -a.comment_added_date});
 // comments =[];
     return(
         <div className="tab-content pt-4" id="pills-tabContent">
@@ -14,12 +16,17 @@ let comments= (data[2]!=null ? JSON.parse(data[2])['freshcomment']: []);
               <div className="card bx">
 
                 <div className="card-body">
-                  <p><b>Contact Person</b>- {userdetails['c_p_f']} {userdetails['c_p_l']}</p>
-                  <p><b>Applicant Status</b>-  {userdetails['applicant_status']}</p>
-                  <p><b>Phone Number</b>-  {userdetails['p_h_n']}</p>
-                  <p><b>Priority Date</b>-  {userdetails['p_date']}</p>
-                  <p><b>Deadline 30</b>-  {userdetails['deadline_30_month']}</p>
-                  <p><b>Deadline 31</b>-  {userdetails['deadline_31_month']}</p>
+                  <p className="fs-2"><b>Assigned to</b>- {data['user']}</p>
+                  <p className="fs-2"><b>Applicant name</b>- {userdetails['APPLICANT_NAME']}</p>
+                  <p className="fs-2"><b>Contact Person</b>- {userdetails['c_p_f']} {userdetails['c_p_l']}</p>
+                  <p className="fs-2"><b>Agent Name</b>- {userdetails['agent_name']??'N/A'}</p>
+                  <p className="fs-2"><b>Email-id</b>- {userdetails['email_id']??'N/A'}</p>
+                  <p className="fs-2"><b>Agent Email</b>- {userdetails['agent_email_id']??'N/A'}</p>
+                  <p className="fs-2"><b>Applicant Status</b>-  {userdetails['applicant_status']}</p>
+                  <p className="fs-2"><b>Phone Number</b>-  {userdetails['p_h_n']}</p>
+                  <p className="fs-2"><b>Priority Date</b>-  {userdetails['p_date']}</p>
+                  <p className="fs-2"><b>Deadline 30</b>-  {userdetails['deadline_30_month']}</p>
+                  <p className="fs-2"><b>Deadline 31</b>-  {userdetails['deadline_31_month']}</p>
 
 
                 </div>
@@ -31,12 +38,11 @@ let comments= (data[2]!=null ? JSON.parse(data[2])['freshcomment']: []);
               <div className="card">
                 <div className="card-body border-bottom">
                   <div className="d-flex align-items-center gap-3">
-                    <img src="https://www.anuationlabs.com/demo/main/dist/images/profile/user-1.jpg" alt="" className="rounded-circle" width="40" height="40"/>
-                    <h6 className="fw-semibold mb-0 fs-4">{userdetails['APPLICANT_NAME']}</h6>
+                    <img src='../crm/assets/icons/patent.png' alt="" className="rounded-circle" width="40" height="40"/>
+                    <h6 className="fw-semibold mb-0 fs-4">{data['weblink']} {comments.length>0 ? '( '+(emailstatus?.[comments[0].comment_type]!=undefined ? emailstatus?.[comments[0].comment_type] : '')  +' )' : ''}</h6>
                   </div>
-                  <p className="text-dark my-3">
-                  {userdetails['title']}
-                  </p>
+                  <p className="text-dark my-3"><b>Application Number : </b> {userdetails['app_no']}</p>
+                  <p className="text-dark my-3"><b>Title : </b> {userdetails['title']}</p>
                   <img src="dist/images/products/s1.jpg" alt="" className="img-fluid rounded-4 w-100 object-fit-cover"/>
 
                   {comments.map((item) => {

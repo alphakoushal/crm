@@ -24,7 +24,7 @@ function Loading() {
     return <h2>🌀 Loading...</h2>;
   }
    let filtered=[];
-const Dashboard =() =>{
+const Statussheet =() =>{
     const [d,sd]=useState([]); const [d2,gd]=useState([]);
     const [defaultdata,setdefaultdata]=useState({profilebar:{status:false,email:''},opencronbox:false,opendupesendmailbox:false,opensendmailbox:false,sortDown:true,showcurrencytab:false,countrydata:[],agentdupedata:[],dupedata:[],applicantstatusdata:[],cio:[],callstatus:[],emailstatus:[],agentgendata:[],gendata:[],monthdata:[]});
       const [columns, setColumns] = useState([{"width":110,"css":"","type":"","key":"APPLN.NO."},{"width":110,"css":"","type":"","key":"Title"},{"width":110,"css":"","type":"select","key":"COUNTRY"},{"width":110,"css":"","type":"","key":"PRIOTITY DATE"},{"width":110,"css":"","type":"","key":"DEADLINE - 30 mth"},{"width":110,"css":"","type":"","key":"DEADLINE - 31 mth"},{"width":110,"css":"","type":"","key":"APPLICANT NAME"},{"width":110,"css":"","type":"","key":"Unique/Dupe"},{"width":110,"css":"","type":"","key":"Gen/Non Gen"},{"width":110,"css":"","type":"","key":"Applicant Status"},{"width":110,"css":"","type":"","key":"CONTACT INFO OF"},{"width":110,"css":"","type":"","key":"CONTACT PERSON"},{"width":110,"css":"","type":"","key":"EMAIL ID"},{"width":110,"css":"","type":"","key":"Domain"},{"width":110,"css":"","type":"","key":"PH. NO."},{"width":110,"css":"","type":"","key":"Pages"},{"width":110,"css":"","type":"","key":"Claim"},{"width":110,"css":"","type":"","key":"Priority"},{"width":110,"css":"","type":"","key":"Drawings"},{"width":110,"css":"","type":"","key":"ISR"},{"width":110,"css":"","type":"","key":"REF. NO."},{"width":110,"css":"","type":"","key":"First Email Date"},{"width":110,"css":"","type":"","key":"FollowUp date"},{"width":110,"css":"","type":"","key":"Next Follow Up"},{"width":110,"css":"","type":"","key":"Pct App Status"},{"width":110,"css":"","type":"","key":"Email Status"},{"width":110,"css":"","type":"","key":"Call Status"},{"width":110,"css":"","type":"","key":"Comment"},{"width":110,"css":"","type":"","key":"Agent name"},{"width":110,"css":"","type":"","key":"Agent Email Id"},{"width":110,"css":"","type":"","key":"Agent Domain"},{"width":110,"css":"","type":"","key":"Agent Phone"},{"width":110,"css":"","type":"","key":"Previous Email Status"},{"width":110,"css":"","type":"","key":"Company"},{"width":110,"css":"","type":"cost","key":"IN "},{"width":110,"css":"","type":"cost","key":"CA "},{"width":110,"css":"","type":"cost","key":"CN "},{"width":110,"css":"","type":"cost","key":"JP "},{"width":110,"css":"","type":"cost","key":"AU "},{"width":110,"css":"","type":"cost","key":"BR "},{"width":110,"css":"","type":"cost","key":"US "},{"width":110,"css":"","type":"cost","key":"KR "},{"width":110,"css":"","type":"cost","key":"EP "},{"width":110,"css":"","type":"cost","key":"RU "},{"width":110,"css":"","type":"cost","key":"MX "},{"width":110,"css":"","type":"cost","key":"MY "},{"width":110,"css":"","type":"cost","key":"PH "},{"width":110,"css":"","type":"cost","key":"TH "},{"width":110,"css":"","type":"cost","key":"ID "},{"width":110,"css":"","type":"cost","key":"NZ "},{"width":110,"css":"","type":"cost","key":"ZA "},{"width":110,"css":"","type":"cost","key":"VN "},{"width":110,"css":"","type":"cost","key":"SG "},{"width":110,"css":"","type":"cost","key":"CO "},{"width":110,"css":"","type":"","key":"Month"},{"width":110,"css":"","type":"","key":"Sent on"},{"width":110,"css":"","type":"","key":"Cron Status"},{"width":110,"css":"","type":"","key":"Assigned"},{"width":110,"css":"","type":"","key":"Agent Unique/Dupe"},{"width":110,"css":"","type":"","key":"Agent Gen/Non Gen"}]);
@@ -92,8 +92,7 @@ const changedata =  useCallback ( (data,modal='') =>{
 })
    const loaddata =  useCallback  ( async (formdata,refreshmode='') =>
     {
-      document.querySelector('.sheet.active').classList.remove('active');
-      document.querySelector('#'+(formdata.sheet??'current')).classList.add('active');
+
       let abortc= new AbortController();
       let {signal}=abortc;
 
@@ -104,7 +103,7 @@ const changedata =  useCallback ( (data,modal='') =>{
     processing.current=true;
      let datas={};
         document.querySelector('.ti-refresh').classList.add('rotate');document.querySelector('.body-wrapper1').classList.add('loader');
-        data = await Fetchdata.fetchdata(formdata,signal).then(response=>{return response;}).finally(()=>{document.querySelector('.ti-refresh').classList.remove('rotate');document.querySelector('.body-wrapper1').classList.remove('loader');});
+        data = await Fetchdata.fetchstatusheetdata(formdata,signal).then(response=>{return response;}).finally(()=>{document.querySelector('.ti-refresh').classList.remove('rotate');document.querySelector('.body-wrapper1').classList.remove('loader');});
         if(data.data.success)
         {
           datas =data.data.data;
@@ -125,7 +124,6 @@ const changedata =  useCallback ( (data,modal='') =>{
     });
    useEffect(()=>{loaddata(formdata);},[]);
    const showmailbox = () =>{
-    
     setdefaultdata((prev)=>({...prev,opensendmailbox:true}))
 
   }
@@ -255,11 +253,9 @@ function pushdata(event,w)
     event.nativeEvent.stopImmediatePropagation();
     event.stopPropagation();
 }
-function sortdata(event,index=0)
+function sortdata(index=0)
 {
-  console.log(event);
     const copy = [...d];
-    if(event.detail==1){
 if(defaultdata.sortDown)
 {
 copy.sort((a, b) =>  -((typeof(a[index])=='number' ? a[index] : a[index].trim()) > (typeof(b[index])=='number' ? b[index] : b[index].trim()))); 
@@ -271,11 +267,6 @@ else
 }
 setdefaultdata((prev)=> ({...prev,sortDown:!prev.sortDown}))
 sd(copy);
-}
-else
-{
-  navigator.clipboard.writeText([...new Set(copy.map((item)=>{if(item[index]!='' && item[index]!=null){return  item[index]; } else { return false}}))].toString())
-}
 }
 const clearfilter =useCallback(()=>
 {
@@ -465,9 +456,9 @@ function getColumnLetter(columnNumber) {
         </tr>
         <tr> 
 
- <th style={{background: 'white', position: 'sticky', left: 0, zindex: 1 }}><div  className="headers">APPLN.NO. <i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,60)}}></i></div><input className="filter" onKeyUp={(e)=>filterdata(2,e.target.value)} type='text'></input></th>
-<th  style={{  background: 'white' }}><div  className="headers">Title <i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,1)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(1,e.target.value)} type='text'></input></th>
-<th  style={{  background: 'white' }}><div className="headers">COUNTRY <i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,3)}}></i> </div>
+ <th style={{background: 'white', position: 'sticky', left: 0, zindex: 1 }}><div  className="headers">APPLN.NO. <i className="ti ti-sort-ascending" onClick={()=>{sortdata(60)}}></i></div><input className="filter" onKeyUp={(e)=>filterdata(2,e.target.value)} type='text'></input></th>
+<th  style={{  background: 'white' }}><div  className="headers">Title <i className="ti ti-sort-ascending" onClick={()=>{sortdata(1)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(1,e.target.value)} type='text'></input></th>
+<th  style={{  background: 'white' }}><div className="headers">COUNTRY <i className="ti ti-sort-ascending" onClick={()=>{sortdata(3)}}></i> </div>
 <FormControl sx={{ m: 0, width: '100%' }}>
     
         <Select
@@ -501,11 +492,11 @@ function getColumnLetter(columnNumber) {
         </Select>
       </FormControl>
 </th>
-<th style={{  background: 'white' }}><div className="headers">PRIOTITY DATE <i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,4)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(4,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">DEADLINE - 30 mth<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,5)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(5,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">DEADLINE - 31 mth<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,6)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(6,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">APPLICANT NAME<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,7)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(7,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Unique/Dupe<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,53)}}></i> </div>
+<th style={{  background: 'white' }}><div className="headers">PRIOTITY DATE <i className="ti ti-sort-ascending" onClick={()=>{sortdata(4)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(4,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">DEADLINE - 30 mth<i className="ti ti-sort-ascending" onClick={()=>{sortdata(5)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(5,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">DEADLINE - 31 mth<i className="ti ti-sort-ascending" onClick={()=>{sortdata(6)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(6,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">APPLICANT NAME<i className="ti ti-sort-ascending" onClick={()=>{sortdata(7)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(7,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Unique/Dupe<i className="ti ti-sort-ascending" onClick={()=>{sortdata(53)}}></i> </div>
 
 <FormControl sx={{ m: 0, width: '100%' }}>
     
@@ -530,7 +521,7 @@ function getColumnLetter(columnNumber) {
       </FormControl>
 
 </th>
-<th style={{  background: 'white' }}><div className="headers">Gen/Non Gen<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,53)}}></i> </div>
+<th style={{  background: 'white' }}><div className="headers">Gen/Non Gen<i className="ti ti-sort-ascending" onClick={()=>{sortdata(53)}}></i> </div>
 
 <FormControl sx={{ m: 0, width: '100%' }}>
     
@@ -553,7 +544,7 @@ function getColumnLetter(columnNumber) {
       </FormControl>
 
 </th>
-<th style={{  background: 'white' }}><div className="headers">Applicant Status<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,8)}}></i> </div>
+<th style={{  background: 'white' }}><div className="headers">Applicant Status<i className="ti ti-sort-ascending" onClick={()=>{sortdata(8)}}></i> </div>
 
 <FormControl sx={{ m: 0, width: '100%' }}>
     
@@ -578,7 +569,7 @@ function getColumnLetter(columnNumber) {
       </FormControl>
 
 </th>
-<th style={{  background: 'white' }}><div className="headers">CONTACT INFO OF<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,9)}}></i> </div>
+<th style={{  background: 'white' }}><div className="headers">CONTACT INFO OF<i className="ti ti-sort-ascending" onClick={()=>{sortdata(9)}}></i> </div>
 
 <FormControl sx={{ m: 0, width: '100%' }}>
     
@@ -602,21 +593,21 @@ function getColumnLetter(columnNumber) {
         </Select>
       </FormControl>
 
-</th><th style={{  background: 'white' }}><div className="headers">CONTACT PERSON<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,10)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(10,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">EMAIL ID<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,11)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(11,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Domain<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,12)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(12,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">PH. NO.<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,13)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(13,e.target.value)} type='text'></input></th>
-<th className="small" style={{  background: 'white' }}><div className="headers">Pages<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,14)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(14,e.target.value)} type='text'></input></th>
-<th className="small" style={{  background: 'white' }}><div className="headers">Claim<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,15)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(15,e.target.value)} type='text'></input></th>
-<th className="small" style={{  background: 'white' }}><div className="headers">Priority<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,16)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(16,e.target.value)} type='text'></input></th>
-<th className="small" style={{  background: 'white' }}><div className="headers">Drawings<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,17)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(17,e.target.value)} type='text'></input></th>
-<th className="small" style={{  background: 'white' }}><div className="headers">ISR<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,18)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(18,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">REF. NO.<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,19)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(19,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">First Email Date<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,20)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(20,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">FollowUp date<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,21)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(21,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Next Follow Up<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,22)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(22,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Previous Status<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,52)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(52,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Email Status<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,23)}}></i> </div>
+</th><th style={{  background: 'white' }}><div className="headers">CONTACT PERSON<i className="ti ti-sort-ascending" onClick={()=>{sortdata(10)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(10,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">EMAIL ID<i className="ti ti-sort-ascending" onClick={()=>{sortdata(11)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(11,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Domain<i className="ti ti-sort-ascending" onClick={()=>{sortdata(12)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(12,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">PH. NO.<i className="ti ti-sort-ascending" onClick={()=>{sortdata(13)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(13,e.target.value)} type='text'></input></th>
+<th className="small" style={{  background: 'white' }}><div className="headers">Pages<i className="ti ti-sort-ascending" onClick={()=>{sortdata(14)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(14,e.target.value)} type='text'></input></th>
+<th className="small" style={{  background: 'white' }}><div className="headers">Claim<i className="ti ti-sort-ascending" onClick={()=>{sortdata(15)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(15,e.target.value)} type='text'></input></th>
+<th className="small" style={{  background: 'white' }}><div className="headers">Priority<i className="ti ti-sort-ascending" onClick={()=>{sortdata(16)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(16,e.target.value)} type='text'></input></th>
+<th className="small" style={{  background: 'white' }}><div className="headers">Drawings<i className="ti ti-sort-ascending" onClick={()=>{sortdata(17)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(17,e.target.value)} type='text'></input></th>
+<th className="small" style={{  background: 'white' }}><div className="headers">ISR<i className="ti ti-sort-ascending" onClick={()=>{sortdata(18)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(18,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">REF. NO.<i className="ti ti-sort-ascending" onClick={()=>{sortdata(19)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(19,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">First Email Date<i className="ti ti-sort-ascending" onClick={()=>{sortdata(20)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(20,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">FollowUp date<i className="ti ti-sort-ascending" onClick={()=>{sortdata(21)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(21,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Next Follow Up<i className="ti ti-sort-ascending" onClick={()=>{sortdata(22)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(22,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Pct App Status<i className="ti ti-sort-ascending" onClick={()=>{sortdata(52)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(52,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Email Status<i className="ti ti-sort-ascending" onClick={()=>{sortdata(23)}}></i> </div>
 
 <FormControl sx={{ m: 0, width: '100%' }}>
     
@@ -641,7 +632,7 @@ function getColumnLetter(columnNumber) {
       </FormControl>
 
 </th>
-<th style={{  background: 'white' }}><div className="headers">Call Status<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,24)}}></i> </div>
+<th style={{  background: 'white' }}><div className="headers">Call Status<i className="ti ti-sort-ascending" onClick={()=>{sortdata(24)}}></i> </div>
 <FormControl sx={{ m: 0, width: '100%' }}>
     
         <Select
@@ -664,34 +655,34 @@ function getColumnLetter(columnNumber) {
         </Select>
       </FormControl>
 </th>
-<th style={{  background: 'white' }}><div className="headers">Comment<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,25)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(25,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Agent name<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,26)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(26,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Agent Email Id<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,27)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(27,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Agent Domain<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,28)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(28,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Agent Phone<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,29)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(29,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Previous Email Status<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,30)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(30,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Company<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,31)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(31,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">IN<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,32)}}></i> </div><input className="filter"  onKeyUp={(e)=>filterdata(32,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">CA<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,33)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(33,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">CN<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,34)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(34,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">JP<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,35)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(35,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">AU<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,36)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(36,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">BR<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,37)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(37,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">US<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,38)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(38,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">KR<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,39)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(39,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">EP<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,40)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(40,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">RU<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,41)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(41,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">MX<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,42)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(42,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">MY<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,43)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(43,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">PH<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,44)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(44,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">TH<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,45)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(45,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">ID<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,46)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(46,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">NZ<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,47)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(47,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">ZA<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,48)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(48,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">VN<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,49)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(49,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">SG<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,50)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(50,e.target.value)} type='text'></input></th>
-<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">CO<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,51)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(51,e.target.value)} type='text'></input></th>
-<th  style={{  background: 'white' }}><div className="headers">Month <i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,55)}}></i> </div>
+<th style={{  background: 'white' }}><div className="headers">Comment<i className="ti ti-sort-ascending" onClick={()=>{sortdata(25)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(25,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Agent name<i className="ti ti-sort-ascending" onClick={()=>{sortdata(26)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(26,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Agent Email Id<i className="ti ti-sort-ascending" onClick={()=>{sortdata(27)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(27,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Agent Domain<i className="ti ti-sort-ascending" onClick={()=>{sortdata(28)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(28,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Agent Phone<i className="ti ti-sort-ascending" onClick={()=>{sortdata(29)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(29,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Previous Email Status<i className="ti ti-sort-ascending" onClick={()=>{sortdata(30)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(30,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Company<i className="ti ti-sort-ascending" onClick={()=>{sortdata(31)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(31,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">IN<i className="ti ti-sort-ascending" onClick={()=>{sortdata(32)}}></i> </div><input className="filter"  onKeyUp={(e)=>filterdata(32,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">CA<i className="ti ti-sort-ascending" onClick={()=>{sortdata(33)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(33,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">CN<i className="ti ti-sort-ascending" onClick={()=>{sortdata(34)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(34,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">JP<i className="ti ti-sort-ascending" onClick={()=>{sortdata(35)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(35,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">AU<i className="ti ti-sort-ascending" onClick={()=>{sortdata(36)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(36,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">BR<i className="ti ti-sort-ascending" onClick={()=>{sortdata(37)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(37,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">US<i className="ti ti-sort-ascending" onClick={()=>{sortdata(38)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(38,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">KR<i className="ti ti-sort-ascending" onClick={()=>{sortdata(39)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(39,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">EP<i className="ti ti-sort-ascending" onClick={()=>{sortdata(40)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(40,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">RU<i className="ti ti-sort-ascending" onClick={()=>{sortdata(41)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(41,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">MX<i className="ti ti-sort-ascending" onClick={()=>{sortdata(42)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(42,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">MY<i className="ti ti-sort-ascending" onClick={()=>{sortdata(43)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(43,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">PH<i className="ti ti-sort-ascending" onClick={()=>{sortdata(44)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(44,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">TH<i className="ti ti-sort-ascending" onClick={()=>{sortdata(45)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(45,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">ID<i className="ti ti-sort-ascending" onClick={()=>{sortdata(46)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(46,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">NZ<i className="ti ti-sort-ascending" onClick={()=>{sortdata(47)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(47,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">ZA<i className="ti ti-sort-ascending" onClick={()=>{sortdata(48)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(48,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">VN<i className="ti ti-sort-ascending" onClick={()=>{sortdata(49)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(49,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">SG<i className="ti ti-sort-ascending" onClick={()=>{sortdata(50)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(50,e.target.value)} type='text'></input></th>
+<th className={(defaultdata.showcurrencytab ? '' : ' hiddencol')} style={{  background: 'white' }}><div className="headers cost">CO<i className="ti ti-sort-ascending" onClick={()=>{sortdata(51)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(51,e.target.value)} type='text'></input></th>
+<th  style={{  background: 'white' }}><div className="headers">Month <i className="ti ti-sort-ascending" onClick={()=>{sortdata(55)}}></i> </div>
 <FormControl sx={{ m: 0, width: '100%' }}>
     
         <Select
@@ -725,10 +716,10 @@ function getColumnLetter(columnNumber) {
         </Select>
       </FormControl>
 </th>
-<th style={{  background: 'white' }}><div className="headers">Sent on<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,56)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(56,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Cron Status<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,57)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(57,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Assigned<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,58)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(58,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Agent Unique/Dupe<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,61)}}></i> </div>
+<th style={{  background: 'white' }}><div className="headers">Sent on<i className="ti ti-sort-ascending" onClick={()=>{sortdata(56)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(56,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Cron Status<i className="ti ti-sort-ascending" onClick={()=>{sortdata(57)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(57,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Assigned<i className="ti ti-sort-ascending" onClick={()=>{sortdata(58)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(58,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Agent Unique/Dupe<i className="ti ti-sort-ascending" onClick={()=>{sortdata(61)}}></i> </div>
 
 <FormControl sx={{ m: 0, width: '100%' }}>
     
@@ -753,7 +744,7 @@ function getColumnLetter(columnNumber) {
       </FormControl>
 
 </th>
-<th style={{  background: 'white' }}><div className="headers">Agent Gen/Non Gen<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,62)}}></i> </div>
+<th style={{  background: 'white' }}><div className="headers">Agent Gen/Non Gen<i className="ti ti-sort-ascending" onClick={()=>{sortdata(62)}}></i> </div>
 
 <FormControl sx={{ m: 0, width: '100%' }}>
     
@@ -847,7 +838,7 @@ function getColumnLetter(columnNumber) {
       
     />
     </Suspense>
-    <div className="footable-pagination-wrapper text-center fixed"><div className="divider"><span id='current' className="active sheet" onClick={()=>loaddata({...formdata,'sheet':'current'})}>Current</span><span id='statussheet' className={`sheet`} onClick={()=>loaddata({...formdata,'sheet':'statussheet'})}>Status Sheet</span><span className={`sheet`} id='exhausted' onClick={()=>loaddata({...formdata,'sheet':'exhausted'})}>Exhausted</span><span className={`sheet`} id='converted' onClick={()=>loaddata({...formdata,'sheet':'converted'})}>Converted</span><span className={`sheet`} id='pipeline' onClick={()=>loaddata({...formdata,'sheet':'pipeline'})}>Pipeline</span><span className={`sheet`} id='dnc' onClick={()=>loaddata({...formdata,'sheet':'dnc'})}>Dnc</span></div><span className="label label-default"><span className="text-white">Total Filtered Record {valued}</span></span></div>
+    <div className="footable-pagination-wrapper text-center fixed"><div className="divider"></div><span className="label label-default"><span className="text-white">Total Filtered Record {valued}</span></span></div>
     </div>
     </div>
     <Uploadsidebar/>
@@ -857,4 +848,4 @@ function getColumnLetter(columnNumber) {
     )
 }
 
-export default Dashboard;
+export default Statussheet;

@@ -22,12 +22,12 @@ const ResizableColumn2 = ({ width, onResize, children,index,getColumnLetter,type
     };
   
     return (
-      <th className={(type=='cost' ? (costtab ? '' : 'hiddencol') : ' ')}>
-        <div style={{ width }}></div>
+      <th className={`fw-bolder ${(type=='cost' ? (costtab ? '' : 'hiddencol') : ' ')}`}>
+        <div  style={{ width }}></div>
         {getColumnLetter(index+1)}
         <div
           className="resizer"
-          style={{ width: '8px', height: '100%', position: 'absolute', right: '0', top: '0', cursor: 'col-resize', zIndex: '1' }}
+          style={{ width: '20px', height: '100%', position: 'absolute', right: '0', top: '0', cursor: 'col-resize', zIndex: '1' }}
           onMouseDown={handleMouseDown}
         />
       </th>

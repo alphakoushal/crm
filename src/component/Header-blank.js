@@ -55,7 +55,7 @@ window.location.reload();
           <nav className="navbar navbar-expand-lg navbar-light">
             <ul className="navbar-nav quick-links d-none d-lg-flex">
               <li className="nav-item dropdown hover-dd d-none d-lg-block">
-                <a className="nav-link" href="#" data-bs-toggle="dropdown">Dashboard<span className="mt-1"><i className="ti ti-chevron-down"></i></span></a>
+                <Link className="nav-link"  data-bs-toggle="dropdown">Dashboard<span className="mt-1"><i className="ti ti-chevron-down"></i></span></Link>
                 <div className="dropdown-menu dropdown-menu-nav dropdown-menu-animate-up py-0">
                   <div className="row">
                     <div className="col-12">
@@ -111,18 +111,18 @@ window.location.reload();
             </button>
             <div className="collapse navbar-collapse justify-content-end show" id="navbarNav">
               <div className="d-flex align-items-center justify-content-between">
-                <a href="#" className="nav-link d-flex d-lg-none align-items-center justify-content-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobilenavbar" aria-controls="offcanvasWithBothOptions">
+                <Link className="nav-link d-flex d-lg-none align-items-center justify-content-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobilenavbar" aria-controls="offcanvasWithBothOptions">
                   <i className="ti ti-align-justified fs-7"></i>
-                </a>
+                </Link>
                 <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-center">
                   <li onClick={showuserprofile} className="nav-item dropdown">
-                    <a className="nav-link pe-0 show" href="#" id="drop1" data-bs-toggle="dropdown" aria-expanded="true">
+                    <Link className="nav-link pe-0 show" id="drop1" data-bs-toggle="dropdown" aria-expanded="true">
                       <div className="d-flex align-items-center">
                         <div className="user-profile-img">
                           <img src={"../crm/assets/images/profile/"+(auth.gender=='f' ? 'user-2' : 'user-1')+".jpg"} className="rounded-circle" width="35" height="35" alt=""/>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                     <div className="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up user-profile" aria-labelledby="drop1" data-bs-popper="static">
                       <div className="profile-dropdown position-relative" data-simplebar="init"><div className="simplebar-wrapper" style={{"margin": "0px"}}><div className="simplebar-height-auto-observer-wrapper"><div className="simplebar-height-auto-observer"></div></div><div className="simplebar-mask"><div className="simplebar-offset" style={{"right": "0px","bottom": "0px"}}><div className="simplebar-content-wrapper" tabIndex="0" role="region" aria-label="scrollable content" style={{"height": "auto","overflow": "hidden scroll"}}><div className="simplebar-content" style={{"padding": "0px"}}>
                         <div className="py-3 px-7 pb-0">
@@ -139,7 +139,7 @@ window.location.reload();
                           </div>
                         </div>
                         <div className="d-grid py-4 px-7 pt-8">
-                          <a onClick={()=>signout()} className="btn btn-outline-primary"><i  className="ti ti-logout"></i>    Log Out</a>
+                          <Link onClick={()=>signout()} className="btn btn-outline-primary"><i  className="ti ti-logout"></i>    Log Out</Link>
                         </div>
                       </div></div></div></div><div className="simplebar-placeholder" style={{"width":"auto","height":"601px"}}></div></div><div className="simplebar-track simplebar-horizontal" style={{"visibility": "hidden"}}><div className="simplebar-scrollbar" style={{"width": "0px","display": "none"}}></div></div><div className="simplebar-track simplebar-vertical" style={{"visibility": "visible"}}><div className="simplebar-scrollbar" style={{"height": "146px","display": "block","transform": "translate3d(0px, 0px, 0px)"}}></div></div></div>
                     </div>

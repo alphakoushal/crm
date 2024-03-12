@@ -7,15 +7,15 @@ const Login =function()
 {
     const tooastref = useRef(null);
     const navigate =useNavigate();
-    function loginauth()
+    function loginauth(e)
     {
-        
+        e.preventDefault();
         let ecode=document.querySelector('#signin_code').value;let signin_password=document.querySelector('#signin_password').value;
         if(ecode==''){
-            tooastref.current.errors('Please enter Code');
+            tooastref.current.errors('Please enter Employee Code.');
            }
            else if(signin_password==''){
-            tooastref.current.errors('Please enter Password');
+            tooastref.current.errors('Please enter your Password.');
            }
            else
            {
@@ -31,7 +31,7 @@ const Login =function()
                     if(data.data.message)
                     {
                         tooastref.current.errors(data.data.message);
-                navigate("/#dashboard");
+                navigate("/dashboard");
               window.location.reload();
                     }
                     else
@@ -79,7 +79,7 @@ const Login =function()
                       <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
                       <input type="password" className="form-control" id="signin_password"/>
                     </div>
-                    <div className="d-flex align-items-center justify-content-between mb-4">
+                    {/* <div className="d-flex align-items-center justify-content-between mb-4">
                       <div className="form-check">
                         <input className="form-check-input primary" type="checkbox" value="" id="flexCheckChecked" checked/>
                         <label className="form-check-label text-dark" htmlFor="flexCheckChecked">
@@ -87,8 +87,8 @@ const Login =function()
                         </label>
                       </div>
                       <a className="text-primary fw-medium" href="#">Forgot Password ?</a>
-                    </div>
-                    <a onClick={()=>{loginauth()}}href="#" className="btn btn-primary w-100 py-8 mb-4 rounded-2">Sign In</a>
+                    </div> */}
+                    <a onClick={(e)=>{loginauth(e)}} href="#" className="btn btn-primary w-100 py-8 mb-4 rounded-2">Sign In</a>
                     {/* <div className="d-flex align-items-center justify-content-center">
                       <p className="fs-4 mb-0 fw-medium">New to CRM?</p>
                       <a className="text-primary fw-medium ms-2" href="#">Create an account</a>

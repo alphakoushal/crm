@@ -107,9 +107,9 @@ window.location.reload();
       {
           setvalidate((validate)=>({...validate,status:true,message:'Add Applications'}));
       }
-      else if(commenttext=='' || typeof(commenttext)=='undefined')
+      else if((commenttext=='' || typeof(commenttext)=='undefined') && status!='2')
       {
-          setvalidate((validate)=>({...validate,status:true,message:a}));
+          setvalidate((validate)=>({...validate,status:true,message:'Add Description'}));
       }
       else
       {
@@ -124,7 +124,7 @@ clientObject[e] = {
   "date": commentdate,
   "status": status,
   "addedby":a.options[a.selectedIndex].text,
-  "comment": commenttext,
+  "comment": (status=='2' ? 'failed' : commenttext),
   "domain":getdata[0][12],//document.querySelector(`.appno[value='${e}']`).closest('tr').querySelectorAll('td')[13].innerText,
   "email":getdata[0][11],//document.querySelector(`.appno[value='${e}']`).closest('tr').querySelectorAll('td')[12].innerText,
   "status_type": type
@@ -141,7 +141,7 @@ clientObject[e] = {
     {
       setvalidate((validate)=>({...validate,inprocess:true,loader:'block',loadermessage:'Submitting'}));
    let cstatus= await commentprocess.updatecomments(salesdata).then((response)=>{return response});
-   if (cstatus.data.success) { setvalidate((prev)=>({ ...prev, status: true,inprocess:false, message: cstatus.data.message,color:'success',icon:'success' }));
+   if (cstatus.data.success) { setvalidate((prev)=>({ ...prev,loader:'hide',loadermessage:'Submit', status: true,inprocess:false, message: cstatus.data.message,color:'success',icon:'success' }));
    setOpen({status:false,type:'',title:''}); 
    if(type=='email_comment_react')
    {
@@ -172,7 +172,8 @@ clientObject[e] = {
   }
     }
 
-    const showuserprofile = () =>{
+    const showuserprofile = (e) =>{
+      e.preventDefault();
       let ps=document.querySelector('.user-profile');
       (ps.classList.contains('show') ? ps.classList.remove('show') : ps.classList.add('show'));
     }
@@ -280,7 +281,7 @@ clientObject[e] = {
           <nav className="navbar navbar-expand-lg navbar-light">
             <ul className="navbar-nav quick-links d-none d-lg-flex">
               <li className="nav-item dropdown hover-dd d-none d-lg-block">
-                <a className="nav-link" href="#" data-bs-toggle="dropdown">Dashboard<span className="mt-1"><i className="ti ti-chevron-down"></i></span></a>
+                <Link className="nav-link" data-bs-toggle="dropdown">Dashboard<span className="mt-1"><i className="ti ti-chevron-down"></i></span></Link>
                 <div className="dropdown-menu dropdown-menu-nav dropdown-menu-animate-up py-0">
                   <div className="row">
                     <div className="col-12">
@@ -324,7 +325,7 @@ clientObject[e] = {
                 </div>
               </li>
               <li className="nav-item dropdown hover-dd d-none d-lg-block">
-                <a className="nav-link" href="#" data-bs-toggle="dropdown">Comments<span className="mt-1"><i className="ti ti-chevron-down"></i></span></a>
+                <Link className="nav-link" data-bs-toggle="dropdown">Comments<span className="mt-1"><i className="ti ti-chevron-down"></i></span></Link>
                 <div className="dropdown-menu dropdown-menu-nav dropdown-menu-animate-up py-0">
                   <div className="row">
                     <div className="col-12">
@@ -333,7 +334,7 @@ clientObject[e] = {
                           <div className="row">
                             <div className="col-6">
                               <div className="position-relative">
-                                <a onClick={(e)=>handleClickOpen(e,'email_comment_react','Email Comments')} href="#" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                <Link onClick={(e)=>handleClickOpen(e,'email_comment_react','Email Comments')}  className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div  className="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
                                     <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-dd-chat.svg" alt="" className="img-fluid" width="24" height="24"/>
                                   </div>
@@ -341,8 +342,8 @@ clientObject[e] = {
                                     <h6 className="mb-1 fw-semibold bg-hover-primary"> Email Comment</h6>
                                     <span className="fs-2 d-block text-dark">Add New Email Comment</span>
                                   </div>
-                                </a>
-                                <a onClick={(e)=>handleClickOpen(e,'call_comment_react','Call Comments')} href="#" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                </Link>
+                                <Link onClick={(e)=>handleClickOpen(e,'call_comment_react','Call Comments')} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div  className="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
                                     <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-dd-chat.svg" alt="" className="img-fluid" width="24" height="24"/>
                                   </div>
@@ -350,8 +351,8 @@ clientObject[e] = {
                                     <h6 className="mb-1 fw-semibold bg-hover-primary"> Call Comment</h6>
                                     <span className="fs-2 d-block text-dark">Add New Call Comment</span>
                                   </div>
-                                </a>
-                                <a onClick={(e)=>followboxevent(e)} href="#" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                </Link>
+                                <Link onClick={(e)=>followboxevent(e)} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div  className="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
                                     <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-dd-chat.svg" alt="" className="img-fluid" width="24" height="24"/>
                                   </div>
@@ -359,8 +360,8 @@ clientObject[e] = {
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Followup</h6>
                                     <span className="fs-2 d-block text-dark">Update Followup</span>
                                   </div>
-                                </a>
-                                <a onClick={(e)=>addentry(e)} href="#" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                </Link>
+                                <Link onClick={(e)=>addentry(e)} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div  className="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
                                     <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-dd-chat.svg" alt="" className="img-fluid" width="24" height="24"/>
                                   </div>
@@ -368,7 +369,7 @@ clientObject[e] = {
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Add Application</h6>
                                     <span className="fs-2 d-block text-dark">Add New application</span>
                                   </div>
-                                </a>
+                                </Link>
                               </div>
                             </div>
                           </div>
@@ -390,59 +391,59 @@ clientObject[e] = {
             </button>
             <div className="collapse navbar-collapse justify-content-end show" id="navbarNav">
               <div className="d-flex align-items-center justify-content-between">
-                <a href="#" className="nav-link d-flex d-lg-none align-items-center justify-content-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobilenavbar" aria-controls="offcanvasWithBothOptions">
+                <Link  className="nav-link d-flex d-lg-none align-items-center justify-content-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobilenavbar" aria-controls="offcanvasWithBothOptions">
                   <i className="ti ti-align-justified fs-7"></i>
-                </a>
+                </Link>
                 <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-center">
               <li><input id='totalsending'/></li>
               <li title="Add Dupe Cron Task" onClick={()=>showdupemailbox()} className="nav-item">
-                    <a className="nav-link notify-badge nav-icon-hover" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                    <Link className="nav-link notify-badge nav-icon-hover" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-mail-fast"></i>               
-                    </a>
+                    </Link>
                   </li>
                <li title="Add Cron Task" onClick={()=>showmailbox()} className="nav-item">
-                    <a className="nav-link notify-badge nav-icon-hover" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                    <Link className="nav-link notify-badge nav-icon-hover"data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-mail"></i>               
-                    </a>
+                    </Link>
                   </li>
                   <li title="Cron job status" onClick={()=>showcronbox()} className="nav-item">
-                    <a className="nav-link notify-badge nav-icon-hover" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                    <Link className="nav-link notify-badge nav-icon-hover" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-calendar-time"></i>               
-                    </a>
+                    </Link>
                   </li>
                 <li title="Clear Filter" onClick={()=>clearfilters()} className="nav-item">
-                    <a className="nav-link notify-badge nav-icon-hover" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                    <Link className="nav-link notify-badge nav-icon-hover" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-eraser"></i>               
-                    </a>
+                    </Link>
                   </li>
 
                 <li title="Show currencies" onClick={()=>showcurrencies()} className="nav-item">
-                    <a className="nav-link notify-badge nav-icon-hover" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                    <Link className="nav-link notify-badge nav-icon-hover" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-zoom-money"></i>               
-                    </a>
+                    </Link>
                   </li>
                   <li title="Open sidebar" onClick={()=>showsidebar()} className="nav-item">
-                    <a className="nav-link notify-badge nav-icon-hover" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                    <Link className="nav-link notify-badge nav-icon-hover" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-menu-2"></i>               
-                    </a>
+                    </Link>
                   </li>
                   <li title="Refresh Data" onClick={()=>refreshdata(formdatas,'hard')} className="nav-item">
-                    <a className="nav-link notify-badge nav-icon-hover" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                    <Link className="nav-link notify-badge nav-icon-hover" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-refresh"></i>               
-                    </a>
+                    </Link>
                   </li>
                   <li className="nav-item">
                     <Link className="nav-link notify-badge nav-icon-hover" to={`https://www.anuation.com/oldcrm/employee/auth/reactauth/export-excel.php?userid=${auth.userid}`}>  <i className="ti ti-cloud-download"></i>  </Link>
 
                   </li>
-                  <li onClick={showuserprofile} className="nav-item dropdown">
-                    <a className="nav-link pe-0 show" href="#" id="drop1" data-bs-toggle="dropdown" aria-expanded="true">
+                  <li  className="nav-item dropdown">
+                    <Link onClick={(e)=>{showuserprofile(e)}} className="nav-link pe-0 show" id="drop1" data-bs-toggle="dropdown" aria-expanded="true">
                       <div className="d-flex align-items-center">
                         <div className="user-profile-img">
                           <img src={"../crm/assets/images/profile/"+(auth.gender=='f' ? 'user-2' : 'user-1')+".jpg"} className="rounded-circle" width="35" height="35" alt=""/>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                     <div className="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up user-profile" aria-labelledby="drop1" data-bs-popper="static">
                       <div className="profile-dropdown position-relative" data-simplebar="init"><div className="simplebar-wrapper" style={{"margin": "0px"}}><div className="simplebar-height-auto-observer-wrapper"><div className="simplebar-height-auto-observer"></div></div><div className="simplebar-mask"><div className="simplebar-offset" style={{"right": "0px","bottom": "0px"}}><div className="simplebar-content-wrapper" tabIndex="0" role="region" aria-label="scrollable content" style={{"height": "auto","overflow": "hidden scroll"}}><div className="simplebar-content" style={{"padding": "0px"}}>
                         <div className="py-3 px-7 pb-0">
@@ -459,7 +460,7 @@ clientObject[e] = {
                           </div>
                         </div>
                         <div className="d-grid py-4 px-7 pt-8">
-                          <a onClick={()=>signout()} className="btn btn-outline-primary"><i  className="ti ti-logout"></i>    Log Out</a>
+                          <Link onClick={()=>signout()} className="btn btn-outline-primary"><i  className="ti ti-logout"></i>    Log Out</Link>
                         </div>
                       </div></div></div></div><div className="simplebar-placeholder" style={{"width":"auto","height":"601px"}}></div></div><div className="simplebar-track simplebar-horizontal" style={{"visibility": "hidden"}}><div className="simplebar-scrollbar" style={{"width": "0px","display": "none"}}></div></div><div className="simplebar-track simplebar-vertical" style={{"visibility": "visible"}}><div className="simplebar-scrollbar" style={{"height": "146px","display": "block","transform": "translate3d(0px, 0px, 0px)"}}></div></div></div>
                     </div>

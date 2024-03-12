@@ -1,7 +1,7 @@
 {
   "name": "crm",
   "version": "0.1.0",
-  "homepage": "https://anuation.com/crm/",
+  "homepage": "https://anuation.com/crm/#/portal",
   "private": true,
   "dependencies": {
     "@ckeditor/ckeditor5-basic-styles": "^41.0.0",

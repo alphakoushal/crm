@@ -13,7 +13,8 @@ const TemplateList = () =>{
 
   let clienttype={'1':'Agent','2':'Individual','3':'Both'};
   let templatetype= {'1':'Individual','2':'Dupe'};
-  const sendtome = async(id) =>{
+  const sendtome = async(e,id) =>{
+    e.preventDefault();
     let email  = document.querySelector('#sendtome').value;
     let res =await Uploaddata.sendtome({'email':email,'id':id}).then((resposne)=>{return resposne});
     if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true, message: res.data.message,color:'success',icon:'success' })) }
@@ -79,7 +80,7 @@ settemplate(data.data.data);
                               <p className="mb-0 fs-1"><Link to={"/edit-template?id="+user['id']}>Edit</Link></p>
                             </td>
                             <td>
-                              <p className="mb-0 fs-1"><a href="#" onClick={()=>{sendtome(user['id'])}} className="text-bg-light rounded py-1 px-8 d-flex align-items-center text-decoration-none">
+                              <p className="mb-0 fs-1"><a href="#" onClick={(e)=>{sendtome(e,user['id'])}} className="text-bg-light rounded py-1 px-8 d-flex align-items-center text-decoration-none">
                         <i className="ti ti-message-2 fs-6 text-primary"></i>
                       </a></p>
                             </td>

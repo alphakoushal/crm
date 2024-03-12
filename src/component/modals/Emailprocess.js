@@ -4,6 +4,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Uploaddata from "../../services/uploaddata";
 import Fetchdata from "../../services/fetchdata";
+import moment from "moment";
 import { costs,standard,defaultvalue } from "../../constant/Constant";
 const Emailbox = ({platform,fn,emailsdata,closeemailsendbox,changedata,alldata})=>{
   const [templatelist,settemplate]=useState([]);
@@ -53,9 +54,17 @@ let t=document.querySelector('#templateid');
 let a=document.querySelector('#chooseaccount');
 let title=document.querySelector('#crontitle').value;
 let nextfollowup=document.querySelector('#nextfollowup').value;
+let today =moment().format('YYYY-MM-DD');
+let diff=moment(nextfollowup).diff(moment(today),'days');
+
 if(inprocess.current==true)
 {
   setvalidate((validate)=>({...validate,status:true,message:'In process'}));
+}
+else if(diff<=2)
+{
+  setvalidate((validate)=>({...validate,status:true,message:'Next follow up Date should be greater'}));
+
 }
 else if(t.value=='')
         {

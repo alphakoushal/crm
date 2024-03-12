@@ -78,11 +78,11 @@ const styls="table input[type='text1']{width:100%}th{position:relative}td{"+styl
 return <option key={index} defaultValue={style.fontsize==e ? e : ''} value={e}>{e}</option>;
 })}
 </select>
-<a onClick={()=>wraptext(1)} href="#" className="rounded-2 p-2 customizer-box hover-img d-flex align-items-center gap-2">
+<a onClick={()=>wraptext(1)}  className="rounded-2 p-2 customizer-box hover-img d-flex align-items-center gap-2">
             <i className={"ti ti-text-direction-ltr fs-6 "+(style.wrap.active==1 ? " text-primary" : "text-dark")}></i>
             <span className="text-dark">Wrap</span>
           </a>
-          <a onClick={()=>wraptext(2)} href="#" className="rounded-2 p-2 customizer-box hover-img d-flex align-items-center gap-2">
+          <a onClick={()=>wraptext(2)}  className="rounded-2 p-2 customizer-box hover-img d-flex align-items-center gap-2">
             <i className={"ti ti-text-direction-ltr fs-6 "+(style.wrap.active==2 ? "text-primary" : "text-dark")}></i>
             <span className="text-dark">Nowrap</span>
           </a>
