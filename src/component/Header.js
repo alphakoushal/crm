@@ -380,22 +380,25 @@ clientObject[e] = {
                 </div>
               </li>
             </ul> 
-            <div className="d-block d-lg-none">
-              <img src="../crm/assets/images/logos/dark-logo.svg" className="dark-logo" width="180" alt=""/>
-              <img src="../crm/assets/images/logos/light-logo.svg" className="light-logo" width="180" alt="" style={{"display": "none"}}/>
-            </div>
-            <button className="navbar-toggler p-0 border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-              <span className="p-2">
-                <i className="ti ti-dots fs-7"></i>
-              </span>
-            </button>
             <div className="collapse navbar-collapse justify-content-end show" id="navbarNav">
               <div className="d-flex align-items-center justify-content-between">
                 <Link  className="nav-link d-flex d-lg-none align-items-center justify-content-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobilenavbar" aria-controls="offcanvasWithBothOptions">
                   <i className="ti ti-align-justified fs-7"></i>
                 </Link>
                 <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-center">
-              <li><input id='totalsending'/></li>
+              <li>
+              <div class="input-group">
+                      <input type="text" class="form-control" id='totalsending' aria-label="Text input with dropdown button"/>
+                      
+                      <select id='mailtypeaccount' style={{'width':'38%','max-width':'38%'}} className="form-select"><option selected value=''>Choose Column</option><option value='1'>Email-ID</option><option  value='2'>EMAIL-ID2</option></select>
+                    </div>
+              </li>
+                </ul>
+              </div>
+            </div>
+            <div className="collapse justify-content-end show" id="navbarNav">
+              <div className="d-flex align-items-center justify-content-between">
+                <ul className="grid-col navbar-nav flex-row ms-auto align-items-center justify-content-center">
               <li title="Add Dupe Cron Task" onClick={()=>showdupemailbox()} className="nav-item">
                     <Link className="nav-link notify-badge nav-icon-hover" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-mail-fast"></i>               
@@ -411,32 +414,43 @@ clientObject[e] = {
                         <i  className="ti ti-calendar-time"></i>               
                     </Link>
                   </li>
-                <li title="Clear Filter" onClick={()=>clearfilters()} className="nav-item">
+                  <li title="Refresh Data" onClick={()=>refreshdata(formdatas,'hard')} className="nav-item">
+                    <Link className="nav-link notify-badge nav-icon-hover" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                        <i  className="ti ti-refresh"></i>               
+                    </Link>
+                  </li>
+
+                  <li title="Clear Filter" onClick={()=>clearfilters()} className="nav-item">
                     <Link className="nav-link notify-badge nav-icon-hover" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-eraser"></i>               
                     </Link>
                   </li>
-
                 <li title="Show currencies" onClick={()=>showcurrencies()} className="nav-item">
                     <Link className="nav-link notify-badge nav-icon-hover" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-zoom-money"></i>               
                     </Link>
+                  </li>
+
+
+                  <li title="Download file" className="nav-item">
+                    <Link className="nav-link notify-badge nav-icon-hover" to={`https://www.anuation.com/oldcrm/employee/auth/reactauth/export-excel.php?userid=${auth.userid}`}>  <i className="ti ti-cloud-download"></i>  </Link>
+
                   </li>
                   <li title="Open sidebar" onClick={()=>showsidebar()} className="nav-item">
                     <Link className="nav-link notify-badge nav-icon-hover" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-menu-2"></i>               
                     </Link>
                   </li>
-                  <li title="Refresh Data" onClick={()=>refreshdata(formdatas,'hard')} className="nav-item">
-                    <Link className="nav-link notify-badge nav-icon-hover" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-                        <i  className="ti ti-refresh"></i>               
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link notify-badge nav-icon-hover" to={`https://www.anuation.com/oldcrm/employee/auth/reactauth/export-excel.php?userid=${auth.userid}`}>  <i className="ti ti-cloud-download"></i>  </Link>
-
-                  </li>
-                  <li  className="nav-item dropdown">
+                </ul>
+              </div>
+            </div>
+            <div className="collapse justify-content-end show" id="navbarNav">
+              <div className="d-flex align-items-center justify-content-between">
+                <Link  className="nav-link d-flex d-lg-none align-items-center justify-content-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobilenavbar" aria-controls="offcanvasWithBothOptions">
+                  <i className="ti ti-align-justified fs-7"></i>
+                </Link>
+                <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-center">
+                <li  className="nav-item dropdown">
                     <Link onClick={(e)=>{showuserprofile(e)}} className="nav-link pe-0 show" id="drop1" data-bs-toggle="dropdown" aria-expanded="true">
                       <div className="d-flex align-items-center">
                         <div className="user-profile-img">

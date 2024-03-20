@@ -1,4 +1,4 @@
-import axios, { AxiosHeaders } from "axios";
+import axios, { Axios, AxiosHeaders } from "axios";
 
 const API_URL = "https://www.anuation.com/oldcrm/";
 let axiosConfig = { 'content-type': 'application/x-www-form-urlencoded' };
@@ -6,10 +6,16 @@ let axiosConfig = { 'content-type': 'application/x-www-form-urlencoded' };
 
 const fetchdata = (data,signal) => {
   axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
-    return axios.post(API_URL+'employee/auth/reactauth/currentdata',data,{signal}).then((response) => {
+    return axios.post(API_URL+'employee/auth/react-index',data,{signal}).then((response) => {
        return response;
       });
 };
+const fetchdomain = (data) =>{
+  axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
+  return axios.post(API_URL+'employee/auth/react-index',data).then((response)=>{
+    return response;
+  })
+}
 const fetchstatusheetdata = (data,signal) =>{
   axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
   return axios.post(API_URL+'employee/auth/reactauth/fetchstatusheetdata',data,{signal}).then((response)=>{
@@ -30,7 +36,7 @@ return axios.post(API_URL+'employee/auth/reactauth/it-currentdata',data,{signal}
 }
 const freshdata = (data,signal) => {
   axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
-    return axios.post(API_URL+'employee/auth/reactauth/freshdata',data,{signal}).then((response) => {
+    return axios.post(API_URL+'employee/auth/react-index',data,{signal}).then((response) => {
        return response;
       });
 };
@@ -93,7 +99,7 @@ const fetchapp = (data) =>{
   })
 }
 const Fetchdata = {
-  fetchapp,freshdata,fetchdata,fetchcomment,fetchstatusheetdata,fetchitdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchtemp,fetchtemplate
+  fetchapp,fetchdomain,freshdata,fetchdata,fetchcomment,fetchstatusheetdata,fetchitdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchtemp,fetchtemplate
 }
 
 export default Fetchdata;

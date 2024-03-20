@@ -8,6 +8,7 @@ import moment from "moment";
 import { costs,standard,defaultvalue } from "../../constant/Constant";
 const Emailbox = ({platform,fn,emailsdata,closeemailsendbox,changedata,alldata})=>{
   const [templatelist,settemplate]=useState([]);
+  let mailtypeaccount=document.querySelector('#mailtypeaccount').value;
   const inprocess =useRef(false);
   let auth= localStorage.getItem("user"); 
   auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
@@ -31,11 +32,13 @@ const Emailbox = ({platform,fn,emailsdata,closeemailsendbox,changedata,alldata})
         'platform':platform.current,
         'title':title,
         'nextfollowup':nextfollowup,
+        'mailtypeaccount':mailtypeaccount,
         'userid':auth.userid,
         'a':a,
         'totalapp':emailsdata.length,
-        'apps':JSON.stringify(emailsdata.map((val)=>{return {'weblink':val[0],'title':val[1],'email_id':val[11],'agentemail_id':val[27],'deadline_30_month':val[5],'applicant_name':val[7],'application_no':val[2],'contact_person':val[10],'deadline_30_month':val[5],'deadline_31_month':val[6],'incost':costs.IN.apply({'c':'IN','as':val[8],'ci':val[9],'pages':val[14],'claim':val[15],'priority':val[16],'co':val[3],'isa':val[18],'standard':standard})}}))
+        'apps':JSON.stringify(emailsdata.map((val)=>{return {'weblink':val[0],'title':val[1],'email_id':(mailtypeaccount=='2' ? val[27] : val[11]),'agentname':val[26],'agentemail_id':val[27],'deadline_30_month':val[5],'applicant_name':val[7],'application_no':val[2],'contact_person':(mailtypeaccount=='2' ? val[26] : val[10]),'deadline_30_month':val[5],'deadline_31_month':val[6],'incost':costs.IN.apply({'c':'IN','as':val[8],'ci':val[9],'pages':val[14],'claim':val[15],'priority':val[16],'co':val[3],'isa':val[18],'standard':standard})}}))
       }
+     // console.log(formdata);
      return Uploaddata.emailformat(formdata).then((resposne)=>{return resposne});
      }
      
@@ -120,7 +123,7 @@ return (
             <form className="form-horizontal filing-form_data">
             <div className="modal-header d-flex align-items-center">
                                 <h4 className="modal-title" id="myLargeModalLabel">
-                                  Total Filtered Record {emailsdata.length}
+                                  Total {defaultvalue.mailtypeaccount[mailtypeaccount]} Record {emailsdata.length}
                                 </h4>
                                 <button onClick={()=>{fn(false)}} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                               </div>
@@ -138,6 +141,7 @@ return (
  <th><div className="headers">DEADLINE - 30 mth</div></th>
  <th><div className="headers">DEADLINE - 31 mth</div></th>
  <th><div className="headers">Email-id</div></th>
+ <th><div className="headers">Agent Name</div></th>
  <th><div className="headers">Agent Email-id</div></th>
  <th><div className="headers">APPLICANT NAME</div></th>
  <th><div className="headers">Contact Person Name</div></th>
@@ -150,6 +154,7 @@ return (
  <td  className="column-value">{user[5]}</td>
  <td  className="column-value">{user[6]}</td>
  <td  className="column-value">{user[11]}</td>
+ <td  className="column-value">{user[26]}</td>
  <td  className="column-value">{user[27]}</td>
  <td  className="column-value">{user[7]}</td>
  <td  className="column-value">{user[10]}</td>

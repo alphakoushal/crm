@@ -70,6 +70,7 @@ const Dashboard =() =>{
 "anuationuser_uniqueid":auth.userid,
 "accounttype":auth.type,
 "org":auth.org,
+"posttype":"local-current-data",
 "email": "",
 "domain": "",
 "platform":platform.current,
@@ -125,9 +126,10 @@ const changedata =  useCallback ( (data,modal='') =>{
     });
    useEffect(()=>{loaddata(formdata);},[]);
    const showmailbox = () =>{
-    
+   if(document.querySelector('#mailtypeaccount').value!='')
+   {
     setdefaultdata((prev)=>({...prev,opensendmailbox:true}))
-
+   }
   }
   const showdupemailbox = () =>{
     setdefaultdata((prev)=>({...prev,opendupesendmailbox:true}))

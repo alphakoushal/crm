@@ -32049,7 +32049,7 @@ textarea.form-control-lg {
 .w-30 {
     width: 30%!important
 }
-
+.w-185{width:185px}
 .w-40 {
     width: 40%!important
 }
@@ -45838,12 +45838,12 @@ html[dir=rtl] .welcome-bg-img {
 
 .app-header .navbar .navbar-nav .nav-item .nav-link {
     padding: 8px 16px;
-    line-height: 46px;
-    height: 46px;
+    line-height: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     position: relative;
-    font-size: 20px;
+    font-size: 15px;
     z-index: 2
 }
 
@@ -45880,8 +45880,8 @@ html[dir=rtl] .welcome-bg-img {
     left: 50%;
     top: 50%;
     transform: translate(-50%,-50%);
-    height: 40px;
-    width: 40px;
+    height: 23px;
+    width: 23px;
     z-index: -1;
     border-radius: 100px;
     transition: all .3s ease-in-out;
@@ -54453,20 +54453,9 @@ ul {
     border-radius: 12px 12px 0 12px;
 }
 .hiddencol{display:none}#demo-multiple-name,#up-multiple-name,#call-name{padding:0 !important}
-.fixed-table-container{height:91vh;flex-direction: column;} .fixed-table-container .breadcrumb{height:auto}.fixed-table-container .breadcrumb>div{height:100%}
+.fixed-table-container{height:89vh;flex-direction: column;} .fixed-table-container .breadcrumb{height:auto}.fixed-table-container .breadcrumb>div{height:100%}
 .ck-editor ul{padding-left:20px}.resize{top: 0px; right: 0px; width: 5px; position: absolute; cursor: col-resize; user-select: none; height: 62px;}
 td:nth-child(1),th:nth-child(1){position: sticky !important; left: 0; z-index: 1}.divider{position:absolute;left:10px;cursor: pointer;}.divider span.active{background-color: white;font-weight:bold;color:green;} .divider span{color:#fff;padding:0 10px;margin-right: 3px;}input.filter {width: 100%;max-width: 100%;}tr{--bs-table-hover-bg:none}td i {position: absolute;margin-top:4px;}td i:not(.hide)+span{margin-left: 14px;}
-.loader {
-  height: 4px;
-  position: absolute;
-  width: 100%;
-  --c:no-repeat linear-gradient(#6100ee 0 0);
-  background: var(--c),var(--c),#d7b8fc;
-  background-size: 60% 100%;
-  animation: l16 3s infinite;
-}
-@keyframes l16 {
-  0%   {background-position:-150% 0,-150% 0}
-  66%  {background-position: 250% 0,-150% 0}
-  100% {background-position: 250% 0, 250% 0}
-}
+.loader {height: 4px;position: absolute;width: 100%;--c:no-repeat linear-gradient(#6100ee 0 0);background: var(--c),var(--c),#d7b8fc;background-size: 60% 100%;animation: l16 3s infinite;}
+@keyframes l16 {0%   {background-position:-150% 0,-150% 0}66%  {background-position: 250% 0,-150% 0}100% {background-position: 250% 0, 250% 0}}
+.grid-col{display: grid;grid-template-columns: repeat(4, 1fr);}.app-content{max-height:130px;overflow: overlay;}
