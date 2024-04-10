@@ -15,6 +15,10 @@ const Cronlist = ({closecronbox})=>{
     function Loading() {
         return <h2>🌀 Loading...</h2>;
       }
+      const Deletecron = async(id) =>{
+        let auth ={'posttype':'deletecron','id':id};
+let d = await Fetchdata.deletecron(auth).then((response)=>{return response});
+      }
  async function getcrondata(){
     let crond = await Fetchdata.fetchcrondata(auth).then((response)=>{return response});
    // console.log(crondata.data.data.length);
@@ -59,6 +63,7 @@ return (
  <th><div className="headers">Account Name</div></th>
  <th><div className="headers">Schedule On</div></th>
  <th><div className="headers">Status</div></th>
+ <th><div className="headers">Action</div></th>
         </tr>
       )}
       itemContent={(index, user) => (
@@ -94,6 +99,9 @@ return (
                             </td>
                             <td>
                               <span className={`badge fw-semibold py-1 w-85 bg-${(user[3]==user[7] ? 'success' : 'danger')}-subtle text-${(user[3]==user[7] ? 'success' : 'danger')}`}>{(user[3]==user[7] ? 'Completed' : 'Pending')}</span>
+                            </td>
+                            <td>
+                              <span onClick={Deletecron(user[8])} className={`badge fw-semibold py-1 w-85 bg-success-subtle text-success`}>Delete</span>
                             </td>
                             
  </>

@@ -261,7 +261,7 @@ sd(copy);
 }
 else
 {
-  navigator.clipboard.writeText([...new Set(copy.map((item)=>{if(item[index]!='' && item[index]!=null){return  item[index]; } else { return false}}))].toString())
+  navigator.clipboard.writeText([...new Set(copy.map((item)=>{if(item[index]!='' && item[index]!=null){return  "'"+item[index]+"'"; } else { return false}}))].toString())
 }
 }
 const clearfilter =useCallback(()=>

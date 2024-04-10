@@ -24,7 +24,7 @@ function Loading() {
     return <h2>🌀 Loading...</h2>;
   }
    let filtered=[];
-const Dashboard =() =>{
+const Comparedata =() =>{
     const [d,sd]=useState([]); const [d2,gd]=useState([]);
     const [defaultdata,setdefaultdata]=useState({profilebar:{status:false,email:''},opencronbox:false,opendupesendmailbox:false,opensendmailbox:false,sortDown:true,showcurrencytab:false,countrydata:[],agentdupedata:[],dupedata:[],applicantstatusdata:[],cio:[],callstatus:[],emailstatus:[],agentgendata:[],gendata:[],monthdata:[]});
       const [columns, setColumns] = useState([{"width":110,"css":"","type":"","key":"APPLN.NO."},{"width":110,"css":"","type":"","key":"Title"},{"width":110,"css":"","type":"select","key":"COUNTRY"},{"width":110,"css":"","type":"","key":"PRIOTITY DATE"},{"width":110,"css":"","type":"","key":"DEADLINE - 30 mth"},{"width":110,"css":"","type":"","key":"DEADLINE - 31 mth"},{"width":110,"css":"","type":"","key":"APPLICANT NAME"},{"width":110,"css":"","type":"","key":"Unique/Dupe"},{"width":110,"css":"","type":"","key":"Gen/Non Gen"},{"width":110,"css":"","type":"","key":"Applicant Status"},{"width":110,"css":"","type":"","key":"CONTACT INFO OF"},{"width":110,"css":"","type":"","key":"CONTACT PERSON"},{"width":110,"css":"","type":"","key":"EMAIL ID"},{"width":110,"css":"","type":"","key":"Domain"},{"width":110,"css":"","type":"","key":"PH. NO."},{"width":110,"css":"","type":"","key":"Pages"},{"width":110,"css":"","type":"","key":"Claim"},{"width":110,"css":"","type":"","key":"Priority"},{"width":110,"css":"","type":"","key":"Drawings"},{"width":110,"css":"","type":"","key":"ISR"},{"width":110,"css":"","type":"","key":"REF. NO."},{"width":110,"css":"","type":"","key":"First Email Date"},{"width":110,"css":"","type":"","key":"FollowUp date"},{"width":110,"css":"","type":"","key":"Next Follow Up"},{"width":110,"css":"","type":"","key":"Pct App Status"},{"width":110,"css":"","type":"","key":"Email Status"},{"width":110,"css":"","type":"","key":"Call Status"},{"width":110,"css":"","type":"","key":"Comment"},{"width":110,"css":"","type":"","key":"Agent name"},{"width":110,"css":"","type":"","key":"Agent Email Id"},{"width":110,"css":"","type":"","key":"Agent Domain"},{"width":110,"css":"","type":"","key":"Agent Phone"},{"width":110,"css":"","type":"","key":"Previous Email Status"},{"width":110,"css":"","type":"","key":"Company"},{"width":110,"css":"","type":"cost","key":"IN "},{"width":110,"css":"","type":"cost","key":"CA "},{"width":110,"css":"","type":"cost","key":"CN "},{"width":110,"css":"","type":"cost","key":"JP "},{"width":110,"css":"","type":"cost","key":"AU "},{"width":110,"css":"","type":"cost","key":"BR "},{"width":110,"css":"","type":"cost","key":"US "},{"width":110,"css":"","type":"cost","key":"KR "},{"width":110,"css":"","type":"cost","key":"EP "},{"width":110,"css":"","type":"cost","key":"RU "},{"width":110,"css":"","type":"cost","key":"MX "},{"width":110,"css":"","type":"cost","key":"MY "},{"width":110,"css":"","type":"cost","key":"PH "},{"width":110,"css":"","type":"cost","key":"TH "},{"width":110,"css":"","type":"cost","key":"ID "},{"width":110,"css":"","type":"cost","key":"NZ "},{"width":110,"css":"","type":"cost","key":"ZA "},{"width":110,"css":"","type":"cost","key":"VN "},{"width":110,"css":"","type":"cost","key":"SG "},{"width":110,"css":"","type":"cost","key":"CO "},{"width":110,"css":"","type":"","key":"Month"},{"width":110,"css":"","type":"","key":"Sent on"},{"width":110,"css":"","type":"","key":"Cron Status"},{"width":110,"css":"","type":"","key":"Assigned"},{"width":110,"css":"","type":"","key":"Agent Unique/Dupe"},{"width":110,"css":"","type":"","key":"Agent Gen/Non Gen"}]);
@@ -35,20 +35,6 @@ const Dashboard =() =>{
           return newColumns;
         });
       };
-    // const [profilebar,setprofilebar] =useState({status:false,email:''});
-    //const [ciodata,setcio]=useState([]);
-   // const [callstatusdata,setcall]=useState([]);
-  // const [emailstatusdata,setemail]=useState([]);
- // const [monthdata,setmonth]=useState([]);
-  //const [gendata,setgen]=useState([]);
- // const [applicantstatusdata,setapplicant]=useState([]);
- //    const [dupedata,setdupe]=useState([]);
- //    const [countrydata,setcountry]=useState([]);
-   // const [defaultdata.showcurrencytab,setcurrency]=useState(false);
-   //    const [sortDown, setSortDown] = useState(true); 
-    // const [opensendmailbox, setsendmailbox] = useState(false);
-   // const [opendupesendmailbox, setdupesendmailbox] = useState(false);
-   // const [opencronbox, setcronbox] = useState(false);
    const [showeditmodal, updateeditmodal] = useState({state:false,data:{}}); 
     const countries=useRef([]); 
     const processing =useRef(false);
@@ -70,7 +56,7 @@ const Dashboard =() =>{
 "anuationuser_uniqueid":auth.userid,
 "accounttype":auth.type,
 "org":auth.org,
-"posttype":"local-current-data",
+"posttype":"local-compare-data",
 "email": "",
 "domain": "",
 "platform":platform.current,
@@ -105,7 +91,7 @@ const changedata =  useCallback ( (data,modal='') =>{
     processing.current=true;
      let datas={};
         document.querySelector('.ti-refresh').classList.add('rotate');document.querySelector('.body-wrapper1').classList.add('loader');
-        data = await Fetchdata.fetchdata(formdata,signal).then(response=>{return response;}).finally(()=>{document.querySelector('.ti-refresh').classList.remove('rotate');document.querySelector('.body-wrapper1').classList.remove('loader');});
+        data = await Fetchdata.freshdata(formdata,signal).then(response=>{return response;}).finally(()=>{document.querySelector('.ti-refresh').classList.remove('rotate');document.querySelector('.body-wrapper1').classList.remove('loader');});
         if(data.data.success)
         {
           datas =data.data.data;
@@ -126,10 +112,9 @@ const changedata =  useCallback ( (data,modal='') =>{
     });
    useEffect(()=>{loaddata(formdata);},[]);
    const showmailbox = () =>{
-   if(document.querySelector('#mailtypeaccount').value!='')
-   {
+    
     setdefaultdata((prev)=>({...prev,opensendmailbox:true}))
-   }
+
   }
   const showdupemailbox = () =>{
     setdefaultdata((prev)=>({...prev,opendupesendmailbox:true}))
@@ -218,7 +203,7 @@ async function pickvalue(e,i,ni)
     if(e.detail==1)
     {
     document.querySelector('.cell-name').value=document.querySelectorAll('.custom-table table thead tr+tr th')[ni].querySelector('.headers').innerText;
-    document.querySelector('.cell-value').innerHTML=(i=='11' && e.target.tagName=='TD'  ? e.target.getElementsByTagName('span')[0].innerHTML : (i=='2' && e.target.tagName=='TD' ? e.target.getElementsByTagName('a')[0].innerHTML : e.target.innerHTML));
+    document.querySelector('.cell-value').value=(i=='11' && e.target.tagName=='TD'  ? e.target.getElementsByTagName('span')[0].innerHTML : (i=='2' && e.target.tagName=='TD' ? e.target.getElementsByTagName('a')[0].innerHTML : e.target.innerHTML));
     }
     else if(e.detail==2 && i=='11')
     {
@@ -276,7 +261,7 @@ sd(copy);
 }
 else
 {
-  navigator.clipboard.writeText([...new Set(copy.map((item)=>{if(item[index]!='' && item[index]!=null){return  item[index]; } else { return false}}))].toString())
+  navigator.clipboard.writeText([...new Set(copy.map((item)=>{if(item[index]!='' && item[index]!=null){return  "'"+item[index]+"'"; } else { return false}}))].toString())
 }
 }
 const clearfilter =useCallback(()=>
@@ -441,7 +426,7 @@ function getColumnLetter(columnNumber) {
               <input disabled className="form-control cell-name"/>
             </li>
             <li className="col-10" >
-              <pre style={{'height':'40px'}} className="form-control cell-value"></pre>
+              <textarea style={{'height':'40px'}} className="form-control cell-value"></textarea>
             </li>
           </ul>
         <Suspense fallback={<Loading />}>
@@ -840,7 +825,7 @@ function getColumnLetter(columnNumber) {
 <td  onClick={(e)=>{pickvalue(e,52,54)}} className="column-value" style={{  }}>{user[55]}</td>
 <td  onClick={(e)=>{pickvalue(e,53,55)}} className="column-value" style={{  }}>{user[56]}</td>
 <td  onClick={(e)=>{pickvalue(e,54,56)}} className="column-value" style={{  }}>{user[57]}</td>
-<td  onClick={(e)=>{pickvalue(e,55,57)}} className="column-value" style={{  }}>{defaultvalue.username[user[58]]??user[58]}</td>
+<td  onClick={(e)=>{pickvalue(e,55,57)}} className="column-value" style={{  }}>{user[58]}</td>
 <td  onClick={(e)=>{pickvalue(e,56,58)}} className="column-value" style={{  }}>{user[61]}</td>
 <td  onClick={(e)=>{pickvalue(e,57,59)}} className="column-value" style={{  }}>{user[62]}</td>
 
@@ -859,4 +844,4 @@ function getColumnLetter(columnNumber) {
     )
 }
 
-export default Dashboard;
+export default Comparedata;

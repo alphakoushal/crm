@@ -19,8 +19,10 @@ import Addmodal from "./modals/addmodal";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import { defaultvalue } from "../constant/Constant";
+import { useOnlinestatus } from "../services/Online";
 const Header = React.memo(({platform,alldata,changedata,completedata,showmailbox,showdupemailbox,showcronbox,clearfilters,refreshdata,formdatas,showcurrencies}) =>{
   const navigate=useNavigate(); 
+  const isOnline = useOnlinestatus();
   let auth= localStorage.getItem("user"); 
   auth =(auth!='' ? JSON.parse(auth) : '');
   let accounts =(defaultvalue.accounts[auth.userid]!==undefined ? defaultvalue.accounts[auth.userid] :Object.values(defaultvalue.accounts).flat());
@@ -211,6 +213,7 @@ clientObject[e] = {
     <MenuItem value={9}>Dupe</MenuItem>
     <MenuItem value={10}>Exhausted</MenuItem>
     <MenuItem value={12}>Email Sent</MenuItem>
+    <MenuItem value={13}>Not Responsive</MenuItem>
   </Select>
   </> :  
   <>
@@ -454,7 +457,7 @@ clientObject[e] = {
                     <Link onClick={(e)=>{showuserprofile(e)}} className="nav-link pe-0 show" id="drop1" data-bs-toggle="dropdown" aria-expanded="true">
                       <div className="d-flex align-items-center">
                         <div className="user-profile-img">
-                          <img src={"../crm/assets/images/profile/"+(auth.gender=='f' ? 'user-2' : 'user-1')+".jpg"} className="rounded-circle" width="35" height="35" alt=""/>
+                          <img src={"../crm/assets/images/profile/"+(auth.gender=='f' ? 'user-2' : 'user-1')+".jpg"} className={`rounded-circle ${(isOnline ? 'border-green' : 'border-red')}`} width="35" height="35" alt=""/>
                         </div>
                       </div>
                     </Link>
@@ -464,7 +467,7 @@ clientObject[e] = {
                           <h5 className="mb-0 fs-5 fw-semibold">User Profile</h5>
                         </div>
                         <div className="d-flex align-items-center py-9 mx-7 border-bottom">
-                          <img src={"../crm/assets/images/profile/"+(auth.gender=='f' ? 'user-2' : 'user-1')+".jpg"} className="rounded-circle" width="80" height="80" alt=""/>
+                          <img src={"../crm/assets/images/profile/"+(auth.gender=='f' ? 'user-2' : 'user-1')+".jpg"} className={`rounded-circle ${(isOnline ? 'border-green' : 'border-red')}`} width="80" height="80" alt=""/>
                           <div className="ms-3">
                             <h5 className="mb-1 fs-3">{auth?.name}</h5>
                             {/* <span className="mb-1 d-block text-dark">Designer</span> */}

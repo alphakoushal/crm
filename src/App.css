@@ -54451,7 +54451,7 @@ ul {
     line-height: 1.5;
     padding: 12px;
     border-radius: 12px 12px 0 12px;
-}
+}.border-green{border:2px solid green}.border-red{border:2px solid red}
 .hiddencol{display:none}#demo-multiple-name,#up-multiple-name,#call-name{padding:0 !important}
 .fixed-table-container{height:89vh;flex-direction: column;} .fixed-table-container .breadcrumb{height:auto}.fixed-table-container .breadcrumb>div{height:100%}
 .ck-editor ul{padding-left:20px}.resize{top: 0px; right: 0px; width: 5px; position: absolute; cursor: col-resize; user-select: none; height: 62px;}

@@ -98,8 +98,14 @@ const fetchapp = (data) =>{
     return response;
   })
 }
+const deletecron = (data) =>{
+  axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
+  return axios.post(API_URL+'employee/auth/react-index',data).then((response)=>{
+    return response;
+  })
+}
 const Fetchdata = {
-  fetchapp,fetchdomain,freshdata,fetchdata,fetchcomment,fetchstatusheetdata,fetchitdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchtemp,fetchtemplate
+  fetchapp,deletecron,fetchdomain,freshdata,fetchdata,fetchcomment,fetchstatusheetdata,fetchitdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchtemp,fetchtemplate
 }
 
 export default Fetchdata;
