@@ -126,7 +126,7 @@ clientObject[e] = {
   "date": commentdate,
   "status": status,
   "addedby":a.options[a.selectedIndex].text,
-  "comment": (status=='2' ? 'failed' : commenttext),
+  "comment": (status=='2' && type=='email_comment_react' ? 'failed' : commenttext),
   "domain":getdata[0][12],//document.querySelector(`.appno[value='${e}']`).closest('tr').querySelectorAll('td')[13].innerText,
   "email":getdata[0][11],//document.querySelector(`.appno[value='${e}']`).closest('tr').querySelectorAll('td')[12].innerText,
   "status_type": type
@@ -390,10 +390,10 @@ clientObject[e] = {
                 </Link>
                 <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-center">
               <li>
-              <div class="input-group">
-                      <input type="text" class="form-control" id='totalsending' aria-label="Text input with dropdown button"/>
+              <div className="input-group">
+                      <input type="text" className="form-control" id='totalsending' aria-label="Text input with dropdown button"/>
                       
-                      <select id='mailtypeaccount' style={{'width':'38%','max-width':'38%'}} className="form-select"><option selected value=''>Choose Column</option><option value='1'>Email-ID</option><option  value='2'>EMAIL-ID2</option></select>
+                      <select id='mailtypeaccount' style={{'width':'38%','maxWidth':'38%'}} className="form-select"><option selected value=''>Choose Column</option><option value='1'>Email-ID</option><option  value='2'>EMAIL-ID2</option></select>
                     </div>
               </li>
                 </ul>

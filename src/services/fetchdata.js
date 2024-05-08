@@ -1,44 +1,41 @@
-import axios, { Axios, AxiosHeaders } from "axios";
-
-const API_URL = "https://www.anuation.com/oldcrm/";
-let axiosConfig = { 'content-type': 'application/x-www-form-urlencoded' };
-
+import axios from "axios";
+import { API_URL,axiosConfig } from "../constant/Constant";
 
 const fetchdata = (data,signal) => {
   axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
     return axios.post(API_URL+'employee/auth/react-index',data,{signal}).then((response) => {
        return response;
-      });
+      }).catch((error)=> {return {data:{success:false,data:[]}};});
 };
 const fetchdomain = (data) =>{
   axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
   return axios.post(API_URL+'employee/auth/react-index',data).then((response)=>{
     return response;
-  })
+  }).catch((error)=> {return {data:{success:false,data:[]}};})
 }
 const fetchstatusheetdata = (data,signal) =>{
   axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
   return axios.post(API_URL+'employee/auth/reactauth/fetchstatusheetdata',data,{signal}).then((response)=>{
     return response;
-  })
+  }).catch((error)=> {return {data:{success:false,data:[]}};})
 }
 const fetchcomment = (data,signal) =>{
   axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
   return axios.post(API_URL+'employee/auth/reactauth/currentcommentdata',data,signal).then((response)=>{
     return response;
-  });
+  }).catch((error)=> {return {data:{success:false,data:[]}};});
 }
 const fetchitdata =(data,signal) =>{
   axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
 return axios.post(API_URL+'employee/auth/reactauth/it-currentdata',data,{signal}).then((response) =>{
   return response
-})
+}).catch((error)=> {return {data:{success:false,data:[]}};})
 }
 const freshdata = (data,signal) => {
   axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
     return axios.post(API_URL+'employee/auth/react-index',data,{signal}).then((response) => {
        return response;
-      });
+      }).catch((error)=> {return {data:{success:false,data:[]}};});
 };
 const fetchcrondata = (data) =>{
 return axios({

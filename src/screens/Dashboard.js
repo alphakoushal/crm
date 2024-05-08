@@ -26,7 +26,7 @@ function Loading() {
    let filtered=[];
 const Dashboard =() =>{
     const [d,sd]=useState([]); const [d2,gd]=useState([]);
-    const [defaultdata,setdefaultdata]=useState({profilebar:{status:false,email:''},opencronbox:false,opendupesendmailbox:false,opensendmailbox:false,sortDown:true,showcurrencytab:false,countrydata:[],agentdupedata:[],dupedata:[],applicantstatusdata:[],cio:[],callstatus:[],emailstatus:[],agentgendata:[],gendata:[],monthdata:[]});
+    const [defaultdata,setdefaultdata]=useState({totalpages: [] , profilebar:{status:false,email:''},opencronbox:false,opendupesendmailbox:false,opensendmailbox:false,sortDown:true,showcurrencytab:false,countrydata:[],agentdupedata:[],dupedata:[],applicantstatusdata:[],cio:[],callstatus:[],emailstatus:[],agentgendata:[],gendata:[],monthdata:[]});
       const [columns, setColumns] = useState([{"width":110,"css":"","type":"","key":"APPLN.NO."},{"width":110,"css":"","type":"","key":"Title"},{"width":110,"css":"","type":"select","key":"COUNTRY"},{"width":110,"css":"","type":"","key":"PRIOTITY DATE"},{"width":110,"css":"","type":"","key":"DEADLINE - 30 mth"},{"width":110,"css":"","type":"","key":"DEADLINE - 31 mth"},{"width":110,"css":"","type":"","key":"APPLICANT NAME"},{"width":110,"css":"","type":"","key":"Unique/Dupe"},{"width":110,"css":"","type":"","key":"Gen/Non Gen"},{"width":110,"css":"","type":"","key":"Applicant Status"},{"width":110,"css":"","type":"","key":"CONTACT INFO OF"},{"width":110,"css":"","type":"","key":"CONTACT PERSON"},{"width":110,"css":"","type":"","key":"EMAIL ID"},{"width":110,"css":"","type":"","key":"Domain"},{"width":110,"css":"","type":"","key":"PH. NO."},{"width":110,"css":"","type":"","key":"Pages"},{"width":110,"css":"","type":"","key":"Claim"},{"width":110,"css":"","type":"","key":"Priority"},{"width":110,"css":"","type":"","key":"Drawings"},{"width":110,"css":"","type":"","key":"ISR"},{"width":110,"css":"","type":"","key":"REF. NO."},{"width":110,"css":"","type":"","key":"First Email Date"},{"width":110,"css":"","type":"","key":"FollowUp date"},{"width":110,"css":"","type":"","key":"Next Follow Up"},{"width":110,"css":"","type":"","key":"Pct App Status"},{"width":110,"css":"","type":"","key":"Email Status"},{"width":110,"css":"","type":"","key":"Call Status"},{"width":110,"css":"","type":"","key":"Comment"},{"width":110,"css":"","type":"","key":"Agent name"},{"width":110,"css":"","type":"","key":"Agent Email Id"},{"width":110,"css":"","type":"","key":"Agent Domain"},{"width":110,"css":"","type":"","key":"Agent Phone"},{"width":110,"css":"","type":"","key":"Previous Email Status"},{"width":110,"css":"","type":"","key":"Company"},{"width":110,"css":"","type":"cost","key":"IN "},{"width":110,"css":"","type":"cost","key":"CA "},{"width":110,"css":"","type":"cost","key":"CN "},{"width":110,"css":"","type":"cost","key":"JP "},{"width":110,"css":"","type":"cost","key":"AU "},{"width":110,"css":"","type":"cost","key":"BR "},{"width":110,"css":"","type":"cost","key":"US "},{"width":110,"css":"","type":"cost","key":"KR "},{"width":110,"css":"","type":"cost","key":"EP "},{"width":110,"css":"","type":"cost","key":"RU "},{"width":110,"css":"","type":"cost","key":"MX "},{"width":110,"css":"","type":"cost","key":"MY "},{"width":110,"css":"","type":"cost","key":"PH "},{"width":110,"css":"","type":"cost","key":"TH "},{"width":110,"css":"","type":"cost","key":"ID "},{"width":110,"css":"","type":"cost","key":"NZ "},{"width":110,"css":"","type":"cost","key":"ZA "},{"width":110,"css":"","type":"cost","key":"VN "},{"width":110,"css":"","type":"cost","key":"SG "},{"width":110,"css":"","type":"cost","key":"CO "},{"width":110,"css":"","type":"","key":"Month"},{"width":110,"css":"","type":"","key":"Sent on"},{"width":110,"css":"","type":"","key":"Cron Status"},{"width":110,"css":"","type":"","key":"Assigned"},{"width":110,"css":"","type":"","key":"Agent Unique/Dupe"},{"width":110,"css":"","type":"","key":"Agent Gen/Non Gen"}]);
        const handleResize = (index, width) => {
         setColumns(prevColumns => {
@@ -51,6 +51,7 @@ const Dashboard =() =>{
    // const [opencronbox, setcronbox] = useState(false);
    const [showeditmodal, updateeditmodal] = useState({state:false,data:{}}); 
     const countries=useRef([]); 
+    const offset=useRef({limit:0,page:0}); 
     const processing =useRef(false);
     const months=useRef([]); 
     const platform =useRef('anuation');
@@ -70,6 +71,7 @@ const Dashboard =() =>{
 "anuationuser_uniqueid":auth.userid,
 "accounttype":auth.type,
 "org":auth.org,
+"recordlimit":10000,
 "posttype":"local-current-data",
 "email": "",
 "domain": "",
@@ -91,6 +93,28 @@ const changedata =  useCallback ( (data,modal='') =>{
     updateeditmodal((prev)=>({...prev,state:false}));
   }
 })
+const callpages = (e,type) =>{
+  let sheet=document.querySelector('.sheet.active').getAttribute('id');
+ let user=document.querySelector('#username'), pages=document.querySelector('#pages').value, recordlimit =document.querySelector('#recordlimit').value;
+ user = user??{value:auth.userid}
+ console.log(user.value);
+ if (type=='limit')
+ {
+
+   loaddata({...formdata1,sheet:sheet,recordlimit:recordlimit,accounttype:(user.value=='All' ? 2 : 1 ),offset: 1,anuationuser_uniqueid: (user.value=='' ? auth.userid : user.value )});
+ }
+ else
+ {
+    loaddata({...formdata1,sheet:sheet,recordlimit:recordlimit,accounttype:1,offset: (pages=='' ? 1 : pages),anuationuser_uniqueid: (user.value=='' ? auth.userid : user.value )});
+}
+}
+const calluser = (e,type) =>{
+  let sheet=document.querySelector('.sheet.active').getAttribute('id');
+  let user=document.querySelector('#username').value, recordlimit =document.querySelector('#recordlimit').value;
+
+     loaddata({...formdata1,sheet:sheet,recordlimit:recordlimit,accounttype:(user=='All' ? 2 : 1),offset:1,anuationuser_uniqueid:(user=='' ? auth.userid : user)});
+
+ }
    const loaddata =  useCallback  ( async (formdata,refreshmode='') =>
     {
       document.querySelector('.sheet.active').classList.remove('active');
@@ -106,16 +130,19 @@ const changedata =  useCallback ( (data,modal='') =>{
      let datas={};
         document.querySelector('.ti-refresh').classList.add('rotate');document.querySelector('.body-wrapper1').classList.add('loader');
         data = await Fetchdata.fetchdata(formdata,signal).then(response=>{return response;}).finally(()=>{document.querySelector('.ti-refresh').classList.remove('rotate');document.querySelector('.body-wrapper1').classList.remove('loader');});
+      console.log(data.data.success);
         if(data.data.success)
         {
           datas =data.data.data;
           countries.current=data.data.country;
           months.current=data.data.monthdata;
           processing.current=false;
+          offset.current={page:data.data.currentpage,limit:data.data.recordlimit};
+          setdefaultdata((prev)=>({...prev,totalpages: new Array(data.data.totalpage).fill(0).map((_, index) => index + 1)}))
         }
         else
         {
-          processing.current=false;
+          processing.current=false;datas=[];
         }
 
        sd(datas);
@@ -124,7 +151,10 @@ const changedata =  useCallback ( (data,modal='') =>{
         document.querySelector('table').classList.add("table","table-bordered","table-hover");
       
     });
-   useEffect(()=>{loaddata(formdata);},[]);
+   useEffect(()=>{
+
+    loaddata(formdata);
+  },[]);
    const showmailbox = () =>{
    if(document.querySelector('#mailtypeaccount').value!='')
    {
@@ -222,15 +252,15 @@ async function pickvalue(e,i,ni)
     }
     else if(e.detail==2 && i=='11')
     {
-      showprofilesidebar(e,e.target.getElementsByTagName('span')[0].innerHTML,e.target.parentNode.children[8].innerHTML);
+      showprofilesidebar(e,e.target.getElementsByTagName('span')[0].innerHTML,e.target.parentNode.children[9].innerHTML);
       
     }
     else if(e.detail==2 && i=='25')
     {
         let formdata ={
-            "publication_value": e.target.closest('tr').querySelectorAll('td')[0].innerText,
-    "email": e.target.closest('tr').querySelectorAll('td')[10].innerText,
-    "domain": e.target.closest('tr').querySelectorAll('td')[11].innerText,
+            "publication_value": e.target.closest('tr').querySelectorAll('td')[1].innerText,
+    "email": e.target.closest('tr').querySelectorAll('td')[12].innerText,
+    "domain": e.target.closest('tr').querySelectorAll('td')[13].innerText,
     "type": "3"
         }
         const fetchcomment=await Uploaddata.fetchcomment(formdata).then(response=>{return response});
@@ -287,7 +317,7 @@ const clearfilter =useCallback(()=>
         e.value='';
     })
     sd(d2);
-    setdefaultdata({profilebar:{status:false,email:''},opencronbox:false,opendupesendmailbox:false,opensendmailbox:false,sortDown:true,showcurrencytab:false,countrydata:[],agentdupedata:[],dupedata:[],applicantstatusdata:[],cio:[],callstatus:[],emailstatus:[],agentgendata:[],gendata:[],monthdata:[]});
+    setdefaultdata({totalpages:[],profilebar:{status:false,email:''},opencronbox:false,opendupesendmailbox:false,opensendmailbox:false,sortDown:true,showcurrencytab:false,countrydata:[],agentdupedata:[],dupedata:[],applicantstatusdata:[],cio:[],callstatus:[],emailstatus:[],agentgendata:[],gendata:[],monthdata:[]});
     dispatch(userprofileupdate(d2.length));
 },[d]);
 const showcurrency = useCallback(()=>
@@ -451,6 +481,7 @@ function getColumnLetter(columnNumber) {
       fixedHeaderContent={() => (
         <>
          <tr>
+          <th></th>
           {columns.map((column, index) => (
                      <ResizableColumn2
                      key={column.key}
@@ -466,7 +497,7 @@ function getColumnLetter(columnNumber) {
           ))}
         </tr>
         <tr> 
-
+<th><div  className="headers">Sr. no</div></th>
  <th style={{background: 'white', position: 'sticky', left: 0, zindex: 1 }}><div  className="headers">APPLN.NO. <i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,60)}}></i></div><input className="filter" onKeyUp={(e)=>filterdata(2,e.target.value)} type='text'></input></th>
 <th  style={{  background: 'white' }}><div  className="headers">Title <i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,1)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(1,e.target.value)} type='text'></input></th>
 <th  style={{  background: 'white' }}><div className="headers">COUNTRY <i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,3)}}></i> </div>
@@ -783,7 +814,10 @@ function getColumnLetter(columnNumber) {
       )}
       itemContent={(index, user) => (
         <>
-<td onClick={(e)=>{pickvalue(e,2,0)}} className="column-value" style={{ background:user[60], position: 'sticky', left: 0, zIndex: 1 }}><input className='appno' value={user[2]} onClick={(event)=>pushdata(event,user[2])} style={{'position':"absolute",'top':'18px','left':'0'}} type='checkbox'></input><a target="blank" href={"https://patentscope.wipo.int/search/en/detail.jsf?docId="+user[0]}>{user[2]}</a><i onClick={()=>{editinfo(true,user[2])}} style={{'position': 'absolute','top': '1px','right': '5px','background': '#5d87ff','width': '14px','height': '14px','display': 'flex','lineHeight': '14px','borderRadius': '50%','color': 'white','justifyContent': 'center'}} className="ti ti-edit"></i></td>
+        <td >{(offset.current.limit*(offset.current.page-1)) + (index+1)}</td>
+<td onClick={(e)=>{pickvalue(e,2,0)}} className="column-value" style={{ background:user[60], position: 'sticky', left: 0, zIndex: 1 }}>
+{/* <input className='appno' value={user[2]} onClick={(event)=>pushdata(event,user[2])} style={{'position':"absolute",'top':'18px','left':'0'}} type='checkbox'></input> */}
+<a target="blank" href={"https://patentscope.wipo.int/search/en/detail.jsf?docId="+user[0]}>{user[2]}</a><i onClick={()=>{editinfo(true,user[2])}} style={{'position': 'absolute','top': '1px','right': '5px','background': '#5d87ff','width': '14px','height': '14px','display': 'flex','lineHeight': '14px','borderRadius': '50%','color': 'white','justifyContent': 'center'}} className="ti ti-edit"></i></td>
 <td onClick={(e)=>{pickvalue(e,1,1)}} className="column-value" style={{  }}>{user[1]}</td>
 <td onClick={(e)=>{pickvalue(e,3,2)}} className="column-value small" style={{  }}>{user[3]}</td>
 <td onClick={(e)=>{pickvalue(e,4,3)}} className="column-value" style={{  }}>{user[4]}</td>
@@ -849,7 +883,37 @@ function getColumnLetter(columnNumber) {
       
     />
     </Suspense>
-    <div className="footable-pagination-wrapper text-center fixed"><div className="divider"><span id='current' className="active sheet" onClick={()=>loaddata({...formdata,'sheet':'current'})}>Current</span><span id='statussheet' className={`sheet`} onClick={()=>loaddata({...formdata,'sheet':'statussheet'})}>Status Sheet</span><span className={`sheet`} id='exhausted' onClick={()=>loaddata({...formdata,'sheet':'exhausted'})}>Exhausted</span><span className={`sheet`} id='converted' onClick={()=>loaddata({...formdata,'sheet':'converted'})}>Converted</span><span className={`sheet`} id='pipeline' onClick={()=>loaddata({...formdata,'sheet':'pipeline'})}>Pipeline</span><span className={`sheet`} id='dnc' onClick={()=>loaddata({...formdata,'sheet':'dnc'})}>Dnc</span></div><span className="label label-default"><span className="text-white">Total Filtered Record {valued}</span></span></div>
+    <div className="footable-pagination-wrapper text-center fixed d-inline-grid"><div className="divider"><span id='current' className="active sheet" onClick={()=>loaddata({...formdata,'sheet':'current'})}>Current</span><span id='statussheet' className={`sheet`} onClick={()=>loaddata({...formdata,'sheet':'statussheet'})}>Status Sheet</span><span className={`sheet`} id='exhausted' onClick={()=>loaddata({...formdata,'sheet':'exhausted'})}>Exhausted</span><span className={`sheet`} id='converted' onClick={()=>loaddata({...formdata,'sheet':'converted'})}>Converted</span><span className={`sheet`} id='pipeline' onClick={()=>loaddata({...formdata,'sheet':'pipeline'})}>Pipeline</span><span className={`sheet`} id='dnc' onClick={()=>loaddata({...formdata,'sheet':'dnc'})}>Dnc</span></div><span className="label label-default"><span className="text-white">Total Filtered Record {valued}</span></span><div className="divider text-start d-flex">
+    {
+     <>
+      <span>
+      <select className="form-select bg-white height-28 padding-filter" id='recordlimit' onChange={(e)=>{callpages(e,'limit')}}> <option value=''> Limit</option>
+     {
+      [10,100,500,1000,2000,3000,5000,7000,10000].map((item,key)=> <option key={key} value={item}>{item}</option>)
+     }
+      </select></span>
+      {
+      (auth.type=='2') ?
+    <span>
+      <select className="form-select bg-white height-28 padding-filter" id='username' onChange={(e)=>{calluser(e,'username')}}><option value='All'>All User</option>
+      {
+     defaultvalue.usernames.map((item,key) => {
+      return <option key={key} value={item.key} >{item.name}</option>; 
+      })
+      }
+      </select></span>
+      : <></>
+}
+      <span>
+      <select className="form-select bg-white height-28 padding-filter" id='pages' onChange={(e)=>{callpages(e,'pages')}}><option value=''> Select page</option>
+      {
+      defaultdata.totalpages.map((item,key)=>{ return <option key={key} value={item} >{'Page '+item}</option>; })
+      }
+      </select></span>
+    </>
+}
+
+</div></div>
     </div>
     </div>
     <Uploadsidebar/>
