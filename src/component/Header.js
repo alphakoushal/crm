@@ -318,6 +318,15 @@ clientObject[e] = {
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
+                                {auth.type=='2' ? <>
+                                <Link to="/countrylist" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Country List</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                </> : <></>
+                                }
                               </div>
                             </div>
                           </div>

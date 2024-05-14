@@ -101,8 +101,24 @@ const deletecron = (data) =>{
     return response;
   })
 }
+const fetchformula = (data) =>{
+  return axios({
+headers:axiosConfig,
+data: data,
+url:API_URL+'employee/auth/react-index',
+method:'POST'
+  }).then((response)=>{return response;})
+}
+const fetchcountry = (data) =>{
+  return axios({
+headers:axiosConfig,
+data: data,
+url:API_URL+'employee/auth/react-index',
+method:'POST'
+  }).then((response)=>{return response;})
+}
 const Fetchdata = {
-  fetchapp,deletecron,fetchdomain,freshdata,fetchdata,fetchcomment,fetchstatusheetdata,fetchitdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchtemp,fetchtemplate
+  fetchapp,deletecron,fetchformula,fetchcountry,fetchdomain,freshdata,fetchdata,fetchcomment,fetchstatusheetdata,fetchitdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchtemp,fetchtemplate
 }
 
 export default Fetchdata;

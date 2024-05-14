@@ -98,9 +98,16 @@ const updateinfo = function(formdata)
 {
     return axios({method :"POST",data:formdata,url:API_URL+'/employee/auth/',headers:axiosConfig}).then((response)=>{return response});
 }
-
+const uploadformula = (formdata) =>{
+    return axios({
+        method:'POST',
+        headers : axiosConfig,
+        data:formdata,
+        url: "https://www.anuation.com/oldcrm/employee/auth/react-index",
+    }).then(response =>{ return response})
+}
 const Uploaddata = {
-  uploaddata,fetchcomment,assignsheet,updateinfo,addpct,createssheet,updatepct,uploadanalyticdata,emailformat,mailtemplate,sendtome
+  uploaddata,uploadformula,fetchcomment,assignsheet,updateinfo,addpct,createssheet,updatepct,uploadanalyticdata,emailformat,mailtemplate,sendtome
 }
 
 export default Uploaddata;

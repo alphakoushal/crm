@@ -144,7 +144,7 @@
 }
 
 .table-one .h-table p {
-    font-size: 9px;
+    font-size: 9px;padding: 10px 0;
 }
 
 .table-one button.btn.btn-primary {
@@ -173,13 +173,14 @@
     font-weight: 900;
     /* margin: 0 !important; */
 }
-
+.d-flex01{flex-direction:column;margin-right: 1px;}
+.d-flex01 label {text-align: center;width:100%}
 .table-one .inside-btn {
     background: #1e7ffb;
     padding: 4px;
 }
 
-
+.ti.ti-square-rounded-x-filled{position: absolute;right:10px;font-size: 25px;}
 .table-one .inside-btn .btn-info:hover {
     background: #fff;
     color: #000;
@@ -231,4 +232,29 @@ ol {
 /* Adjust the gap between table rows */
 #addRow tr {
     margin-bottom: 10px;
+}
+.h-total p {
+    background: #1e7ffb;
+    color: #fff;
+    font-size: 12px;
+}
+
+.h-total .form-control{
+    padding:0 16px;
+}
+.div_1 {
+    border: 0 !important;
+    background: #0000 !important;
+}
+.h-table-b {
+    margin: 1px;
+    background: #f3f3f3;
+}
+.h-table-b p {
+    background: #1e7ffb;
+    color: #fff;
+    font-size: 12px;
+}
+.h-table-b .form-control{
+    padding:0 16px;
 }

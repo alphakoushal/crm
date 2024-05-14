@@ -11,6 +11,7 @@ import Editemailemplate from "./screens/edittemplate.js";
 import Editcountryformula from "./screens/Edit-country-formula.js";
 import Comparedata from "./screens/compare-existing-data.js";
 import Countrylist from "./screens/formula-country.js";
+import Calculatecost from "./screens/calculate-cost.js";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import './bootstrap-table.min.css';
@@ -23,7 +24,7 @@ function App() {
       {/* basename={process.env.PUBLIC_URL} */}
       <HashRouter basename="/portal" >
 
-        {auth?.userid ? (<Routes path="/" ><Route path='/countrylist' element={<Countrylist/>}></Route><Route path='/comparedata' element={<Comparedata />}></Route><Route path="*" element={<Dashboard />} /><Route path="/dashboard" element={<Dashboard />} /><Route path='/iip-dashboard' element={<IIPDashboard />}></Route><Route path='/it-dashboard' element={<ITDashboard />}></Route><Route path="/freshdata" element={<Freshdata />}></Route><Route path='/analytic' element={<Analytic />}></Route><Route path='/templates' element={<Emailemplate />}></Route><Route path='/templates-list' element={<TemplateList />}></Route><Route path='edit-country-formula' element={<Editcountryformula/>}></Route><Route path='/edit-template' element={<Editemailemplate />}></Route></Routes>)
+        {auth?.userid ? (<Routes path="/" ><Route path='/calculate' element={<Calculatecost/>}></Route><Route path='/countrylist' element={<Countrylist/>}></Route><Route path='/comparedata' element={<Comparedata />}></Route><Route path="*" element={<Dashboard />} /><Route path="/dashboard" element={<Dashboard />} /><Route path='/iip-dashboard' element={<IIPDashboard />}></Route><Route path='/it-dashboard' element={<ITDashboard />}></Route><Route path="/freshdata" element={<Freshdata />}></Route><Route path='/analytic' element={<Analytic />}></Route><Route path='/templates' element={<Emailemplate />}></Route><Route path='/templates-list' element={<TemplateList />}></Route><Route path='edit-country-formula' element={<Editcountryformula/>}></Route><Route path='/edit-template' element={<Editemailemplate />}></Route></Routes>)
           :
           (<Routes><Route path="/login" element={<Login />} /><Route path="/" element={<Login />} /></Routes>)}
 
