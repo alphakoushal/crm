@@ -6,13 +6,15 @@ import Fetchdata from "../services/fetchdata";
 import '../component/style/calcost.css'
 const Calculatecost = () =>{
 let coststage=[{'value':"IP Type Selection"},{'value':"Country Selection"},{'value':"Stages Selection"},{'value':"Detailed Report"}]
-let service = ['Patent','Trademark','Design'];
+let service = ['Patent'];
 let detailservice = ['Filing','Examination','Granting','Annuity'];
 let applicantstatus = ['Micro','Small','Large'];
 let applicantstatusnumber = {'1':'','2':'s','3':'l'};
 let applicantstatusvalue = {'1':'Micro','2':'Small','3':'Large'};
 const [getdata,setdata]=useState([]);
 const [tab,settab]=useState('tab1');
+const [countrytab,setcountrytab]=useState('');
+const [qtab,setqtab]=useState('');
 const [formuladata,setformuladata]=useState({'p':'','c':'','i':'','pr':'','word':20,'as':'','country':[]});
 const updatedata = (k,value) =>{
     setformuladata((prev)=>({...prev,[k]:value}))
@@ -24,18 +26,19 @@ const getcost = (c,s,ser) =>{
         {
         let parts=JSON.parse(item.data);
         s.map((status)=>{
-            console.log(status);
        ser.map((keys)=>{
         if(parts['part'+keys].length>0 && 'part'+keys!='part5')
         {
+
                 cost = cost + returncostoverall(parts['part'+keys],status);
         }
        })
        costs[status]=cost;
-       total = total +cost;
+       total = total + cost;
        cost=0;
     })
     costs['total']=total;
+    total=0;
     }
     })
     return costs;
@@ -43,27 +46,29 @@ const getcost = (c,s,ser) =>{
 const returncostoverall = (parts,s) =>{
     let cost=0;
     parts.map((item,index)=>{
-        if(s!='pro' && s!='trans' && formuladata['p']>item['p'] && item['p']!='' && item[`pc${s}`]!='')
-        {
-        cost = cost + ((formuladata['p']-parseInt(item['p']))*parseInt(item[`pc${s}`]));
-        }
-        if(s!='pro' && s!='trans' && item[`${(s=='' ? 'm' : s)}c`]!='')
+       let t = (s=='' ? 'm' : s);
+        if(s!='pro' && s!='trans' && item[`${(s=='' ? 'm' : s)}c`]!='')// standard cost
         {        
      cost = cost + parseInt(item[`${(s=='' ? 'm' : s)}c`]);
         }
-        if(s!='pro' && s!='trans' && formuladata['c']>item['c'] && item['c']!='' && item[`cc${s}`]!='')
+        if(s!='pro' && s!='trans' && parseInt(formuladata['p'])>parseInt(item['p']) && item['p']!='' && item[`pc${s}`]!='') //page cost
         {
-            cost = cost + ((formuladata['c']-parseInt(item['c']))*parseInt(item[`cc${s}`]));
+        cost = cost + ((parseInt(formuladata['p'])-parseInt(item['p']))*parseInt(item[`pc${s}`]));
         }
-        if(s!='pro' && s!='trans' && formuladata['pr']>item['pr'] && item['pr']!='' && item[`prc${s}`]!='')
+        if(s!='pro' && s!='trans' && parseInt(formuladata['c'])>parseInt(item['c']) && item['c']!='' && item[`cc${s}`]!='') // claim cost
         {
-            cost = cost + ((formuladata['pr']-parseInt(item['pr']))*parseInt(item[`prc${s}`]));
+           cost = cost + ((parseInt(formuladata['c'])-parseInt(item['c']))*parseInt(item[`cc${s}`]));
         }
-        if(s=='pro' && item[`${s}`]!='')
+        if(s!='pro' && s!='trans' && parseInt(formuladata['pr'])>parseInt(item['pr']) && item['pr']!='' && item[`prc${s}`]!='') // priority cost
+        {
+            
+            cost = cost + ((parseInt(formuladata['pr'])-parseInt(item['pr']))*parseInt(item[`prc${s}`]));
+        }
+        if(s=='pro' && item[`${s}`]!='') // pro cost
         {
             cost = cost + parseInt(item[`${s}`]);
         }
-        if(s=='trans' && formuladata['word']!='' && item[`${s}`]!='')
+        if(s=='trans' && formuladata['word']!='' && item[`${s}`]!='') // trans cost
         {
             cost = cost + (parseInt(formuladata['word']) * parseFloat(item[`${s}`]));
         }
@@ -73,12 +78,24 @@ return cost;
 
 const getcountrydata = async() => {
     let fetchcountry=await Fetchdata.fetchcountry({'posttype':'fetchcountry',country:formuladata.country.map((item)=>"'"+item.value+"'").toString()}).then((response)=>{return response});
-    setdata(fetchcountry.data.data);
+    if(fetchcountry.data.success)
+    {
+
+        setdata(fetchcountry.data.data);
+    }
+    else
+    {
+        setdata([]);
+    }
 }
 useEffect(()=>{
 if(tab=='tab4')
 {
-    getcountrydata();
+  if(formuladata.country.length>0)
+  {
+
+      getcountrydata();
+  }
 }
 },[tab])
 const pushvalue = (e,val) =>{
@@ -109,14 +126,37 @@ else
 {
     let nested ={...formuladata};
     nested['country'][cindex]['service'] = nested['country'][cindex]['service'].filter((item,inx)=>item!==index+1);
-
     setformuladata(nested);
 
 }
 }
 const changetab = (tab) =>{
+    if('tab'+tab!='tab4')
+    {
+        setdata([]);
+    }
 settab('tab'+tab);
 }
+const changequotetab = (tab) =>{
+    if(tab==qtab)
+    {
+        setqtab('');
+    }
+    else
+    {
+        setqtab(tab);
+    }
+    }
+const changecountyrtab = (tab) =>{
+    if('tab'+tab==countrytab)
+    {
+        setcountrytab('');
+    }
+    else
+    {
+    setcountrytab('tab'+tab);
+    }
+    }
 return(
         <>
         <div className={"body-wrapper1 custom-table "}>  
@@ -131,8 +171,8 @@ return(
                                     <ul>
                                         {
                                             coststage.map((value,index)=>{
-                                               return <li key={index} class={`step${index+1} checked active`}>
-                                                <a href="#"  class="active-tab">{value.value}</a>
+                                               return <li  class={`step${index+1} checked ${(tab=='tab'+(index+1) ? 'active' : '')}`}>
+                                                <a onClick={()=>{changetab(index+1)}} key={index}   class="active-tab">{value.value}</a>
                                             </li>
                                             })
                                         }
@@ -145,7 +185,7 @@ return(
                                         {
                                             service.map((value,index)=>{
 return <>
-<input type="radio" id={`tab${index}`} name="tab" checked=""/>
+<input type="radio" id={`tab${index}`} name="tab" checked/>
                                         <label for="tab1" class="me-3">{value}</label></>
                                             })
                                         }
@@ -216,25 +256,11 @@ return <>
                                                     </label>
                                                     <div class="col-sm-4">
                                                         <div class="input-group border rounded-1">
-                                                            <input type="text" onChange={(e)=>{updatedata('word',e.target.value)}} class="form-control border-0" placeholder="ISA"/>
+                                                            <input type="text" onChange={(e)=>{updatedata('word',e.target.value)}} class="form-control border-0" placeholder="Total Words"/>
 
                                                         </div>
                                                         <div class="col-sm-3"></div>
                                                     </div>
-                                                </div>
-                                                <div class="mb-4 row align-items-center">
-                                                    <label for="exampleInputText3" class="form-label col-sm-5 col-form-label">Entity</label>
-                                                    <div class="col-sm-4">
-                                                        <select onChange={(e)=>{updatedata('as',e.target.value)}} class="form-select">
-                                                            <option>Choose Your Option</option>
-                                                            {
-                                                                applicantstatus.map((value,index)=>{
-                                                                    return <option key ={index} value={index+1}> {value}</option>
-                                                                })
-                                                            }
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-sm-3"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -277,11 +303,11 @@ return <>
                                                         return <div class="accordion" id="regularAccordionRobots">
                                                             <div class="accordion-item">
                                                                 <h2 id="regularHeadingSix" class="accordion-header">
-                                                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#regularCollapseSix" aria-expanded="true" aria-controls="regularCollapseSix">
+                                                                    <button class="accordion-button" type="button" onClick={()=>{changecountyrtab(index+1)}} data-bs-toggle="collapse" data-bs-target="#regularCollapseSix" aria-expanded="true" aria-controls="regularCollapseSix">
                                                                         {Object.keys(value)[0]}
                                                                     </button>
                                                                 </h2>
-                                                                <div id="regularCollapseSix" class="accordion-collapse collapse show" aria-labelledby="regularHeadingSix" data-bs-parent="#regularAccordionRobots">
+                                                                <div id="regularCollapseSix" class={`accordion-collapse collapse ${countrytab=='tab'+(index+1) ? 'show' : ''}`} aria-labelledby="regularHeadingSix" data-bs-parent="#regularAccordionRobots">
                                                                     <div class="accordion-body p-2">
 
                                                                         <div class="row">
@@ -289,8 +315,8 @@ return <>
                                                                                value[Object.keys(value)[0]].map((val,ind)=>{
                                                                                 return <div class="col-md-3">            
                                                            <div class="form-check me-3 py-2">
-                                                                                <input onChange={(e)=>{pushvalue(e,val.code)}} class="form-check-input" type="checkbox" value={val.code} id="flexCheckDefault"/>
-                                                                                <label class="form-check-label" for="flexCheckDefault">
+                                                                                <input onChange={(e)=>{pushvalue(e,val.code)}} class="form-check-input" type="checkbox" value={val.code} id={`country${val.code}`}/>
+                                                                                <label class="form-check-label" for={`country${val.code}`}>
                                                                                 {val.name}
                                                                                 </label>
                                                                             </div>
@@ -348,11 +374,11 @@ return <>
     formuladata.country.map((countryvalue,countryindex)=>{
         return <div class="accordion-item">
         <h2 id="regularHeadingNine" class="accordion-header">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#regularCollapseNine" aria-expanded="true" aria-controls="regularCollapseNine">
+            <button onClick={(it)=>{changequotetab('tab'+countryvalue.value)}} class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#regularCollapseNine" aria-expanded="true" aria-controls="regularCollapseNine">
                {countryvalue.value}
             </button>
         </h2>
-        <div id="regularCollapseNine" class="accordion-collapse collapse show" aria-labelledby="regularHeadingNine" data-bs-parent="#regularAccordionRobots">
+        <div id="regularCollapseNine" class={`accordion-collapse collapse ${(qtab=='tab'+countryvalue.value ? 'show' : '')}`} aria-labelledby="regularHeadingNine" data-bs-parent="#regularAccordionRobots">
             <div class="accordion-body p-2">
                 <div class="">
                     <div class="div_option">
@@ -374,8 +400,8 @@ return <>
                     {
                         detailservice.map((item,index)=>{
                             return <div class="form-check me-3 py-2">
-                            <input onChange={(e)=>{pushcountryaction(e,countryvalue.value,countryindex,index)}} class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                            <label class="form-check-label" for="flexCheckDefault">
+                            <input onChange={(e)=>{pushcountryaction(e,countryvalue.value,countryindex,index)}} class="form-check-input" type="checkbox" value="" id={`${countryvalue.value}${index}`} />
+                            <label class="form-check-label" for={`${countryvalue.value}${index}`}>
                                 {item}
                             </label>
                         </div>
@@ -410,7 +436,7 @@ return <>
                                             <div class="card-body px-4 py-3">
                                                 <div class="row align-items-center">
                                                     <div class="col-9">
-                                                        <h4 class="fw-semibold mb-8"> Detailed Report</h4>
+                                                        <h4 class="fw-semibold mb-8">  Detailed Report</h4>
                                                         <nav aria-label="breadcrumb">
                                                             <ol class="breadcrumb">
 
@@ -490,13 +516,6 @@ return <>
                                                                     <div class="col-sm-3"></div>
                                                                 </div>
                                                             </div>
-                                                            <div class="mb-4 row align-items-center">
-                                                                <label for="exampleInputText3" class="form-label col-sm-5 col-form-label">Entity</label>
-                                                                <div class="col-sm-4">
-                                                                    <input type="text" class="form-control border-0" value={formuladata.as} disabled=""/>
-                                                                </div>
-                                                                <div class="col-sm-3"></div>
-                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -504,7 +523,7 @@ return <>
                                             <div class="accordion-item">
                                                 <h2 id="regularHeading11" class="accordion-header">
                                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#regularCollapse11" aria-expanded="false" aria-controls="regularCollapse11">
-                                                        Detailed Report
+                                                    Combined Detailed Report
                                                     </button>
                                                 </h2>
                                                 <div id="regularCollapse11" class="accordion-collapse collapse show" aria-labelledby="regularHeading11" data-bs-parent="#regularAccordionRobots" >
@@ -535,23 +554,24 @@ return <>
                                                                 </thead>
                                                                 <tbody>
                                                                     {
+                                                                        (tab=='tab4' && getdata.length>0 ? 
                                                                     formuladata.country.map((item,index)=>{
-                                                                        console.log(item);
+                                                                       
                                                                         let returncost =getcost(item.value,[applicantstatusnumber[item.entity],'pro','trans'],item.service);
                                                                         return <tr>
                                                                         <th scope="row">{item.value}</th>
                                                                         <th scope="row">{applicantstatusvalue[item.entity]}</th>
 
                                                                         <td>{item.service.map((item)=>detailservice[item-1]).toString()}</td>
-                                                                        <td>{returncost[applicantstatusnumber[item.entity]]}</td>
-                                                                        <td>{returncost['pro']}</td>
-                                                                        <td>{returncost['trans']}</td>
+                                                                        <td>{returncost[applicantstatusnumber[item.entity]]??'0'}</td>
+                                                                        <td>{returncost['pro']??'0'}</td>
+                                                                        <td>{returncost['trans']??'0'}</td>
 
-                                                                        <td>{returncost['total']}</td>
+                                                                        <td>{returncost['total']??'0'}</td>
                                                                         <td><a href="#" class="badge bg-warning-subtle text-warning">Detail</a>
                                                                         </td>
                                                                     </tr>
-                                                                    })
+                                                                    }) : <></>)
                                                                     }
 
                                                                 </tbody>
@@ -560,6 +580,65 @@ return <>
                                                     </div>
                                                 </div>
                                             </div>
+                                            {
+    formuladata.country.map((item,index)=>{
+                                            return <div class="accordion-item">
+                                                <h2 id="regularHeading11" class="accordion-header">
+                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#regularCollapse11" aria-expanded="false" aria-controls="regularCollapse11">
+                                                    {item.value} Detailed Report
+                                                    </button>
+                                                </h2>
+                                                <div id="regularCollapse11" class="accordion-collapse collapse show" aria-labelledby="regularHeading11" data-bs-parent="#regularAccordionRobots" >
+
+                                                    <div class="accordion-body pt-0 pb-0 ps-3">
+
+                                                        <div class="table-responsive">
+                                                            <div class="table-id">
+                                                            </div>
+                                                            <div class="table-id">
+                                                            </div>
+                                                            <table class="table mb-0">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th scope="col" class="even-color">Stages</th>
+                                                                        <th scope="col" class="odd-color">Official fee
+                                                                        </th>
+                                                                        <th scope="col" class="even-color">Professional fee
+                                                                        </th>
+                                                                        <th scope="col" class="even-color">Trans fee
+                                                                        </th>
+                                                                        <th scope="col" class="odd-color">Total</th>
+                                                                        <th scope="col" class="even-color">Get Detail
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {
+                                                                        (tab=='tab4' && getdata.length>0 ? 
+                                                                        item.service.map((i,ind)=>{
+                                                                       
+                                                                        let returncost =getcost(item.value,[applicantstatusnumber[item.entity],'pro','trans'],[i]);
+                                                                        return <tr>
+                                                                        <td>{detailservice[i-1]}</td>
+                                                                        <td>{returncost[applicantstatusnumber[item.entity]]??'0'}</td>
+                                                                        <td>{returncost['pro']??'0'}</td>
+                                                                        <td>{returncost['trans']??'0'}</td>
+
+                                                                        <td>{returncost['total']??'0'}</td>
+                                                                        <td><a href="#" class="badge bg-warning-subtle text-warning">Detail</a>
+                                                                        </td>
+                                                                    </tr>
+                                                                    }) : <></>)
+                                                                    }
+
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+    })
+                                            }
                                         </div>
 
                                     </article>

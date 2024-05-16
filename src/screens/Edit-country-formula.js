@@ -48,21 +48,21 @@ useEffect(()=>{
 const returncostoverall = (parts,s) =>{
     let cost=0;
     parts.map((item,index)=>{
-        if(s!='pro' && s!='trans' && count['part5'][0]['p']>item['p'] && item['p']!='' && item[`pc${s}`]!='')
+        if(s!='pro' && s!='trans' && parseInt(count['part5'][0]['p'])>parseInt(item['p']) && item['p']!='' && item[`pc${s}`]!='')
         {
-        cost = cost + ((count['part5'][0]['p']-parseInt(item['p']))*parseInt(item[`pc${s}`]));
+        cost = cost + ((parseInt(count['part5'][0]['p'])-parseInt(item['p']))*parseInt(item[`pc${s}`]));
         }
         if(s!='pro' && s!='trans' && item[`${(s=='' ? 'm' : s)}c`]!='')
         {        
      cost = cost + parseInt(item[`${(s=='' ? 'm' : s)}c`]);
         }
-        if(s!='pro' && s!='trans' && count['part5'][0]['c']>item['c'] && item['c']!='' && item[`cc${s}`]!='')
+        if(s!='pro' && s!='trans' && parseInt(count['part5'][0]['c'])>parseInt(item['c']) && item['c']!='' && item[`cc${s}`]!='')
         {
-            cost = cost + ((count['part5'][0]['c']-parseInt(item['c']))*parseInt(item[`cc${s}`]));
+            cost = cost + ((parseInt(count['part5'][0]['c'])-parseInt(item['c']))*parseInt(item[`cc${s}`]));
         }
-        if(s!='pro' && s!='trans' && count['part5'][0]['pr']>item['pr'] && item['pr']!='' && item[`prc${s}`]!='')
+        if(s!='pro' && s!='trans' && parseInt(count['part5'][0]['pr'])>parseInt(item['pr']) && item['pr']!='' && item[`prc${s}`]!='')
         {
-            cost = cost + ((count['part5'][0]['pr']-parseInt(item['pr']))*parseInt(item[`prc${s}`]));
+            cost = cost + ((parseInt(count['part5'][0]['pr'])-parseInt(item['pr']))*parseInt(item[`prc${s}`]));
         }
         if(s=='pro' && item[`${s}`]!='')
         {
@@ -77,17 +77,17 @@ return cost;
 }
 const returncost = (item,s) => {
     let cost=0;
-if(count['part5'][0]['p']>item['p'] && item['p']!='' && item[`pc${s}`]!='')
+if(parseInt(count['part5'][0]['p'])>parseInt(item['p']) && item['p']!='' && item[`pc${s}`]!='')
 {
-cost = cost + ((count['part5'][0]['p']-parseInt(item['p']))*parseInt(item[`pc${s}`]));
+cost = cost + ((parseInt(count['part5'][0]['p'])-parseInt(item['p']))*parseInt(item[`pc${s}`]));
 }
-if(count['part5'][0]['c']>item['c'] && item['c']!='' && item[`cc${s}`]!='')
+if(parseInt(count['part5'][0]['c'])>parseInt(item['c']) && item['c']!='' && item[`cc${s}`]!='')
 {
-    cost = cost + ((count['part5'][0]['c']-parseInt(item['c']))*parseInt(item[`cc${s}`]));
+    cost = cost + ((parseInt(count['part5'][0]['c'])-parseInt(item['c']))*parseInt(item[`cc${s}`]));
 }
-if(count['part5'][0]['pr']>item['pr'] && item['pr']!='' && item[`prc${s}`]!='')
+if(parseInt(count['part5'][0]['pr'])>parseInt(item['pr']) && item['pr']!='' && item[`prc${s}`]!='')
 {
-    cost = cost + ((count['part5'][0]['pr']-parseInt(item['pr']))*parseInt(item[`prc${s}`]));
+    cost = cost + ((parseInt(count['part5'][0]['pr'])-parseInt(item['pr']))*parseInt(item[`prc${s}`]));
 }
 return cost;
 }
@@ -194,7 +194,7 @@ setcount(prevRows => {
                                                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Page Cost:</label><input className="form-control page-no2" type="text" value={item.pc} onChange={(e)=>{updatevalue('part1','pc',e.target.value,index)}}/></div>
                                                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Claim Cost:</label><input className="form-control page-no2" type="text" value={item.cc} onChange={(e)=>{updatevalue('part1','cc',e.target.value,index)}}/></div>
                                                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Priority Cost:</label><input className="form-control page-no2" type="text" value={item.prc} onChange={(e)=>{updatevalue('part1','prc',e.target.value,index)}}/></div>
-                                                    <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Total:</label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'')}/></div>
+                                                    <div className="d-flex02"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">= &nbsp; </label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'')}/></div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -205,7 +205,7 @@ setcount(prevRows => {
                                                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Page Cost:</label><input className="form-control page-no2" type="text" value={item.pcs} onChange={(e)=>{updatevalue('part1','pcs',e.target.value,index)}}/></div>
                                                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Claim Cost:</label><input className="form-control page-no2" type="text" value={item.ccs} onChange={(e)=>{updatevalue('part1','ccs',e.target.value,index)}}/></div>
                                                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Priority Cost:</label><input className="form-control page-no2" type="text" value={item.prcs} onChange={(e)=>{updatevalue('part1','prcs',e.target.value,index)}}/></div>
-                                                    <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Total:</label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'s')}/></div>
+                                                    <div className="d-flex02"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">= &nbsp; </label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'s')}/></div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -216,7 +216,7 @@ setcount(prevRows => {
                                                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Page Cost:</label><input className="form-control page-no2" type="text" value={item.pcl} onChange={(e)=>{updatevalue('part1','pcl',e.target.value,index)}}/></div>
                                                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Claim Cost:</label><input className="form-control page-no2" type="text" value={item.ccl} onChange={(e)=>{updatevalue('part1','ccl',e.target.value,index)}}/></div>
                                                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Priority Cost:</label><input className="form-control page-no2" type="text" value={item.prcl} onChange={(e)=>{updatevalue('part1','prcl',e.target.value,index)}}/></div>
-                                                    <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Total:</label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'l')}/></div>
+                                                    <div className="d-flex02"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">= &nbsp; </label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'l')}/></div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -349,7 +349,7 @@ return <tr key={index} id="addRow">
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Page Cost:</label><input className="form-control page-no2" type="text" value={item.pc} onChange={(e)=>{updatevalue('part2','pc',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Claim Cost:</label><input className="form-control page-no2" type="text" value={item.cc} onChange={(e)=>{updatevalue('part2','cc',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Priority Cost:</label><input className="form-control page-no2" type="text" value={item.prc} onChange={(e)=>{updatevalue('part2','prc',e.target.value,index)}}/></div>
-                    <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Total:</label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'')}/></div>
+                    <div className="d-flex02"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">= &nbsp; </label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'')}/></div>
                     </div>
                 </div>
             </td>
@@ -360,7 +360,7 @@ return <tr key={index} id="addRow">
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Page Cost:</label><input className="form-control page-no2" type="text" value={item.pcs} onChange={(e)=>{updatevalue('part2','pcs',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Claim Cost:</label><input className="form-control page-no2" type="text" value={item.ccs} onChange={(e)=>{updatevalue('part2','ccs',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Priority Cost:</label><input className="form-control page-no2" type="text" value={item.prcs} onChange={(e)=>{updatevalue('part2','prcs',e.target.value,index)}}/></div>
-                    <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Total:</label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'s')}/></div>
+                    <div className="d-flex02"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">= &nbsp; </label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'s')}/></div>
                     </div>
                 </div>
             </td>
@@ -371,7 +371,7 @@ return <tr key={index} id="addRow">
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Page Cost:</label><input className="form-control page-no2" type="text" value={item.pcl} onChange={(e)=>{updatevalue('part2','pcl',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Claim Cost:</label><input className="form-control page-no2" type="text" value={item.ccl} onChange={(e)=>{updatevalue('part2','ccl',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Priority Cost:</label><input className="form-control page-no2" type="text" value={item.prcl} onChange={(e)=>{updatevalue('part2','prcl',e.target.value,index)}}/></div>
-                    <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Total:</label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'l')}/></div>
+                    <div className="d-flex02"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">= &nbsp; </label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'l')}/></div>
                     </div>
                 </div>
             </td>
@@ -504,7 +504,7 @@ return <tr key={index} id="addRow">
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Page Cost:</label><input className="form-control page-no2" type="text" value={item.pc} onChange={(e)=>{updatevalue('part3','pc',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Claim Cost:</label><input className="form-control page-no2" type="text" value={item.cc} onChange={(e)=>{updatevalue('part3','cc',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Priority Cost:</label><input className="form-control page-no2" type="text" value={item.prc} onChange={(e)=>{updatevalue('part3','prc',e.target.value,index)}}/></div>
-                    <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Total:</label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'')}/></div>
+                    <div className="d-flex02"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">= &nbsp; </label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'')}/></div>
                     </div>
                 </div>
             </td>
@@ -515,7 +515,7 @@ return <tr key={index} id="addRow">
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Page Cost:</label><input className="form-control page-no2" type="text" value={item.pcs} onChange={(e)=>{updatevalue('part3','pcs',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Claim Cost:</label><input className="form-control page-no2" type="text" value={item.ccs} onChange={(e)=>{updatevalue('part3','ccs',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Priority Cost:</label><input className="form-control page-no2" type="text" value={item.prcs} onChange={(e)=>{updatevalue('part3','prcs',e.target.value,index)}}/></div>
-                    <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Total:</label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'s')}/></div>
+                    <div className="d-flex02"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">= &nbsp; </label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'s')}/></div>
                     </div>
                 </div>
             </td>
@@ -526,7 +526,7 @@ return <tr key={index} id="addRow">
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Page Cost:</label><input className="form-control page-no2" type="text" value={item.pcl} onChange={(e)=>{updatevalue('part3','pcl',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Claim Cost:</label><input className="form-control page-no2" type="text" value={item.ccl} onChange={(e)=>{updatevalue('part3','ccl',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Priority Cost:</label><input className="form-control page-no2" type="text" value={item.prcl} onChange={(e)=>{updatevalue('part3','prcl',e.target.value,index)}}/></div>
-                    <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Total:</label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'l')}/></div>
+                    <div className="d-flex02"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">= &nbsp; </label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'l')}/></div>
                     </div>
                 </div>
             </td>
@@ -659,7 +659,7 @@ return <tr key={index} id="addRow">
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Page Cost:</label><input className="form-control page-no2" type="text" value={item.pc} onChange={(e)=>{updatevalue('part4','pc',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Claim Cost:</label><input className="form-control page-no2" type="text" value={item.cc} onChange={(e)=>{updatevalue('part4','cc',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Priority Cost:</label><input className="form-control page-no2" type="text" value={item.prc} onChange={(e)=>{updatevalue('part4','prc',e.target.value,index)}}/></div>
-                    <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Total:</label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'')}/></div>
+                    <div className="d-flex02"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">= &nbsp; </label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'')}/></div>
                     </div>
                 </div>
             </td>
@@ -670,7 +670,7 @@ return <tr key={index} id="addRow">
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Page Cost:</label><input className="form-control page-no2" type="text" value={item.pcs} onChange={(e)=>{updatevalue('part4','pcs',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Claim Cost:</label><input className="form-control page-no2" type="text" value={item.ccs} onChange={(e)=>{updatevalue('part4','ccs',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Priority Cost:</label><input className="form-control page-no2" type="text" value={item.prcs} onChange={(e)=>{updatevalue('part4','prcs',e.target.value,index)}}/></div>
-                    <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Total:</label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'s')}/></div>
+                    <div className="d-flex02"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">= &nbsp; </label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'s')}/></div>
                     </div>
                 </div>
             </td>
@@ -681,7 +681,7 @@ return <tr key={index} id="addRow">
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Page Cost:</label><input className="form-control page-no2" type="text" value={item.pcl} onChange={(e)=>{updatevalue('part4','pcl',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Claim Cost:</label><input className="form-control page-no2" type="text" value={item.ccl} onChange={(e)=>{updatevalue('part4','ccl',e.target.value,index)}}/></div>
                     <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Priority Cost:</label><input className="form-control page-no2" type="text" value={item.prcl} onChange={(e)=>{updatevalue('part4','prcl',e.target.value,index)}}/></div>
-                    <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Total:</label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'l')}/></div>
+                    <div className="d-flex02"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">= &nbsp; </label><input className="form-control page-no2" type="text" disabled="disabled" value={returncost(item,'l')}/></div>
                     </div>
                 </div>
             </td>
