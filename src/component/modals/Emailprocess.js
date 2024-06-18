@@ -180,6 +180,7 @@ return (
                                 <option value="transfer">Transfer</option>
                                 <option value="assigned">Assigned</option> */}
                                 <option value="assigned">Assigned</option>
+                                <option value="transfer">Transfer</option>
                               </select>
                               <select id="chooseaccount" className="form-select">
                               <option value="">Choose Account</option>

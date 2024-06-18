@@ -1,8 +1,10 @@
-import React,{useState,useEffect} from "react";
+import React,{useState,useEffect, useRef} from "react";
 import Toast from "../component/New-toast";
 import { defaultvalue } from "../constant/Constant";
 import Headerblank from "../component/Header-blank";
 import Fetchdata from "../services/fetchdata";
+import Uploaddata from "../services/uploaddata";
+import { block } from 'million/react';
 import '../component/style/calcost.css'
 const Calculatecost = () =>{
 let coststage=[{'value':"IP Type Selection"},{'value':"Country Selection"},{'value':"Stages Selection"},{'value':"Detailed Report"}]
@@ -14,10 +16,24 @@ let applicantstatusvalue = {'1':'Micro','2':'Small','3':'Large'};
 const [getdata,setdata]=useState([]);
 const [tab,settab]=useState('tab1');
 const [countrytab,setcountrytab]=useState('');
+const currenttrans=useRef([]);
+const [currenttrans1,updatecurrenttrans1]=useState([]);
+const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:'',file:''});
 const [qtab,setqtab]=useState('');
-const [formuladata,setformuladata]=useState({'p':'','c':'','i':'','pr':'','word':20,'as':'','country':[]});
+const [formuladata,setformuladata]=useState({'ref':'','appno':'ES2022/070522','applicant':'Koushal sethi','p':'12','c':'12','fl':'ger','i':'ES','pr':'1','word':20,'char':10,'as':'','country':[]});
 const updatedata = (k,value) =>{
     setformuladata((prev)=>({...prev,[k]:value}))
+}
+const createpdf = async () =>{
+    let createpdf = await Uploaddata.createpdf({'data':JSON.stringify(formuladata),'country':JSON.stringify(getdata),'posttype':'createpdf'}).then((response)=>{return response;});
+    if(createpdf.data.success)
+    {
+        setvalidate((prev)=>({...prev,file:createpdf.data.file,status:true,message:`${createpdf.data.message} ${createpdf.data.file}`,color:'success',icon:'success'}))
+    }
+    else
+    {
+    setvalidate((prev)=>({...prev,file:'',status:false,message:createpdf.errors.error,color:'error',icon:'error'}))
+}
 }
 const getcost = (c,s,ser) =>{
     let costs =[];let cost=0;let total=0;
@@ -29,8 +45,10 @@ const getcost = (c,s,ser) =>{
        ser.map((keys)=>{
         if(parts['part'+keys].length>0 && 'part'+keys!='part5')
         {
-
-                cost = cost + returncostoverall(parts['part'+keys],status);
+if(keys==1)
+{
+                cost = cost + returncostoverall(parts['part'+keys],status,('part'+keys));
+}
         }
        })
        costs[status]=cost;
@@ -43,14 +61,50 @@ const getcost = (c,s,ser) =>{
     })
     return costs;
 }
-const returncostoverall = (parts,s) =>{
+const returncostoverall = (parts,s,partkey) =>{
     let cost=0;
+    let filterisa = parts.filter((items) =>  items['i']==formuladata.i );
+    
+    if(partkey=='part1')
+    {
+        parts = filterisa.length>0 ? filterisa : [parts[parts.length-1]];
+        parts.map((item,index)=>{
+            let t = (s=='' ? 'm' : s);
+             if(s!='pro' && s!='trans' && item[`${(s=='' ? 'm' : s)}c`]!='')// standard cost
+             {        
+          cost = cost + parseInt(item[`${(s=='' ? 'm' : s)}c`]);
+             } 
+             if(s!='pro' && s!='trans' && parseInt(formuladata['p'])>parseInt(item['p']) && item['p']!='' && item[`pc${s}`]!='') //page cost
+             {
+             cost = cost + ((parseInt(formuladata['p'])-parseInt(item['p']))*parseInt(item[`pc${s}`]));
+             }
+             if(s!='pro' && s!='trans' && parseInt(formuladata['c'])>parseInt(item['c']) && item['c']!='' && item[`cc${s}`]!='') // claim cost
+             {
+                cost = cost + ((parseInt(formuladata['c'])-parseInt(item['c']))*parseInt(item[`cc${s}`]));
+             }
+             if(s!='pro' && s!='trans' && parseInt(formuladata['pr'])>parseInt(item['pr']) && item['pr']!='' && item[`prc${s}`]!='') // priority cost
+             {
+                 
+                 cost = cost + ((parseInt(formuladata['pr'])-parseInt(item['pr']))*parseInt(item[`prc${s}`]));
+             }
+             if(s=='pro' && item[`${s}`]!='') // pro cost
+             {
+                 cost = cost + parseInt(item[`${s}`]);
+             }
+             if(s=='trans' && formuladata['word']!='' && item[`${s}`]!='') // trans cost
+             {
+                 cost = cost + (parseInt(formuladata['word']) * parseFloat(item[`${s}`]));
+             }
+     })
+    }
+    else
+{
     parts.map((item,index)=>{
        let t = (s=='' ? 'm' : s);
         if(s!='pro' && s!='trans' && item[`${(s=='' ? 'm' : s)}c`]!='')// standard cost
         {        
      cost = cost + parseInt(item[`${(s=='' ? 'm' : s)}c`]);
-        }
+        } 
         if(s!='pro' && s!='trans' && parseInt(formuladata['p'])>parseInt(item['p']) && item['p']!='' && item[`pc${s}`]!='') //page cost
         {
         cost = cost + ((parseInt(formuladata['p'])-parseInt(item['p']))*parseInt(item[`pc${s}`]));
@@ -73,6 +127,7 @@ const returncostoverall = (parts,s) =>{
             cost = cost + (parseInt(formuladata['word']) * parseFloat(item[`${s}`]));
         }
 })
+}
 return cost;
 }
 
@@ -89,6 +144,10 @@ const getcountrydata = async() => {
     }
 }
 useEffect(()=>{
+    currenttrans.current=[];
+})
+useEffect(()=>{
+
 if(tab=='tab4')
 {
   if(formuladata.country.length>0)
@@ -101,7 +160,7 @@ if(tab=='tab4')
 const pushvalue = (e,val) =>{
 if(e.target.checked)
 {
-    setformuladata((prev)=>({...prev,['country']:[...prev.country,{'value':val,'service':[],'entity':''}]})) 
+    setformuladata((prev)=>({...prev,['country']:[...prev.country,{'value':val,'service':[1],'entity':'1'}]})) 
 }
 else
 {
@@ -157,166 +216,230 @@ const changecountyrtab = (tab) =>{
     setcountrytab('tab'+tab);
     }
     }
+    
+    const returntranscost = (from,to,word,chars,pages)=>{
+        let gettranscost=defaultvalue.transcost.filter((item)=>item.from==from && item.to==to);
+        let totalcost=0;
+   if(gettranscost.length>0)
+   {
+    console.log(gettranscost);
+       totalcost =((gettranscost[0].type=='word' ? parseFloat(word) : (gettranscost[0].type=='char' ? parseFloat(chars) : (gettranscost[0].type=='page' ? parseFloat(pages) : parseFloat(word))) ) * parseFloat(gettranscost[0].cost)) + 150;
+       let ob ={'lng':to,'cost':totalcost}
+       console.log(currenttrans.current);
+       let f =currenttrans.current.filter((item)=>item.lng==to);
+       if(f.length>0)
+       {
+        totalcost ='Already Mentioned';
+       }
+       else
+       {
+       currenttrans.current.push(ob);
+       }
+   }
+return totalcost;
+            }
+            
 return(
         <>
         <div className={"body-wrapper1 custom-table "}>  
+        <Toast validate={validate}></Toast>
         <Headerblank></Headerblank>
-        <div class="container">
-            <div class="row">
-                <div class="div_1">
-                    <div class="col-md-12">
-                        <div class="row">
-                            <div class="col-md-2">
-                                <div class="quotation_leftpanel">
+        <div className="container">
+            <div className="row">
+                <div className="div_1">
+                    <div className="col-md-12">
+                        <div className="row">
+                            <div className="col-md-2">
+                                <div className="quotation_leftpanel">
                                     <ul>
                                         {
                                             coststage.map((value,index)=>{
-                                               return <li  class={`step${index+1} checked ${(tab=='tab'+(index+1) ? 'active' : '')}`}>
-                                                <a onClick={()=>{changetab(index+1)}} key={index}   class="active-tab">{value.value}</a>
+                                               return <li key={index}  className={`step${index+1} ${(tab=='tab'+(index+1) ? 'active' : '')}`}>
+                                                <a onClick={()=>{changetab(index+1)}} key={index}   className="active-tab">{value.value}</a>
                                             </li>
                                             })
                                         }
                                     </ul>
                                 </div>
                             </div>
-                            <div class="col-md-10">
-                                <div class="activetab-1 ps-3 pe-3" style={{'display':`${tab=='tab1' ? 'block' : 'none'}`}}>
-                                    <div class="main-radio">
+                            <div className="col-md-10">
+                                <div className="activetab-1 ps-3 pe-3" style={{'display':`${tab=='tab1' ? 'block' : 'none'}`}}>
+                                    <div className="main-radio">
                                         {
                                             service.map((value,index)=>{
 return <>
-<input type="radio" id={`tab${index}`} name="tab" checked/>
-                                        <label for="tab1" class="me-3">{value}</label></>
+<input key={index} type="radio" id={`tab${index}`} name="tab" />
+                                        <label htmlFor="tab1" className="me-3">{value}</label></>
                                             })
                                         }
                                     </div>
-                                    <article class="on">
-                                        <div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-0" >
-                                            <div class="card-body px-4 py-3">
-                                                <div class="row align-items-center">
-                                                    <div class="col-9">
-                                                        <h4 class="fw-semibold mb-8"> Application Information</h4>
+                                    <article className="on">
+                                        <div className="card bg-info-subtle shadow-none position-relative overflow-hidden mb-0" >
+                                            <div className="card-body px-4 py-3">
+                                                <div className="row align-items-center">
+                                                    <div className="col-9">
+                                                        <h4 className="fw-semibold mb-8"> Application Information</h4>
                                                         <nav aria-label="breadcrumb">
-                                                            <ol class="breadcrumb">
-                                                                <li class="breadcrumb-item" aria-current="page" >Get
+                                                            <ol className="breadcrumb">
+                                                                <li className="breadcrumb-item" aria-current="page" >Get
                                                                     Quotation</li>
                                                             </ol>
                                                         </nav>
                                                     </div>
-                                                    <div class="col-3">
-                                                        <div class="text-center mb-n5">
-                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/breadcrumb/ChatBc.png" alt="modernize-img" class="img-fluid mb-n4"/>
+                                                    <div className="col-3">
+                                                        <div className="text-center mb-n5">
+                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/breadcrumb/ChatBc.png" alt="modernize-img" className="img-fluid mb-n4"/>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="card">
+                                        <div className="card">
 
-                                            <div class="card-body">
-                                                <div class="mb-4 row align-items-center">
-                                                    <label for="exampleInputText1" class="form-label col-sm-5 col-form-label">Total Number of
+                                            <div className="card-body row">
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Client Name</label>
+                                                    <div className="col-sm-6">
+                                                        <input type="text" value={formuladata.applicant} onChange={(e)=>{updatedata('applicant',e.target.value)}} className="form-control" placeholder="Client Name"/>
+                                                    </div>
+                                                    <div className="col-sm-3"></div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Patent Application</label>
+                                                    <div className="col-sm-6">
+                                                        <input type="text" value={formuladata.appno} onChange={(e)=>{updatedata('appno',e.target.value)}} className="form-control" placeholder="Patent Application"/>
+                                                    </div>
+                                                    <div className="col-sm-3"></div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Publication Language</label>
+                                                    <div className="col-sm-6">
+                                                        <select  onChange={(e)=>updatedata('fl',e.target.value)} className="form-select w-auto">
+                      <option value=''>Choose Option</option>
+                      {
+                          defaultvalue.filinglang.map((item,index)=>{
+                           return <option key={index} Selected={formuladata['fl']==item.code ? 'Selected' : false} value={item.code}>{item.value}</option>
+
+                        })
+                      }
+                    </select>
+                                                    </div>
+                                                    <div className="col-sm-3"></div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Total Number of
                                                         Pages</label>
-                                                    <div class="col-sm-4">
-                                                        <input type="text" onChange={(e)=>{updatedata('p',e.target.value)}} class="form-control" placeholder="Total Number of Pages"/>
+                                                    <div className="col-sm-6">
+                                                        <input type="text" value={formuladata.p} onChange={(e)=>{updatedata('p',e.target.value)}} className="form-control" placeholder="Total Number of Pages"/>
                                                     </div>
-                                                    <div class="col-sm-3"></div>
+                                                    <div className="col-sm-3"></div>
                                                 </div>
-                                                <div class="mb-4 row align-items-center">
-                                                    <label for="exampleInputText2" class="form-label col-sm-5 col-form-label">Total Number of
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText2" className="form-label col-sm-6 col-form-label">Total Number of
                                                         Claims</label>
-                                                    <div class="col-sm-4">
-                                                        <input type="text" onChange={(e)=>{updatedata('c',e.target.value)}} class="form-control" placeholder="Total Number of Claims"/>
+                                                    <div className="col-sm-6">
+                                                        <input type="text" value={formuladata.c} onChange={(e)=>{updatedata('c',e.target.value)}} className="form-control" placeholder="Total Number of Claims"/>
                                                     </div>
-                                                    <div class="col-sm-3"></div>
+                                                    <div className="col-sm-3"></div>
                                                 </div>
-                                                <div class="mb-4 row align-items-center">
-                                                    <label for="exampleInputText30" class="form-label col-sm-5 col-form-label">Priority</label>
-                                                    <div class="col-sm-4">
-                                                        <div class="input-group border rounded-1">
-                                                            <input type="text" onChange={(e)=>{updatedata('pr',e.target.value)}} class="form-control border-0" placeholder="Priority"/>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">Priority</label>
+                                                    <div className="col-sm-6">
+                                                        <div className="input-group border rounded-1">
+                                                            <input type="text" value={formuladata.pr} onChange={(e)=>{updatedata('pr',e.target.value)}} className="form-control border-0" placeholder="Priority"/>
 
                                                         </div>
-                                                        <div class="col-sm-3"></div>
+                                                        <div className="col-sm-3"></div>
                                                     </div>
                                                 </div>
-                                                <div class="mb-4 row align-items-center">
-                                                    <label for="exampleInputText30" class="form-label col-sm-5 col-form-label">ISA
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">ISA
                                                     </label>
-                                                    <div class="col-sm-4">
-                                                        <div class="input-group border rounded-1">
-                                                            <input type="text" onChange={(e)=>{updatedata('i',e.target.value)}} class="form-control border-0" placeholder="ISA"/>
+                                                    <div className="col-sm-6">
+                                                        <div className="input-group border rounded-1">
+                                                            <input type="text" value={formuladata.i} onChange={(e)=>{updatedata('i',e.target.value)}} className="form-control border-0" placeholder="ISA"/>
 
                                                         </div>
-                                                        <div class="col-sm-3"></div>
+                                                        <div className="col-sm-3"></div>
                                                     </div>
                                                 </div>
-                                                <div class="mb-4 row align-items-center">
-                                                    <label for="exampleInputText30" class="form-label col-sm-5 col-form-label">Total words
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">Total words
                                                     </label>
-                                                    <div class="col-sm-4">
-                                                        <div class="input-group border rounded-1">
-                                                            <input type="text" onChange={(e)=>{updatedata('word',e.target.value)}} class="form-control border-0" placeholder="Total Words"/>
+                                                    <div className="col-sm-6">
+                                                        <div className="input-group border rounded-1">
+                                                            <input type="text" value={formuladata.word} onChange={(e)=>{updatedata('word',e.target.value)}} className="form-control border-0" placeholder="Total Words"/>
 
                                                         </div>
-                                                        <div class="col-sm-3"></div>
+                                                        <div className="col-sm-3"></div>
+                                                    </div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">Total Character
+                                                    </label>
+                                                    <div className="col-sm-6">
+                                                        <div className="input-group border rounded-1">
+                                                            <input type="text" value={formuladata.char} onChange={(e)=>{updatedata('char',e.target.value)}} className="form-control border-0" placeholder="Total Character"/>
+
+                                                        </div>
+                                                        <div className="col-sm-3"></div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </article>
-                                    <div class="mt-3">
-                                        <button class="btn btn-primary float-end next-btn" onClick={()=>{changetab('2')}}>Next</button>
+                                    <div className="mt-3">
+                                        <button className="btn btn-primary float-end next-btn" onClick={()=>{changetab('2')}}>Next</button>
                                     </div>
                                 </div>
                                 
-                                <div class="activetab-2  ps-3 pe-3" style={{'display':`${tab=='tab2' ? 'block' : 'none'}`}}>
-                                    <article class="on mt-0">
-                                        <div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-0" >
+                                <div className="activetab-2  ps-3 pe-3" style={{'display':`${tab=='tab2' ? 'block' : 'none'}`}}>
+                                    <article className="on mt-0">
+                                        <div className="card bg-info-subtle shadow-none position-relative overflow-hidden mb-0" >
 
-                                            <div class="card-body px-4 py-3">
-                                                <div class="row align-items-center">
-                                                    <div class="col-9">
-                                                        <h4 class="fw-semibold mb-8"> Country Selection</h4>
+                                            <div className="card-body px-4 py-3">
+                                                <div className="row align-items-center">
+                                                    <div className="col-9">
+                                                        <h4 className="fw-semibold mb-8"> Country Selection</h4>
                                                         <nav aria-label="breadcrumb">
-                                                            <ol class="breadcrumb" style={{"display": "flex","align-items": "center"}}>
+                                                            <ol className="breadcrumb" style={{"display": "flex","alignItems": "center"}}>
 
-                                                                <li class="breadcrumb-item" aria-current="page">Get
+                                                                <li className="breadcrumb-item" aria-current="page">Get
                                                                     Quotation</li>
                                                             </ol>
                                                         </nav>
                                                     </div>
-                                                    <div class="col-3">
-                                                        <div class="text-center mb-n5">
-                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/breadcrumb/ChatBc.png" alt="modernize-img" class="img-fluid mb-n4"/>
+                                                    <div className="col-3">
+                                                        <div className="text-center mb-n5">
+                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/breadcrumb/ChatBc.png" alt="modernize-img" className="img-fluid mb-n4"/>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="card">
-                                            <div class="card-body p-0">
-                                                <div class="row">
-                                                    <div class="col-md-12">
+                                        <div className="card">
+                                            <div className="card-body p-0">
+                                                <div className="row">
+                                                    <div className="col-md-12">
                                                         {
                                                             defaultvalue.continent_country.map((value,index)=>{
-                                                        return <div class="accordion" id="regularAccordionRobots">
-                                                            <div class="accordion-item">
-                                                                <h2 id="regularHeadingSix" class="accordion-header">
-                                                                    <button class="accordion-button" type="button" onClick={()=>{changecountyrtab(index+1)}} data-bs-toggle="collapse" data-bs-target="#regularCollapseSix" aria-expanded="true" aria-controls="regularCollapseSix">
+                                                        return <div key={index} className="accordion" id="regularAccordionRobots">
+                                                            <div className="accordion-item">
+                                                                <h2 id="regularHeadingSix" className="accordion-header">
+                                                                    <button className="accordion-button" type="button" onClick={()=>{changecountyrtab(index+1)}} data-bs-toggle="collapse" data-bs-target="#regularCollapseSix" aria-expanded="true" aria-controls="regularCollapseSix">
                                                                         {Object.keys(value)[0]}
                                                                     </button>
                                                                 </h2>
-                                                                <div id="regularCollapseSix" class={`accordion-collapse collapse ${countrytab=='tab'+(index+1) ? 'show' : ''}`} aria-labelledby="regularHeadingSix" data-bs-parent="#regularAccordionRobots">
-                                                                    <div class="accordion-body p-2">
+                                                                <div id="regularCollapseSix" className={`accordion-collapse collapse ${countrytab=='tab'+(index+1) ? 'show' : ''}`} aria-labelledby="regularHeadingSix" data-bs-parent="#regularAccordionRobots">
+                                                                    <div className="accordion-body p-2">
 
-                                                                        <div class="row">
+                                                                        <div className="row">
                                                                             {
                                                                                value[Object.keys(value)[0]].map((val,ind)=>{
-                                                                                return <div class="col-md-3">            
-                                                           <div class="form-check me-3 py-2">
-                                                                                <input onChange={(e)=>{pushvalue(e,val.code)}} class="form-check-input" type="checkbox" value={val.code} id={`country${val.code}`}/>
-                                                                                <label class="form-check-label" for={`country${val.code}`}>
+                                                                                return <div key={ind} className="col-md-3">            
+                                                           <div className="form-check me-3 py-2">
+                                                                                <input onChange={(e)=>{pushvalue(e,val.code)}} className="form-check-input" type="checkbox" value={val.code} id={`country${val.code}`}/>
+                                                                                <label className="form-check-label" htmlFor={`country${val.code}`}>
                                                                                 {val.name}
                                                                                 </label>
                                                                             </div>
@@ -337,71 +460,71 @@ return <>
                                             </div>
                                         </div>
                                     </article>
-                                    <div class="mt-3">
-                                        <button class="btn btn-primary float-end next-btn" onClick={()=>{changetab('3')}}>Next</button>
-                                        <button class="btn bg-danger-subtle text-danger float-start back-btn" onClick={()=>{changetab('1')}}>Previous</button>
+                                    <div className="mt-3">
+                                        <button className="btn btn-primary float-end next-btn" onClick={()=>{changetab('3')}}>Next</button>
+                                        <button className="btn bg-danger-subtle text-danger float-start back-btn" onClick={()=>{changetab('1')}}>Previous</button>
                                     </div>
                                 </div>
 
-                                <div class="activetab-3  ps-3 pe-3" style={{'display':`${tab=='tab3' ? 'block' : 'none'}`}}>
-                                    <article class="on mt-0">
+                                <div className="activetab-3  ps-3 pe-3" style={{'display':`${tab=='tab3' ? 'block' : 'none'}`}}>
+                                    <article className="on mt-0">
 
-                                        <div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-0" >
-                                            <div class="card-body px-4 py-3">
-                                                <div class="row align-items-center">
-                                                    <div class="col-9">
-                                                        <h4 class="fw-semibold mb-8"> Stages Selection</h4>
+                                        <div className="card bg-info-subtle shadow-none position-relative overflow-hidden mb-0" >
+                                            <div className="card-body px-4 py-3">
+                                                <div className="row align-items-center">
+                                                    <div className="col-9">
+                                                        <h4 className="fw-semibold mb-8"> Stages Selection</h4>
                                                         <nav aria-label="breadcrumb">
-                                                            <ol class="breadcrumb">
+                                                            <ol className="breadcrumb">
 
-                                                                <li class="breadcrumb-item" aria-current="page" >Get
+                                                                <li className="breadcrumb-item" aria-current="page" >Get
                                                                     Quotation</li>
                                                             </ol>
                                                         </nav>
                                                     </div>
-                                                    <div class="col-3">
-                                                        <div class="text-center mb-n5">
-                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/breadcrumb/ChatBc.png" alt="modernize-img" class="img-fluid mb-n4"/>
+                                                    <div className="col-3">
+                                                        <div className="text-center mb-n5">
+                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/breadcrumb/ChatBc.png" alt="modernize-img" className="img-fluid mb-n4"/>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="accordion" id="regularAccordionRobots">
+                                        <div className="accordion" id="regularAccordionRobots">
 
 {
     formuladata.country.map((countryvalue,countryindex)=>{
-        return <div class="accordion-item">
-        <h2 id="regularHeadingNine" class="accordion-header">
-            <button onClick={(it)=>{changequotetab('tab'+countryvalue.value)}} class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#regularCollapseNine" aria-expanded="true" aria-controls="regularCollapseNine">
-               {countryvalue.value}
+        return <div key={countryindex} className="accordion-item">
+        <h2 id="regularHeadingNine" className="accordion-header">
+            <button onClick={(it)=>{changequotetab('tab'+countryvalue.value)}} className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#regularCollapseNine" aria-expanded="true" aria-controls="regularCollapseNine">
+               {defaultvalue.countriescode[countryvalue.value].name}
             </button>
         </h2>
-        <div id="regularCollapseNine" class={`accordion-collapse collapse ${(qtab=='tab'+countryvalue.value ? 'show' : '')}`} aria-labelledby="regularHeadingNine" data-bs-parent="#regularAccordionRobots">
-            <div class="accordion-body p-2">
-                <div class="">
-                    <div class="div_option">
-                        <div class="row align-items-center">
-                            <label for="exampleInputText3" class="form-label col-sm-5 col-form-label">Entity</label>
-                            <div class="col-sm-7">
-                                <select onChange={(e)=>{pushcountryentity(e,countryvalue.value,countryindex)}} class="form-select">
+        <div id="regularCollapseNine" className={`accordion-collapse collapse ${(qtab=='tab'+countryvalue.value ? 'show' : '')}`} aria-labelledby="regularHeadingNine" data-bs-parent="#regularAccordionRobots">
+            <div className="accordion-body p-2">
+                <div className="">
+                    <div className="div_option">
+                        <div className="row align-items-center">
+                            <label htmlFor="exampleInputText3" className="form-label col-sm-5 col-form-label">Entity</label>
+                            <div className="col-sm-7">
+                                <select onChange={(e)=>{pushcountryentity(e,countryvalue.value,countryindex)}} className="form-select">
                                     <option>Choose Your Option</option>
                                     {
                                                                 applicantstatus.map((value,index)=>{
-                                                                    return <option key ={index} value={index+1}> {value}</option>
+                                                                    return <option  Selected={countryvalue['entity']==(index+1) ? 'Selected' : false} key ={index} value={index+1}> {value}</option>
                                                                 })
                                                             }
                                 </select>
                             </div>
-                            <div class="col-sm-3"></div>
+                            <div className="col-sm-3"></div>
                         </div>
                     </div>
                     {
                         detailservice.map((item,index)=>{
-                            return <div class="form-check me-3 py-2">
-                            <input onChange={(e)=>{pushcountryaction(e,countryvalue.value,countryindex,index)}} class="form-check-input" type="checkbox" value="" id={`${countryvalue.value}${index}`} />
-                            <label class="form-check-label" for={`${countryvalue.value}${index}`}>
+                            return <div key={index} className="form-check me-3 py-2">
+                            <input checked={ countryvalue.service.includes((index+1)) ? true : ''}  onChange={(e)=>{pushcountryaction(e,countryvalue.value,countryindex,index)}} className="form-check-input" type="checkbox" value="" id={`${countryvalue.value}${index}`} />
+                            <label className="form-check-label" htmlFor={`${countryvalue.value}${index}`}>
                                 {item}
                             </label>
                         </div>
@@ -422,156 +545,189 @@ return <>
 
                                         </div>
                                     </article>
-                                    <div class="mt-3  ps-3 pe-3">
-                                        <button class="btn btn-primary float-end next-btn" onClick={ () =>{changetab('4')}}>Next</button>
-                                        <button class="btn bg-danger-subtle text-danger float-start back-btn" onClick={ () =>{changetab('2')}}>Previous</button>
+                                    <div className="mt-3  ps-3 pe-3">
+                                        <button className="btn btn-primary float-end next-btn" onClick={ () =>{changetab('4')}}>Next</button>
+                                        <button className="btn bg-danger-subtle text-danger float-start back-btn" onClick={ () =>{changetab('2')}}>Previous</button>
                                     </div>
                                 </div>
 
 
-                                <div class="activetab-4  ps-3 pe-3" style={{'display':`${tab=='tab4' ? 'block' : 'none'}`}}>
-                                    <article class="on mt-0">
+                                <div className="activetab-4  ps-3 pe-3" style={{'display':`${tab=='tab4' ? 'block' : 'none'}`}}>
+                                    <article className="on mt-0">
 
-                                        <div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-0" >
-                                            <div class="card-body px-4 py-3">
-                                                <div class="row align-items-center">
-                                                    <div class="col-9">
-                                                        <h4 class="fw-semibold mb-8">  Detailed Report</h4>
+                                        <div className="card bg-info-subtle shadow-none position-relative overflow-hidden mb-0" >
+                                            <div className="card-body px-4 py-3">
+                                                <div className="row align-items-center">
+                                                    <div className="col-9">
+                                                        <h4 className="fw-semibold mb-8">  Detailed Report</h4>
                                                         <nav aria-label="breadcrumb">
-                                                            <ol class="breadcrumb">
+                                                            <ol className="breadcrumb">
 
-                                                                <li class="breadcrumb-item" aria-current="page" >Get
+                                                                <li className="breadcrumb-item" aria-current="page" >Get
                                                                     Quotation</li>
                                                             </ol>
                                                         </nav>
                                                     </div>
-                                                    <div class="col-3">
-                                                        <div class="text-center mb-n5">
-                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/breadcrumb/ChatBc.png" alt="modernize-img" class="img-fluid mb-n4"/>
+                                                    <div className="col-3">
+                                                        <div className="text-center mb-n5">
+                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/breadcrumb/ChatBc.png" alt="modernize-img" className="img-fluid mb-n4"/>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="accordion" id="regularAccordionRobots">
+                                        <div className="accordion" id="regularAccordionRobots">
 
 
-                                            <div class="accordion-item">
-                                                <h2 id="regularHeadingTen" class="accordion-header">
-                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#regularCollapseTen" aria-expanded="false" aria-controls="regularCollapseTen">
+                                            <div className="accordion-item mt-3">
+                                                <h2 id="regularHeadingTen" className="accordion-header">
+                                                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#regularCollapseTen" aria-expanded="false" aria-controls="regularCollapseTen">
                                                         Initial Information
                                                     </button>
                                                 </h2>
-                                                <div id="regularCollapseTen" class="accordion-collapse collapse show" aria-labelledby="regularHeadingTen" data-bs-parent="#regularAccordionRobots" >
-                                                    <div class="accordion-body p-2">
-                                                        <div class="accordion-body pt-0 pb-0 ps-3">
+                                                <div id="regularCollapseTen" className="accordion-collapse collapse show" aria-labelledby="regularHeadingTen" data-bs-parent="#regularAccordionRobots" >
+                                                    <div className="accordion-body p-2">
+                                                        <div className="accordion-body pt-0 pb-0 ps-3 row">
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Applicant</label>
+                                                    <div className="col-sm-6">
+                                                        <input type="text" onChange={(e)=>{updatedata('applicant',e.target.value)}} className="form-control" value={formuladata.applicant}/>
+                                                    </div>
+                                                    <div className="col-sm-3"></div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Patent Application</label>
+                                                    <div className="col-sm-6">
+                                                        <input type="text" onChange={(e)=>{updatedata('appno',e.target.value)}} className="form-control" value={formuladata.appno}/>
+                                                    </div>
+                                                    <div className="col-sm-3"></div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Publication Language</label>
+                                                    <div className="col-sm-6">
+                                                    <select  onChange={(e)=>updatedata('fl',e.target.value)} className="form-select w-auto">
+                      <option value=''>Choose Option</option>
+                      {
+                          defaultvalue.filinglang.map((item,index)=>{
+                           return <option key={index} Selected={formuladata['fl']==item.code ? 'Selected' : false} value={item.code}>{item.value}</option>
 
-                                                            <div class="mb-4 row align-items-center">
-                                                                <label for="exampleInputText1" class="form-label col-sm-5 col-form-label">Total
-                                                                    Number
-                                                                    of Pages</label>
-                                                                <div class="col-sm-4">
-                                                                    <input type="text" class="form-control" onChange={(e)=>{updatedata('p',e.target.value)}} value={formuladata.p} />
-                                                                </div>
-                                                                <div class="col-sm-3"></div>
-                                                            </div>
-                                                            <div class="mb-4 row align-items-center">
-                                                                <label for="exampleInputText2" class="form-label col-sm-5 col-form-label">Total
-                                                                    Number of Claims</label>
-                                                                <div class="col-sm-4">
-                                                                    <input type="text" class="form-control" value={formuladata.c} onChange={(e)=>{updatedata('c',e.target.value)}}/>
-                                                                </div>
-                                                                <div class="col-sm-3"></div>
-                                                            </div>
-                                                            <div class="mb-4 row align-items-center">
-                                                                <label for="exampleInputText30" class="form-label col-sm-5 col-form-label">Priority</label>
-                                                                <div class="col-sm-4">
-                                                                    <div class="input-group border rounded-1">
-                                                                        <input type="text" class="form-control border-0" value={formuladata.pr} onChange={(e)=>{updatedata('pr',e.target.value)}}/>
+                        })
+                      }
+                    </select></div>
+                                                    <div className="col-sm-3"></div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Total Number of
+                                                        Pages</label>
+                                                    <div className="col-sm-6">
+                                                        <input type="text" onChange={(e)=>{updatedata('p',e.target.value)}} className="form-control" value={formuladata.p}/>
+                                                    </div>
+                                                    <div className="col-sm-3"></div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText2" className="form-label col-sm-6 col-form-label">Total Number of
+                                                        Claims</label>
+                                                    <div className="col-sm-6">
+                                                        <input type="text" onChange={(e)=>{updatedata('c',e.target.value)}} className="form-control" value={formuladata.c}/>
+                                                    </div>
+                                                    <div className="col-sm-3"></div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">Priority</label>
+                                                    <div className="col-sm-6">
+                                                        <div className="input-group border rounded-1">
+                                                            <input type="text" onChange={(e)=>{updatedata('pr',e.target.value)}} className="form-control border-0" value={formuladata.pr}/>
 
-                                                                    </div>
-                                                                    <div class="col-sm-3"></div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="mb-4 row align-items-center">
-                                                                <label for="exampleInputText30" class="form-label col-sm-5 col-form-label">ISA
-                                                                </label>
-                                                                <div class="col-sm-4">
-                                                                    <div class="input-group border rounded-1">
-                                                                        <input type="text" class="form-control border-0" value={formuladata.i} onChange={(e)=>{updatedata('i',e.target.value)}}/>
+                                                        </div>
+                                                        <div className="col-sm-3"></div>
+                                                    </div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">ISA
+                                                    </label>
+                                                    <div className="col-sm-6">
+                                                        <div className="input-group border rounded-1">
+                                                            <input type="text" onChange={(e)=>{updatedata('i',e.target.value)}} className="form-control border-0" value={formuladata.i}/>
 
-                                                                    </div>
-                                                                    <div class="col-sm-3"></div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="mb-4 row align-items-center">
-                                                                <label for="exampleInputText30" class="form-label col-sm-5 col-form-label">Total words
-                                                                </label>
-                                                                <div class="col-sm-4">
-                                                                    <div class="input-group border rounded-1">
-                                                                        <input type="text" class="form-control border-0" value={formuladata.word} onChange={(e)=>{updatedata('word',e.target.value)}}/>
+                                                        </div>
+                                                        <div className="col-sm-3"></div>
+                                                    </div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">Total words
+                                                    </label>
+                                                    <div className="col-sm-6">
+                                                        <div className="input-group border rounded-1">
+                                                            <input type="text" onChange={(e)=>{updatedata('word',e.target.value)}} className="form-control border-0" value={formuladata.word}/>
 
-                                                                    </div>
-                                                                    <div class="col-sm-3"></div>
-                                                                </div>
-                                                            </div>
+                                                        </div>
+                                                        <div className="col-sm-3"></div>
+                                                    </div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">Total Character
+                                                    </label>
+                                                    <div className="col-sm-6">
+                                                        <div className="input-group border rounded-1">
+                                                            <input type="text" onChange={(e)=>{updatedata('char',e.target.value)}} className="form-control border-0" value={formuladata.char}/>
+
+                                                        </div>
+                                                        <div className="col-sm-3"></div>
+                                                    </div>
+                                                </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="accordion-item">
-                                                <h2 id="regularHeading11" class="accordion-header">
-                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#regularCollapse11" aria-expanded="false" aria-controls="regularCollapse11">
-                                                    Combined Detailed Report
+                                            <div className="accordion-item mt-3">
+                                                <h2 id="regularHeading11" className="accordion-header">
+                                                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#regularCollapse11" aria-expanded="false" aria-controls="regularCollapse11">
+                                                    Combined  Quotation to file the patent application
                                                     </button>
                                                 </h2>
-                                                <div id="regularCollapse11" class="accordion-collapse collapse show" aria-labelledby="regularHeading11" data-bs-parent="#regularAccordionRobots" >
+                                                <div id="regularCollapse11" className="accordion-collapse collapse show" aria-labelledby="regularHeading11" data-bs-parent="#regularAccordionRobots" >
 
-                                                    <div class="accordion-body pt-0 pb-0 ps-3">
+                                                    <div className="accordion-body pt-0 pb-0 ps-3">
 
-                                                        <div class="table-responsive">
-                                                            <div class="table-id">
-                                                            </div>
-                                                            <div class="table-id">
-                                                            </div>
-                                                            <table class="table mb-0">
+                                                        <div className="table-responsive">
+                                                            <table className="table mb-0">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th scope="col" class="odd-color">Country</th>
-                                                                        <th scope="col" class="odd-color">Entity</th>
-                                                                        <th scope="col" class="even-color">Stages</th>
-                                                                        <th scope="col" class="odd-color">Official fee
-                                                                        </th>
-                                                                        <th scope="col" class="even-color">Professional fee
-                                                                        </th>
-                                                                        <th scope="col" class="even-color">Trans fee
-                                                                        </th>
-                                                                        <th scope="col" class="odd-color">Total</th>
-                                                                        <th scope="col" class="even-color">Get Detail
-                                                                        </th>
+                                                                        <th scope="col" className="odd-color">Country</th>
+                                                                        <th scope="col" className="even-color">Entity</th>
+                                                                        <th scope="col" className="odd-color">Filling Language</th>
+                                                                        <th scope="col" className="even-color">Stages</th>
+                                                                        <th scope="col" className="odd-color">Official fee </th>
+                                                                        <th scope="col" className="even-color">Professional fee</th>
+                                                                        <th scope="col" className="odd-color">Translation fee</th>
+                                                                        <th scope="col" className="even-color">Total</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     {
                                                                         (tab=='tab4' && getdata.length>0 ? 
                                                                     formuladata.country.map((item,index)=>{
-                                                                       
-                                                                        let returncost =getcost(item.value,[applicantstatusnumber[item.entity],'pro','trans'],item.service);
-                                                                        return <tr>
-                                                                        <th scope="row">{item.value}</th>
+                                                                        let stages=item.service.filter((item)=>{return item==1});
+                                                                        let filterc=getdata.filter((fi)=>{return fi.country==item.value});
+                                                                                if(filterc.length>0)
+                                                                        {
+                                                                            let parseddata=JSON.parse(filterc[0].data);
+                                                                        
+                                                                        let returncost =getcost(item.value,[applicantstatusnumber[(item.entity=='' ? '1' : item.entity) ],'pro','trans'],stages);
+                                                                        let transcost =returntranscost((formuladata.fl!=parseddata.part5[0].fl ? (formuladata.fl!='eng' && parseddata.part5[0].fl!='eng' ? 'eng' : formuladata.fl): ''),parseddata.part5[0].fl,formuladata.word,formuladata.char,formuladata.p);
+                                                                       return <tr key={index}>
+                                                                        <th scope="row">{defaultvalue.countriescode[item.value].name}</th>
                                                                         <th scope="row">{applicantstatusvalue[item.entity]}</th>
-
-                                                                        <td>{item.service.map((item)=>detailservice[item-1]).toString()}</td>
-                                                                        <td>{returncost[applicantstatusnumber[item.entity]]??'0'}</td>
-                                                                        <td>{returncost['pro']??'0'}</td>
-                                                                        <td>{returncost['trans']??'0'}</td>
-
-                                                                        <td>{returncost['total']??'0'}</td>
-                                                                        <td><a href="#" class="badge bg-warning-subtle text-warning">Detail</a>
-                                                                        </td>
+                                                                        <th scope="row">{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</th>
+                                                                        <td>{stages.map((item)=>detailservice[item-1]).toString()}</td>
+                                                                        <td>{defaultvalue.filinglangcurr[parseddata.part5[0].curr]} {returncost[applicantstatusnumber[(item.entity=='' ? '1' : item.entity) ]]??'0'}</td>
+                                                                        <td>{defaultvalue.filinglangcurr[parseddata.part5[0].curr]} {returncost['pro']??'0'}</td>
+                                                                        <td>{typeof(transcost)=='string' ? '' : defaultvalue.filinglangcurr[parseddata.part5[0].curr]} {transcost}</td>
+                                                                        <td>{defaultvalue.filinglangcurr[parseddata.part5[0].curr]} {(typeof(transcost)=='string' ? 0 : transcost) + returncost['total']??'0'}</td>
                                                                     </tr>
-                                                                    }) : <></>)
+                                                                                }})
+                                                                     : <></>)
                                                                     }
 
                                                                 </tbody>
@@ -582,69 +738,103 @@ return <>
                                             </div>
                                             {
     formuladata.country.map((item,index)=>{
-                                            return <div class="accordion-item">
-                                                <h2 id="regularHeading11" class="accordion-header">
-                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#regularCollapse11" aria-expanded="false" aria-controls="regularCollapse11">
-                                                    {item.value} Detailed Report
+        let filterc=getdata.filter((fi)=>{return fi.country==item.value});
+        if(filterc.length>0)
+{
+    let parseddata=JSON.parse(filterc[0].data);
+    let f =currenttrans.current.filter((item)=>item.lng==parseddata.part5[0].fl);
+                                            return <div className="accordion-item mt-3">
+                                                <h2 id="regularHeading11" className="accordion-header">
+                                                    <button onClick={(it)=>{changequotetab('tabreport'+item.value)}} className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#regularCollapse11" aria-expanded="false" aria-controls="regularCollapse11">
+                                                    {defaultvalue.countriescode[item.value].name} Quotation
                                                     </button>
                                                 </h2>
-                                                <div id="regularCollapse11" class="accordion-collapse collapse show" aria-labelledby="regularHeading11" data-bs-parent="#regularAccordionRobots" >
+                                                <div id="regularCollapse11" className={`py-0 accordion-collapse collapse ${'tabreport'+item.value==qtab ? 'show' : ''}`} aria-labelledby="regularHeading11" data-bs-parent="#regularAccordionRobots" >
 
-                                                    <div class="accordion-body pt-0 pb-0 ps-3">
-
-                                                        <div class="table-responsive">
-                                                            <div class="table-id">
-                                                            </div>
-                                                            <div class="table-id">
-                                                            </div>
-                                                            <table class="table mb-0">
+                                                    <div className="accordion-body pt-0 pb-0 ps-3">
+                                                    <p className="card-subtitle">Type of Entity: <b>{applicantstatusvalue[item.entity]}</b></p>
+                                                    <p className="card-subtitle">Filing Language: <b>{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</b></p>
+                                                        <div className="table-responsive">
+                                                            <table className="table mb-0">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th scope="col" class="even-color">Stages</th>
-                                                                        <th scope="col" class="odd-color">Official fee
-                                                                        </th>
-                                                                        <th scope="col" class="even-color">Professional fee
-                                                                        </th>
-                                                                        <th scope="col" class="even-color">Trans fee
-                                                                        </th>
-                                                                        <th scope="col" class="odd-color">Total</th>
-                                                                        <th scope="col" class="even-color">Get Detail
-                                                                        </th>
+                                                                        <th scope="col" className="even-color">Description</th>
+                                                                        <th scope="col" className="even-color">Timeline</th>
+                                                                        <th scope="col" className="odd-color">Official fee <br></br> ({defaultvalue.filinglangcurr[parseddata.part5[0].curr]})</th>
+                                                                        <th scope="col" className="even-color">Professional fee <br></br> ({defaultvalue.filinglangcurr[parseddata.part5[0].curr]})</th>
+                                                                        <th scope="col" className="odd-color">Total <br></br> ({defaultvalue.filinglangcurr[parseddata.part5[0].curr]})</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     {
                                                                         (tab=='tab4' && getdata.length>0 ? 
-                                                                        item.service.map((i,ind)=>{
-                                                                       
-                                                                        let returncost =getcost(item.value,[applicantstatusnumber[item.entity],'pro','trans'],[i]);
-                                                                        return <tr>
-                                                                        <td>{detailservice[i-1]}</td>
-                                                                        <td>{returncost[applicantstatusnumber[item.entity]]??'0'}</td>
-                                                                        <td>{returncost['pro']??'0'}</td>
-                                                                        <td>{returncost['trans']??'0'}</td>
+                                                                        
+                                                                        item.service.map((i,ind) => {
+                                                                            if(i==1)
+                                                                            {
+                                                                                let filterisa = parseddata['part1'].filter((items) =>  items['i']==formuladata.i );
+                                                                                let parts = filterisa.length>0 ? filterisa : [parseddata['part1'][parseddata['part1'].length-1]];
+                                                                                return (
+                                                                                    <>
+                                                                                      {
+                                                                                        
+                                                                                        parts.map((parti,index1)=>{
+                                                                                            let returncost =returncostoverall([parti],applicantstatusnumber[(item.entity=='' ? '1' : item.entity) ],('part'+i));
+                                                                                            const regex = /[^0-9.]/;
+                                                                                            let total=(regex.test(parti.pro) && parti.pro!='' ? parti.pro??0 : parseInt(returncost??0) + parseInt((parti.pro!='' ? parti.pro : 0)) );
+                                                                                        return <tr key={index1}>
+                                                                                        <td className="text-wrap width-240">{parti.desc}</td>
+                                                                                        <td className="text-wrap width-240">{parti.time??''}</td>
+                                                                                        <td> { returncost}</td>
+                                                                                        <td> {parti.pro??''}</td>
+                                                                                        <td>{total??0}</td>
+                                                                                    </tr>
+                                                                                      })
+                                                                                      }
+                                                                                    </>
+                                                                                )
+                                                                            }
+                                                                            else{
+                                                                                return (
+                                                                                    <>
+                                                                                      {
+                                                                                        
+                                                                                        parseddata['part'+i].map((parti,index1)=>{
+                                                                                            let returncost =returncostoverall([parti],applicantstatusnumber[(item.entity=='' ? '1' : item.entity) ],('part'+i));
+                                                                                            const regex = /[^0-9.]/;
+                                                                                            let total=(regex.test(parti.pro) && parti.pro!='' ? parti.pro??0 : parseInt(returncost??0) + parseInt((parti.pro!='' ? parti.pro : 0)) );
+                                                                                        return <tr key={index1}>
+                                                                                        <td className="text-wrap width-240">{parti.desc}</td>
+                                                                                        <td className="text-wrap width-240">{parti.time??''}</td>
+                                                                                        <td> { returncost}</td>
+                                                                                        <td> {parti.pro??''}</td>
+                                                                                        <td>{total??0}</td>
+                                                                                    </tr>
+                                                                                      })
+                                                                                      }
+                                                                                    </>
+                                                                                )
+                                                                            }
 
-                                                                        <td>{returncost['total']??'0'}</td>
-                                                                        <td><a href="#" class="badge bg-warning-subtle text-warning">Detail</a>
-                                                                        </td>
-                                                                    </tr>
-                                                                    }) : <></>)
+                                                                          }): <></>)
                                                                     }
-
+{(formuladata.fl!=parseddata.part5[0].fl ? <tr><td>Translation cost </td><td className="text-end" colSpan={3}><div className="d-flex align-items-center gap-2"><span className="fs-3">{formuladata.fl!='eng' && parseddata.part5[0].fl!='eng' ? defaultvalue.filinglangcode['eng'] : defaultvalue.filinglangcode[formuladata.fl]}</span>  <span><i className="ti ti-arrow-right text-success fs-4 position-relative"></i></span> <span className="fs-3">{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</span></div></td><td><b>{f[0].cost}</b></td></tr> : <></>)}
+{/* {(formuladata.fl!=parseddata.part5[0].fl ? <tr><td>Translation cost </td><td className="text-end" colSpan={3}><div className="d-flex align-items-center gap-2"><span className="fs-3">{defaultvalue.filinglangcode[formuladata.fl]}</span>  <span><i className="ti ti-arrow-right text-success fs-4 position-relative"></i></span> {(formuladata.fl!='eng' && parseddata.part5[0].fl!='eng' ? <><span className="fs-3">English</span> <span><i className="ti ti-arrow-right text-success fs-4 position-relative"></i></span></> : <></>)}<span className="fs-3">{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</span></div></td><td><b>{returntranscost((formuladata.fl!='eng' && parseddata.part5[0].fl!='eng' ? 'eng' : formuladata.fl),parseddata.part5[0].fl,formuladata.word)}</b></td></tr> : <></>)} */}
                                                                 </tbody>
                                                             </table>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-    })
+ } })
                                             }
                                         </div>
 
                                     </article>
-                                    <div class="mt-3">
-                                        <button class="btn btn-primary float-end next-btn" onclick="showSuccessPopup()">Final</button>
-                                        <button class="btn bg-danger-subtle text-danger float-start back-btn" onClick={()=>{changetab('3')}}>Previous</button>
+                                    <div className="mt-3">
+                                        <button className="btn btn-primary float-end next-btn mx-1" onClick={()=>{createpdf()}}>Final</button>
+                                        {validate.file && validate.file!='' ? <a target="_blank" href={`https://www.anuation.com/oldcrm/employee/auth/${validate.file}`} className="btn btn-primary float-end next-btn">View</a> : <></>}
+                                        <button className="btn bg-danger-subtle text-danger float-start back-btn" onClick={()=>{changetab('3')}}>Previous</button>
                                     </div>
                                 </div>
 

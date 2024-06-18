@@ -19,9 +19,14 @@ const Cronlist = ({closecronbox})=>{
         let auth ={'posttype':'deletecron','id':id};
 let d = await Fetchdata.deletecron(auth).then((response)=>{return response});
       }
+      function reschedule(data){
+        let last =moment(data[9]).add(5, 'minutes').format('YYYY-MM-DD H:mm:ss');
+        let now =moment(data[10]).format('YYYY-MM-DD H:mm:ss');
+        console.log(last>now ? 'yes' : 'no',last,now);
+      }
  async function getcrondata(){
     let crond = await Fetchdata.fetchcrondata(auth).then((response)=>{return response});
-   // console.log(crondata.data.data.length);
+   
     setcrondata(crond.data.data);
     console.log(crond.data.data[0]);
  }
@@ -98,7 +103,7 @@ return (
                               <p className="fs-1 text-dark mb-0">{moment(user[6]).format('lll')}</p>
                             </td>
                             <td>
-                              <span className={`badge fw-semibold py-1 w-85 bg-${(user[3]==user[7] ? 'success' : 'danger')}-subtle text-${(user[3]==user[7] ? 'success' : 'danger')}`}>{(user[3]==user[7] ? 'Completed' : 'Pending')}</span>
+                              <span onClick={()=>{reschedule(user)}} className={`badge fw-semibold py-1 w-85 bg-${(user[3]==user[7] ? 'success' : 'danger')}-subtle text-${(user[3]==user[7] ? 'success' : 'danger')}`}>{(user[3]==user[7] ? 'Completed' : 'Pending')}</span>
                             </td>
                             <td>
                               <span onClick={Deletecron(user[8])} className={`badge fw-semibold py-1 w-85 bg-success-subtle text-success`}>Delete</span>

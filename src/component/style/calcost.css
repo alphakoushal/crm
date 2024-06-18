@@ -426,9 +426,9 @@
         }
 
         th.odd-color {
-            background: #d3ecff;
+            background: #d3ecff !important;
             padding: 8px 10px 8px 16px;
-            font-size: 12px;
+            font-size: 11px;
 
         }
 
@@ -447,13 +447,13 @@
 
         .table>:not(caption)>*>* {
             text-wrap: nowrap;
-            font-size: 13px;
+            font-size: 11px;
         }
 
         th.even-color {
             background: #f9f9f9;
             padding: 8px 10px 8px 16px;
-            font-size: 12px;
+            font-size: 11px;
 
         }
 

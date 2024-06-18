@@ -71,7 +71,7 @@ const Dashboard =() =>{
 "anuationuser_uniqueid":auth.userid,
 "accounttype":auth.type,
 "org":auth.org,
-"recordlimit":10000,
+"recordlimit":(auth.type=='1' ? 10000 : 0),
 "posttype":"local-current-data",
 "email": "",
 "domain": "",

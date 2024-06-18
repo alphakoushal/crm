@@ -5,13 +5,15 @@ import Fetchdata from "../services/fetchdata";
 import Toast from "../component/New-toast";
 import { useSearchParams } from "react-router-dom";
 import '../component/style/cost.css'
+import { defaultvalue } from "../constant/Constant";
 const Editcountryformula =() =>{
 
     const [restdata, setrestdata] = useState({'loader':'hide','loadermessage':'Update','title':'','subject':'','clienttype':'','templatetype':''});
     const [searchParams, setSearchParams] = useSearchParams();
     const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:''});
-    const [count,setcount]=useState({'part5':[{'word':0,'p':5,'c':10,'i':1,'pr':10}],'part1':[{'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':''}],'part2':[{'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':''}],'part3':[{'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':''}],'part4':[{'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':''}]});
+    const [count,setcount]=useState({'part5':[{'hidebasic':'false','word':0,'p':5,'c':10,'i':1,'pr':10,'fl':'eng','curr':''}],'part1':[{'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':'','time':''}],'part2':[{'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':'','time':''}],'part3':[{'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':'','time':''}],'part4':[{'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':'','time':''}]});
     let auth= localStorage.getItem("user"); 
+    const selectedcountry=useRef(searchParams.get("id"));
     auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''});
     const fetchrecord = async (country) =>{
         let fetch = await Fetchdata.fetchformula({country:country,posttype:'fetchformula'}).then((response)=>{ return response});
@@ -22,7 +24,7 @@ const Editcountryformula =() =>{
           }
     }
     const addNewRow = (part) => {
-        const newRow = {'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':''}; 
+        const newRow = {'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':'','time':''}; 
         setcount({...count,[part]:[...count[part],newRow]});
    
       };
@@ -111,15 +113,47 @@ setcount(prevRows => {
 <Headerblank except={false}></Headerblank>
 <div className={"body-wrapper1 custom-table "}>   
     <div className="container-fluid bootstrap-table">
-    <div className="card">
-                <div className="card-body">
-                  <div className="d-flex border p-2" style={{'flexWrap': 'wrap'}}>
-            <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Pages:</label><input value={count.part5[0]['p']} onChange={(e)=>updatevalue('part5','p',e.target.value,'0')} /></div>
-            <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Claim:</label><input value={count.part5[0]['c']} onChange={(e)=>updatevalue('part5','c',e.target.value,'0')} /></div>
-            <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Priority:</label><input value={count.part5[0]['pr']} onChange={(e)=>updatevalue('part5','pr',e.target.value,'0')} /></div>
-            <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">ISA:</label><input value={count.part5[0]['i']} onChange={(e)=>updatevalue('part5','i',e.target.value,'0')} /></div>
-            <div className="d-flex01"><label htmlFor="example-text-input" className="col-md-2 p-0 col-form-label">Word Count:</label><input value={count.part5[0]['word']} onChange={(e)=>updatevalue('part5','word',e.target.value,'0')} /></div>
+    <div className="card ">
+                <div className="card-body py-3 d-flex justify-content-between position-relative">
+                    <div class="mb-3 mb-sm-0">
+                      <h4 class="card-title fw-semibold">{defaultvalue.countriescode[selectedcountry.current].name??''} Quotation</h4>
+                      <p class="card-subtitle mb-0">Overview</p>
+                    </div>
+                <div class="d-sm-flex d-block align-items-center justify-content-end mb-9">
+                    <div className="mb-3 mx-2">
+                    <label class="form-label">Filling Language</label>
+                    <select  onChange={(e)=>updatevalue('part5','fl',e.target.value,'0')} class="form-select w-auto">
+                      <option value=''>Choose Option</option>
+                      {
+                          defaultvalue.filinglang.map((item,index)=>{
+                           return <option Selected={count.part5[0]['fl']==item.code ? '' : false} value={item.code}>{item.value}</option>
 
+                        })
+                      }
+                    </select>
+                    </div>
+                    <div className="mb-3">
+                    <label class="form-label">Filling Currecny</label>
+                    <select  onChange={(e)=>updatevalue('part5','curr',e.target.value,'0')} class="form-select w-auto">
+                      <option value=''>Choose Option</option>
+                      {
+                          defaultvalue.fillingcurrency.map((item,index)=>{
+                           return <option Selected={count.part5[0]['curr']==item.code ? '' : false} value={item.code}>{item.value}</option>
+
+                        })
+                      }
+                    </select>
+                    </div>
+                  </div>
+                  <i onClick={(e)=>updatevalue('part5','hidebasic',(count.part5[0]['hidebasic']=='true' ? 'false' : 'true'),'0')} class={`ti ${(count.part5[0]['hidebasic']=='true' ? 'ti-eye-off' : 'ti-eye')} fs-6 text-primary`} style={{"position": "absolute","right":"15px","bottom":"0"}}></i>
+                </div>
+                <div className={`card-body py-3  ${(count.part5[0]['hidebasic']=='true' ? 'hide' : 'show')}`}>
+                  <div className="d-flex border p-2" style={{'flexWrap': 'wrap'}}>
+                  <div class="mb-3 mx-1"><label class="form-label">Pages</label><input value={count.part5[0]['p']} type="text" class="form-control" onChange={(e)=>updatevalue('part5','p',e.target.value,'0')} /></div>
+                  <div class="mb-3 mx-1"><label class="form-label">Claim</label><input value={count.part5[0]['c']} type="text" class="form-control" onChange={(e)=>updatevalue('part5','c',e.target.value,'0')} /></div>
+                  <div class="mb-3 mx-1"><label class="form-label">Priority</label><input value={count.part5[0]['pr']} type="text" class="form-control" onChange={(e)=>updatevalue('part5','pr',e.target.value,'0')} /></div>
+                  <div class="mb-3 mx-1"><label class="form-label">ISA</label><input value={count.part5[0]['i']} type="text" class="form-control" onChange={(e)=>updatevalue('part5','i',e.target.value,'0')} /></div>
+                  <div class="mb-3"><label class="form-label">Word Count</label><input value={count.part5[0]['word']} type="text" class="form-control" onChange={(e)=>updatevalue('part5','word',e.target.value,'0')} /></div>
 
         </div></div></div>
 
@@ -143,7 +177,7 @@ setcount(prevRows => {
                                 <th className="r-2 text-center">Description</th>
                                 <th className="r-2 text-center">Official Cost</th>
                                 <th className="r-1 text-center">Professional Cost</th>
-                                <th className="r-2 text-center">Translation Cost</th>
+                                <th className="r-2 text-center">Timeline</th>
                             </tr>
                         </thead>
                         <tbody className="mt-2">
@@ -230,9 +264,9 @@ setcount(prevRows => {
                                     <input className="form-control text-center addPrefer" type="text" value={item.pro} onChange={(e)=>{updatevalue('part1','pro',e.target.value,index)}}/>
                                 </td>
                                 <td className="col-xs-6">
-                                    <input className="form-control text-center addPrefer" type="text" value={item.trans} onChange={(e)=>{updatevalue('part1','trans',e.target.value,index)}}/>
+                                    <input className="form-control text-center addPrefer px-0" type="text" value={item.time} onChange={(e)=>{updatevalue('part1','time',e.target.value,index)}}/>
                                 </td>
-<i onClick={()=>{removerow(index,'part1')}} className="ti ti-square-rounded-x-filled"></i>
+<i onClick={()=>{removerow(index,'part1')}} className="ti ti-square-rounded-x-filled p-0"></i>
                             </tr>
                             })
                         }
@@ -272,10 +306,10 @@ setcount(prevRows => {
                                     </div>
                                 </td>
                                 <td className="col-xs-6">
-                                     <div className="h-total">
+                                     {/* <div className="h-total">
                                     <p className="mb-0 text-center">Total</p>
                                     <input className="form-control text-center addPrefer" value={returncostoverall(count.part1,'trans')} type="text" disabled/>
-                                       </div>
+                                       </div> */}
                                 </td>
                             </tr>
                         </tbody>
@@ -298,7 +332,7 @@ setcount(prevRows => {
         <th className="r-2 text-center">Description</th>
         <th className="r-2 text-center">Official Cost</th>
         <th className="r-1 text-center">Professional Cost</th>
-        <th className="r-2 text-center">Translation Cost</th>
+        <th className="r-2 text-center">Timeline</th>
     </tr>
 </thead>
 <tbody className="mt-2">
@@ -385,9 +419,9 @@ return <tr key={index} id="addRow">
     <input className="form-control text-center addPrefer" type="text" value={item.pro} onChange={(e)=>{updatevalue('part2','pro',e.target.value,index)}}/>
 </td>
 <td className="col-xs-6">
-    <input className="form-control text-center addPrefer" type="text" value={item.trans} onChange={(e)=>{updatevalue('part2','trans',e.target.value,index)}}/>
+    <input className="form-control text-center addPrefer px-0" type="text" value={item.time} onChange={(e)=>{updatevalue('part2','time',e.target.value,index)}}/>
 </td>
-<i onClick={()=>{removerow(index,'part2')}} className="ti ti-square-rounded-x-filled"></i>
+<i onClick={()=>{removerow(index,'part2')}} className="ti ti-square-rounded-x-filled p-0"></i>
 </tr>
     })
 }
@@ -427,10 +461,7 @@ return <tr key={index} id="addRow">
                                     </div>
                                 </td>
                                 <td className="col-xs-6">
-                                     <div className="h-total">
-                                    <p className="mb-0 text-center">Total</p>
-                                    <input className="form-control text-center addPrefer" value={returncostoverall(count.part2,'trans')} type="text" disabled/>
-                                       </div>
+
                                 </td>
                             </tr>
 </tbody>
@@ -453,7 +484,7 @@ return <tr key={index} id="addRow">
         <th className="r-2 text-center">Description</th>
         <th className="r-2 text-center">Official Cost</th>
         <th className="r-1 text-center">Professional Cost</th>
-        <th className="r-2 text-center">Translation Cost</th>
+        <th className="r-2 text-center">Timeline</th>
     </tr>
 </thead>
 <tbody className="mt-2">
@@ -540,9 +571,9 @@ return <tr key={index} id="addRow">
     <input className="form-control text-center addPrefer" type="text" value={item.pro} onChange={(e)=>{updatevalue('part3','pro',e.target.value,index)}}/>
 </td>
 <td className="col-xs-6">
-    <input className="form-control text-center addPrefer" type="text" value={item.trans} onChange={(e)=>{updatevalue('part3','trans',e.target.value,index)}}/>
+    <input className="form-control text-center addPrefer px-0" type="text" value={item.time} onChange={(e)=>{updatevalue('part3','time',e.target.value,index)}}/>
 </td>
-<i onClick={()=>{removerow(index,'part3')}} className="ti ti-square-rounded-x-filled"></i>
+<i onClick={()=>{removerow(index,'part3')}} className="ti ti-square-rounded-x-filled p-0"></i>
 </tr>
     })
 }
@@ -582,10 +613,7 @@ return <tr key={index} id="addRow">
                                     </div>
                                 </td>
                                 <td className="col-xs-6">
-                                     <div className="h-total">
-                                    <p className="mb-0 text-center">Total</p>
-                                    <input className="form-control text-center addPrefer" value={returncostoverall(count.part3,'trans')} type="text" disabled/>
-                                       </div>
+
                                 </td>
                             </tr>
 </tbody>
@@ -608,7 +636,7 @@ return <tr key={index} id="addRow">
         <th className="r-2 text-center">Description</th>
         <th className="r-2 text-center">Official Cost</th>
         <th className="r-1 text-center">Professional Cost</th>
-        <th className="r-2 text-center">Translation Cost</th>
+        <th className="r-2 text-center">Timeline</th>
     </tr>
 </thead>
 <tbody className="mt-2">
@@ -695,9 +723,9 @@ return <tr key={index} id="addRow">
     <input className="form-control text-center addPrefer" type="text" value={item.pro} onChange={(e)=>{updatevalue('part4','pro',e.target.value,index)}}/>
 </td>
 <td className="col-xs-6">
-    <input className="form-control text-center addPrefer" type="text" value={item.trans} onChange={(e)=>{updatevalue('part4','trans',e.target.value,index)}}/>
+    <input className="form-control text-center addPrefer px-0" type="text" value={item.time} onChange={(e)=>{updatevalue('part4','time',e.target.value,index)}}/>
 </td>
-<i onClick={()=>{removerow(index,'part4')}} className="ti ti-square-rounded-x-filled"></i>
+<i onClick={()=>{removerow(index,'part4')}} className="ti ti-square-rounded-x-filled p-0"></i>
 </tr>
     })
 }
@@ -737,10 +765,7 @@ return <tr key={index} id="addRow">
                                     </div>
                                 </td>
                                 <td className="col-xs-6">
-                                     <div className="h-total">
-                                    <p className="mb-0 text-center">Total</p>
-                                    <input className="form-control text-center addPrefer" value={returncostoverall(count.part4,'trans')} type="text" disabled/>
-                                       </div>
+
                                 </td>
                             </tr>
 </tbody>

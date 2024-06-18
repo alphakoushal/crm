@@ -32,8 +32,13 @@ const defaultvalue = {
       {'key':'7','value':'Ringing'},
       {'key':'8','value':'Dnc'}
         ],
-        accounts:{'191214150648429653':[{name:'Divi',account:15},{name:'Priya',account:16},{name:'Meenu',account:4},{name:'Kim',account:5},{name:'Ojas',account:6},{name:'Naina',account:7}],'231220121357187063':[{name:'Amy',account:11},{name:'Anu',account:12},{name:'Neha',account:13},{name:'Mohini',account:8},{name:'Eva',account:9},{name:'Nancy',account:10}],'191220121357187063':[{name:'Ria',account:14}],'240120121357187064':[{name:'Sia',account:17},{name:'Komal',account:18}]},
-        username:{'191214150648429653':'Kim','231220121357187063':'Mohini','191220121357187063':'Ria','240120121357187064':'Komal'},
+        filinglang:[{'code':'eng','value':'English'},{'code':'ger','value':'German'},{'code':'spa','value':'Spanish'},{'code':'por','value':'Portuguese'},{'code':'kor','value':'Korean'},{'code':'jap','value':'Japanese'},{'code':'chn','value':'Chinese'},{'code':'rus','value':'Russian'},{'code':'arb','value':'Arabic'},{'code':'far','value':'Farsi'},{'code':'tha','value':'Thai'},{'code':'fre','value':'French'}],
+        fillingcurrency : [{'code':'usd','value':'USD'},{'code':'eur','value':'EURO'},{'code':'inr','value':'INR'}],
+        filinglangcurr : {'usd':'USD','eur':'EURO','inr':'INR'},
+        filinglangcode:{'eng':'English','ger':'German','spa':'Spanish','por':'Portuguese','kor':'Korean','jap':'Japanese','chn':'Chinese','rus':'Russian','arb':'Arabic','far':'Farsi','tha':'Thai','fre':'French'},
+        transcost :[{ "from": "eng", "to": "jap", "currency": "USD", "cost": "0.17", "type": "word" },{ "from": "jap", "to": "eng", "currency": "USD", "cost": "0.15", "type": "char" },{ "from": "eng", "to": "kor", "currency": "USD", "cost": "0.12", "type": "word" },{ "from": "kor", "to": "eng", "currency": "USD", "cost": "0.12", "type": "char" },{ "from": "eng", "to": "por", "currency": "USD", "cost": "0.13", "type": "word" },{ "from": "por", "to": "eng", "currency": "USD", "cost": "0.13", "type": "word" },{ "from": "eng", "to": "spa", "currency": "USD", "cost": "0.12", "type": "word" },{ "from": "spa", "to": "eng", "currency": "USD", "cost": "0.12", "type": "word" },{ "from": "eng", "to": "ger", "currency": "USD", "cost": "0.17", "type": "word" },{ "from": "ger", "to": "eng", "currency": "USD", "cost": "0.17", "type": "word" },{ "from": "eng", "to": "chn", "currency": "USD", "cost": "0.10", "type": "word" },{ "from": "chn", "to": "eng", "currency": "USD", "cost": "0.10", "type": "word" },{ "from": "eng", "to": "rus", "currency": "USD", "cost": "0.06", "type": "word" },{ "from": "rus", "to": "eng", "currency": "USD", "cost": "0.06", "type": "word" },{ "from": "eng", "to": "arb", "currency": "USD", "cost": "25", "type": "page" },{ "from": "arb", "to": "eng", "currency": "USD", "cost": "25", "type": "page" },{ "from": "eng", "to": "far", "currency": "USD", "cost": "25", "type": "page" },{ "from": "far", "to": "eng", "currency": "USD", "cost": "25", "type": "page" },{ "from": "eng", "to": "tha", "currency": "USD", "cost": "0.08", "type": "word" },{ "from": "tha", "to": "eng", "currency": "USD", "cost": "0.08", "type": "word" },{ "from": "eng", "to": "fre", "currency": "USD", "cost": "0.12", "type": "word" },{ "from": "fre", "to": "eng", "currency": "USD", "cost": "0.14", "type": "word" }],
+        accounts:{'191214150648429653':[{name:'Divi',account:15},{name:'Priya',account:16},{name:'Meenu',account:4},{name:'Kim',account:5},{name:'Ojas',account:6},{name:'Naina',account:7}],'231220121357187063':[{name:'Amy',account:11},{name:'Anu',account:12},{name:'Neha',account:13},{name:'Mohini',account:8},{name:'Eva',account:9},{name:'Nancy',account:10}],'191220121357187063':[{name:'Ria',account:14}],'240120121357187064':[{name:'Sia',account:17},{name:'Komal',account:18}],'240513115857792863':[{name:'Gary',account:19}]},
+        username:{'191214150648429653':'Kim','231220121357187063':'Mohini','191220121357187063':'Ria','240120121357187064':'Komal','240513115857792863':'Gary'},
         usernames:[{'key':'191214150648429653','name':'Kim'},{'key':'231220121357187063','name':'Mohini'},{'key':'191220121357187063','name':'Ria'},{'key':'240120121357187064','name':'Komal'}],
         countries: [{'key':'IN','value':'India','category':['Micro','Small','Large']},{'key':'US','value':'Australia','category':['Micro','Small','Large']}],
         countriescode: {
@@ -209,10 +214,10 @@ const defaultvalue = {
         },
         continent_country:[{
           "Regional":[
-            {"name":"EAPO", "code":"eapo", "continent":"Regional", "url":"eapo","top_country":false},
-            {"name":"EPO", "code":"epo", "continent":"Regional", "url":"epo","top_country":false},
-            {"name":"ARIPO", "code":"aripo", "continent":"Regional", "url":"aripo"},
-            {"name":"OAPI", "code":"oapi", "continent":"Regional", "url":"oapi"}
+            {"name":"EAPO", "code":"EAPO", "continent":"Regional", "url":"eapo","top_country":false},
+            {"name":"EPO", "code":"EPO", "continent":"Regional", "url":"epo","top_country":false},
+            {"name":"ARIPO", "code":"ARIPO", "continent":"Regional", "url":"aripo"},
+            {"name":"OAPI", "code":"OAPI", "continent":"Regional", "url":"oapi"}
         ]},
           {"Asia":[
                   {"name":"Armenia", "code":"AM", "continent":"Asia", "url":"armenia"},
@@ -631,7 +636,8 @@ const costs ={
     },
     EP:function()
     {
-        return costs.roundup(1.12 * (costs.standardcall(this.standard,this.c,this.as) + costs.pagescall({'as':this.as,'pages':this.pages,'smallcost':15,'largecost':0,'pageslimit':35}) + costs.claimcall({'as':'','claim':this.claim,'smallcost':235,'largecost':0,'claimlimit':15,'claimlimittwo':50,'claimlimittwocost':580}) + costs.prioritycall({'as':'','priority':this.priority,'smallcost':100,'largecost':0,'prioritylimit':1})) + costs.isacall({'as':this.as,'isa':this.isa,'smallcost':1456,'largecost':0,'c':this.c}),-2);
+      //ROUNDUP(1.12*(715+700+400+1825+IF(R3407<36,0,15*(R3407-35))+IF(S3407<16,0,IF(S3407<51,235*(S3407-15),8225+580*(S3407-50)))+IF(T3407<2,0,100*(T3407-1)))+IF(V3407="EP",0,1456),-1)
+        return costs.roundup(1.12 * (costs.standardcall(this.standard,this.c,this.as) + costs.pagescall({'as':'','pages':this.pages,'smallcost':15,'largecost':0,'pageslimit':35}) + costs.claimcall({'as':'','claim':this.claim,'smallcost':235,'largecost':0,'claimlimit':15,'claimlimittwo':50,'claimlimittwocost':580}) + costs.prioritycall({'as':'','priority':this.priority,'smallcost':100,'largecost':0,'prioritylimit':1})) + costs.isacall({'as':'','isa':this.isa,'smallcost':1456,'largecost':0,'c':this.c}),-2);
     },
     RU:function()
     {
