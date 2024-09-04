@@ -1,9 +1,10 @@
-import React,{useState,memo,useEffect } from "react";
+import React,{useState,useEffect } from "react";
 import { useDispatch,useSelector } from "react-redux";
 import { BrowserRouter, Routes, Route,Link,useNavigate, json } from "react-router-dom";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
+import { pivotmodal } from "../reducers/Style";
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
@@ -12,7 +13,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import TextareaAutosize from '@mui/base/TextareaAutosize';
+import {TextareaAutosize} from '@mui/base/TextareaAutosize';
 import { styled } from '@mui/system';
 import commentprocess from "../services/commentservice";
 import Addmodal from "./modals/addmodal";
@@ -23,6 +24,7 @@ import { useOnlinestatus } from "../services/Online";
 const Header = React.memo(({platform,alldata,changedata,completedata,showmailbox,showdupemailbox,showcronbox,clearfilters,refreshdata,formdatas,showcurrencies}) =>{
   const navigate=useNavigate(); 
   const isOnline = useOnlinestatus();
+  const dispatch =useDispatch();
   let auth= localStorage.getItem("user"); 
   auth =(auth!='' ? JSON.parse(auth) : '');
   let accounts =(defaultvalue.accounts[auth.userid]!==undefined ? defaultvalue.accounts[auth.userid] :Object.values(defaultvalue.accounts).flat());
@@ -31,7 +33,6 @@ const Header = React.memo(({platform,alldata,changedata,completedata,showmailbox
   const [openaddbox, setaddbox] = useState(false);
   const [validate,setvalidate]=useState({'loader':'hide','loadermessage':'Submit',status:false,color:'error',icon:'error',message:'',inprocess:false});
 const [status,setstatus] =useState();
-
 const StyledTextarea = styled(TextareaAutosize)(
   ({ theme }) => `
   width: 100%;
@@ -50,12 +51,14 @@ useEffect(()=>{
   return()=>{ 
      setTimeout(() => {
       setvalidate(()=>({...validate,status:false}));
-      //show.state=false;
      }, 1000);
   }
 },[])
 const closeaddbox = ()=>{
   setaddbox(false);
+}
+const openpivotmodal = () =>{
+dispatch(pivotmodal(true));
 }
   const handleClickOpen = function (e,type,title) {
     e.preventDefault();
@@ -318,14 +321,28 @@ clientObject[e] = {
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
-                                {auth.type=='2' ? <>
+                                <Link to="/calculate" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Calculate</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                {auth.type=='2' ? 
+                                <>
+                                <Link to="/freshdata" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">PCT New Data</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
                                 <Link to="/countrylist" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Country List</h6>
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
-                                </> : <></>
+                                </>
+                                 : <></>
                                 }
                               </div>
                             </div>
@@ -451,6 +468,11 @@ clientObject[e] = {
                   <li title="Open sidebar" onClick={()=>showsidebar()} className="nav-item">
                     <Link className="nav-link notify-badge nav-icon-hover" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                         <i  className="ti ti-menu-2"></i>               
+                    </Link>
+                  </li>
+                  <li title="Check Record" onClick={()=>openpivotmodal()} className="nav-item">
+                    <Link className="nav-link notify-badge nav-icon-hover" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                        <i  className="ti ti-calculator"></i>               
                     </Link>
                   </li>
                 </ul>

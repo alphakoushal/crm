@@ -1,5 +1,5 @@
 import { responsiveFontSizes } from "@mui/material";
-import axios from "axios";
+import axios, { AxiosHeaders } from "axios";
 import { method } from "lodash";
 
 const API_URL = "https://www.anuation.com/oldcrm/";
@@ -70,10 +70,23 @@ const fetchcomment = (data)=>
 }
 
 const emailformat = (data) =>{
+    let transferurl='https://www.anuation.com/oldcrm/employee/auth/reactauth/transfer-record.php';
+    let assignedurl='https://www.anuation.com/oldcrm/employee/auth/reactauth/allocate-record-from-fresh-data-to-bd-team.php';
+    let cronurl='https://www.anuation.com/oldcrm/employee/auth/reactauth/emailformat_testing.php';
+    let urls= data.t=='assigned' ? assignedurl : (data.t=='transfer' ? transferurl : cronurl);
     return axios({
         method :'POST',
         headers : axiosConfig,
-        url: "https://www.anuation.com/oldcrm/employee/auth/reactauth/emailformat.php",
+        url: urls,
+        data : data
+    }).then(response => { return response});
+}
+const ITemailformat = (data) =>{
+    let itemailurl='https://www.anuation.com/oldcrm/employee/auth/reactauth/itemail.php';
+    return axios({
+        method :'POST',
+        headers : axiosConfig,
+        url: itemailurl,
         data : data
     }).then(response => { return response});
 }
@@ -107,6 +120,14 @@ const uploadformula = (formdata) =>{
     }).then(response =>{ return response})
 }
  
+const transferdatatopct = (formdata) =>{
+return axios({
+    method:'POST',
+    headers:axiosConfig,
+    data:formdata,
+    url: "https://www.anuation.com/oldcrm/employee/auth/react-index",
+}).then(response=>{return response})
+}
 const createpdf = (formdata) =>{
     return axios({
         method:'POST',
@@ -117,7 +138,7 @@ const createpdf = (formdata) =>{
 }
 
 const Uploaddata = {
-  uploaddata,uploadformula,createpdf,fetchcomment,assignsheet,updateinfo,addpct,createssheet,updatepct,uploadanalyticdata,emailformat,mailtemplate,sendtome
+  uploaddata,uploadformula,transferdatatopct,createpdf,fetchcomment,assignsheet,updateinfo,addpct,createssheet,updatepct,uploadanalyticdata,emailformat,ITemailformat,mailtemplate,sendtome
 }
 
 export default Uploaddata;

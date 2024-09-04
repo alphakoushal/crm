@@ -224,10 +224,7 @@
     box-shadow: 0px 5px 12px rgba(126, 142, 177, 0.2);
 }
 
-/* Remove default numbering from the list */
-ol {
-    list-style: none;
-}
+
 
 /* Adjust the gap between table rows */
 #addRow tr {

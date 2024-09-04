@@ -11,16 +11,13 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import Uploaddata from "../../services/uploaddata";
 import Fetchdata from "../../services/fetchdata";
-import InputLabel from '@mui/material/InputLabel'; 
+import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import moment from "moment";
 import MenuItem from "@mui/material/MenuItem";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { costs, standard, defaultvalue } from "../../constant/Constant";
-const Emailbox = ({
+const TransferEmailbox = ({
   platform,
   page,
   fn,
@@ -31,7 +28,7 @@ const Emailbox = ({
 }) => {
   const [templatelist, settemplate] = useState([]);
   const [userlist, setchooseuser] = useState([]);
-  const [crontime,setCrontime] =useState(dayjs(moment()));
+  const [crontime, setCrontime] = useState(dayjs(moment()));
   let mailtypeaccount = document.querySelector("#mailtypeaccount").value;
   const inprocess = useRef(false);
   let auth = localStorage.getItem("user");
@@ -77,7 +74,7 @@ const Emailbox = ({
       templatename: template,
       preview: type,
       account: account,
-      crontime:crontime,
+      crontime: crontime,
       platform: platform.current,
       title: title,
       nextfollowup: nextfollowup,
@@ -133,15 +130,14 @@ const Emailbox = ({
     setchooseuser(e.target.value);
   }
   async function choosetype(e, type) {
+
     let appno = emailsdata.map((item) => {
       return item[2];
     });
     e.preventDefault();
     let t = document.querySelector("#templateid");
-    let title = document.querySelector("#crontitle").value;
-    let nextfollowup = document.querySelector("#nextfollowup").value;
-    let today = moment().format("YYYY-MM-DD");
-    let diff = moment(nextfollowup).diff(moment(today), "days");
+    let title = '';
+    let nextfollowup = '';
 
     if (inprocess.current == true) {
       setvalidate((validate) => ({
@@ -149,19 +145,6 @@ const Emailbox = ({
         status: true,
         message: "In process",
       }));
-    } else if (diff <= 2) {
-      setvalidate((validate) => ({
-        ...validate,
-        status: true,
-        message: "Next follow up Date should be greater",
-      }));
-    } else if (crontime == "") {
-      setvalidate((validate) => ({
-        ...validate,
-        status: true,
-        message: "Please Choose Time",
-      }));
-    } else if (userlist.length == 0) {
     } else if (t.value == "") {
       setvalidate((validate) => ({
         ...validate,
@@ -174,19 +157,7 @@ const Emailbox = ({
         status: true,
         message: "Please Choose Account",
       }));
-    } else if (title == "") {
-      setvalidate((validate) => ({
-        ...validate,
-        status: true,
-        message: "Please Enter Comment",
-      }));
-    } else if (nextfollowup == "") {
-      setvalidate((validate) => ({
-        ...validate,
-        status: true,
-        message: "Please Choose Date",
-      }));
-    } else {
+    }  else {
       inprocess.current = true;
       const res = await emailformat(
         t.value,
@@ -207,8 +178,6 @@ const Emailbox = ({
           color: "success",
           icon: "success",
         }));
-        //   let newarray=alldata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[57]:'sent'} : item) });
-        //   changedata(newarray);
         if (page == "freshdata") {
           window.location.reload();
         }
@@ -343,34 +312,8 @@ const Emailbox = ({
                   />
                 </Suspense>
                 <div className="mb-3 text-center d-md-flex align-items-center mt-3  align-content-md-between gap-3">
-                  <div className="col-md-2">
-                    {" "}
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="crontitle"
-                      placeholder="Enter Comment"
-                    />
-                  </div>
-                  <input
-                    type="date"
-                    className="form-control"
-                    id="nextfollowup"
-                    placeholder="Choose date"
-                  />{" "}
-                  <div className="col-md-2 time-selector">
-                    <LocalizationProvider
-                      dateAdapter={AdapterDayjs}
-                    >
-                      <TimePicker
-          label="Set cron Time"
-          value={crontime}
-          onChange={(newValue) => setCrontime(newValue)}
-        />
-                    </LocalizationProvider>
-                  </div>
                   <select id="templateid" className="form-select">
-                    <option value="">Choose Format</option>
+                    <option value="">Choose Type</option>
                     {templatelist.map((item, index) => {
                       return (
                         <option value={item["id"]}>{item["title"]}</option>
@@ -386,8 +329,8 @@ const Emailbox = ({
                       <></>
                     )}
                   </select>
-                  <FormControl className="accounts"  sx={{width: "100%" }}>
-                  <InputLabel id="demo-simple-select-label">Users</InputLabel>
+                  <FormControl className="accounts" sx={{ width: "100%" }}>
+                    <InputLabel id="demo-simple-select-label">Users</InputLabel>
                     <Select
                       labelId="up-multiple-name-label"
                       id="up-multiple-name"
@@ -413,15 +356,7 @@ const Emailbox = ({
                   >
                     <i id="send" className="ti ti-refresh hide"></i>Submit
                   </button>
-                  <button
-                    onClick={(e) => choosetype(e, "preview")}
-                    className="btn btn-light-info text-info font-medium"
-                    type="submit"
-                  >
-                    <i id="preview" className="ti ti-refresh hide"></i> Preview
-                  </button>
                 </div>
-
               </div>
             </form>
           </div>
@@ -430,4 +365,4 @@ const Emailbox = ({
     </>
   );
 };
-export default Emailbox;
+export default TransferEmailbox;

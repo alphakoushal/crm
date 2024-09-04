@@ -1,11 +1,13 @@
 import React,{useState} from "react";
 import moment from "moment";
-import { emailstatus } from "../../constant/Constant";
+import { emailstatus,defaultvalue } from "../../constant/Constant";
 const Details = ({data}) =>{
 const userdetails= JSON.parse(data['other']);
 let comments= (data['comment']!=null ? JSON.parse(data['comment'])['freshcomment']: []);
+let comments2= (data['comment2']!=null ? JSON.parse(data['comment2'])['freshcomment']: []);
 
 comments.sort((a,b)=> {return b.comment_added_date -a.comment_added_date});
+comments2.sort((a,b)=> {return b.comment_added_date -a.comment_added_date});
 // comments =[];
     return(
         <div className="tab-content pt-4" id="pills-tabContent">
@@ -44,14 +46,14 @@ comments.sort((a,b)=> {return b.comment_added_date -a.comment_added_date});
                   <p className="text-dark my-3"><b>Application Number : </b> {userdetails['app_no']}</p>
                   <p className="text-dark my-3"><b>Title : </b> {userdetails['title']}</p>
                   <img src="dist/images/products/s1.jpg" alt="" className="img-fluid rounded-4 w-100 object-fit-cover"/>
-
+<>
                   {comments.map((item) => {
                     let d =moment.unix(item['comment_added_date']).format("YYYY-MM-DDTHH:mm:ss");
                   return ( item['comments']!=='' ? <div className="position-relative">
                     <div className="p-4 rounded-2 bg-light mb-3">
                       <div className="d-flex align-items-center gap-3">
                       <i className="ti ti-user"></i>
-                          <h6 className="fw-semibold mb-0 fs-4">{item['username']}</h6>
+                          <h6 className="fw-semibold mb-0 fs-4">{defaultvalue.username[item['username']]??item['username']}</h6>
                         <span className="fs-2"><span className="p-1 bg-muted rounded-circle d-inline-block"></span> {moment(d).fromNow()}</span>
                       </div>
                       <p className="my-3">{item['comments']}
@@ -59,6 +61,23 @@ comments.sort((a,b)=> {return b.comment_added_date -a.comment_added_date});
                     </div>
                   </div> : <></>)
                 })}
+                <h4 class="card-title fw-semibold">Comments</h4>
+                <p class="card-subtitle">Previous comments from overall data</p>
+                  {comments2.map((item) => {
+                    let d =moment.unix(item['comment_added_date']).format("YYYY-MM-DDTHH:mm:ss");
+                  return ( item['comments']!=='' ? <div className="position-relative">
+                    <div className="p-4 rounded-2 bg-light mb-3">
+                      <div className="d-flex align-items-center gap-3">
+                      <i className="ti ti-user"></i>
+                          <h6 className="fw-semibold mb-0 fs-4">{defaultvalue.username[item['username']]??item['username']}</h6>
+                        <span className="fs-2"><span className="p-1 bg-muted rounded-circle d-inline-block"></span> {moment(d).fromNow()}</span>
+                      </div>
+                      <p className="my-3">{item['comments']}
+                      </p>
+                    </div>
+                  </div> : <></>)
+                })}
+                </>
                 </div>
               </div>
             </div>

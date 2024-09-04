@@ -10,7 +10,7 @@ const Calculatecost = () =>{
 let coststage=[{'value':"IP Type Selection"},{'value':"Country Selection"},{'value':"Stages Selection"},{'value':"Detailed Report"}]
 let service = ['Patent'];
 let detailservice = ['Filing','Examination','Granting','Annuity'];
-let applicantstatus = ['Micro','Small','Large'];
+let applicantstatus = [{'name':'Large','key':'3'},{'name':'Small','key':'2'},{'name':'Micro','key':'1'}];
 let applicantstatusnumber = {'1':'','2':'s','3':'l'};
 let applicantstatusvalue = {'1':'Micro','2':'Small','3':'Large'};
 const [getdata,setdata]=useState([]);
@@ -20,7 +20,7 @@ const currenttrans=useRef([]);
 const [currenttrans1,updatecurrenttrans1]=useState([]);
 const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:'',file:''});
 const [qtab,setqtab]=useState('');
-const [formuladata,setformuladata]=useState({'ref':'','appno':'ES2022/070522','applicant':'Koushal sethi','p':'12','c':'12','fl':'ger','i':'ES','pr':'1','word':20,'char':10,'as':'','country':[]});
+const [formuladata,setformuladata]=useState({'ref':'','breakup':'no','appno':'ES2022/070522','applicant':'Koushal sethi','p':'12','c':'12','fl':'ger','i':'ES','pr':'1','word':20,'char':10,'as':'','country':[]});
 const updatedata = (k,value) =>{
     setformuladata((prev)=>({...prev,[k]:value}))
 }
@@ -34,6 +34,10 @@ const createpdf = async () =>{
     {
     setvalidate((prev)=>({...prev,file:'',status:false,message:createpdf.errors.error,color:'error',icon:'error'}))
 }
+}
+const handleClose = () =>{
+    setvalidate((prev)=>({...prev,file:'',status:false,message:``,color:'success',icon:'success'}))
+
 }
 const getcost = (c,s,ser) =>{
     let costs =[];let cost=0;let total=0;
@@ -160,7 +164,7 @@ if(tab=='tab4')
 const pushvalue = (e,val) =>{
 if(e.target.checked)
 {
-    setformuladata((prev)=>({...prev,['country']:[...prev.country,{'value':val,'service':[1],'entity':'1'}]})) 
+    setformuladata((prev)=>({...prev,['country']:[...prev.country,{'value':val,'service':[1],'entity':'3'}]})) 
 }
 else
 {
@@ -242,7 +246,7 @@ return totalcost;
 return(
         <>
         <div className={"body-wrapper1 custom-table "}>  
-        <Toast validate={validate}></Toast>
+        <Toast validate={validate} handleClose={handleClose}></Toast>
         <Headerblank></Headerblank>
         <div className="container">
             <div className="row">
@@ -385,6 +389,18 @@ return <>
                                                         <div className="col-sm-3"></div>
                                                     </div>
                                                 </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Break-up Cost</label>
+                                                    <div className="col-sm-6">
+                                                        <select  onChange={(e)=>updatedata('breakup',e.target.value)} className="form-select w-auto">
+                      <option value=''>Choose Option</option>
+                      <option Selected={formuladata['breakup']=='yes' ? 'Selected' : false} value='yes'>Yes</option>
+                      <option Selected={formuladata['breakup']=='no' ? 'Selected' : false} value='no'>No</option>
+
+                    </select>
+                                                    </div>
+                                                    <div className="col-sm-3"></div>
+                                                </div>
                                             </div>
                                         </div>
                                     </article>
@@ -512,7 +528,7 @@ return <>
                                     <option>Choose Your Option</option>
                                     {
                                                                 applicantstatus.map((value,index)=>{
-                                                                    return <option  Selected={countryvalue['entity']==(index+1) ? 'Selected' : false} key ={index} value={index+1}> {value}</option>
+                                                                    return <option  Selected={countryvalue['entity']==(value['key']) ? 'Selected' : false} key ={value['key']} value={value['key']}> {value['name']}</option>
                                                                 })
                                                             }
                                 </select>
@@ -676,6 +692,18 @@ return <>
                                                         <div className="col-sm-3"></div>
                                                     </div>
                                                 </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Break-up Cost</label>
+                                                    <div className="col-sm-6">
+                                                        <select  onChange={(e)=>updatedata('breakup',e.target.value)} className="form-select w-auto">
+                      <option value=''>Choose Option</option>
+                      <option Selected={formuladata['breakup']=='yes' ? 'Selected' : false} value='yes'>Yes</option>
+                      <option Selected={formuladata['breakup']=='no' ? 'Selected' : false} value='no'>No</option>
+
+                    </select>
+                                                    </div>
+                                                    <div className="col-sm-3"></div>
+                                                </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -698,10 +726,78 @@ return <>
                                                                         <th scope="col" className="even-color">Entity</th>
                                                                         <th scope="col" className="odd-color">Filling Language</th>
                                                                         <th scope="col" className="even-color">Stages</th>
-                                                                        <th scope="col" className="odd-color">Official fee </th>
-                                                                        <th scope="col" className="even-color">Professional fee</th>
+                                                                        {
+                                                                            (formuladata['breakup']=='yes' ?
+                                                                            <><th scope="col" className="odd-color">Official fee </th>
+                                                                            <th scope="col" className="even-color">Professional fee</th>
+                                                                            <th scope="col" className="even-color">Total</th></>
+                                                                            :
+                                                     <>
+                                                     <th scope="col" className="even-color">Cost</th></>
+                                                                            )
+                                                                        }
+                                                                        
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {
+                                                                        (tab=='tab4' && getdata.length>0 ? 
+                                                                    formuladata.country.map((item,index)=>{
+                                                                        let stages=item.service.filter((item)=>{return item==1});
+                                                                        let filterc=getdata.filter((fi)=>{return fi.country==item.value});
+                                                                                if(filterc.length>0)
+                                                                        {
+                                                                            let parseddata=JSON.parse(filterc[0].data);
+                                                                        
+                                                                        let returncost =getcost(item.value,[applicantstatusnumber[(item.entity=='' ? '1' : item.entity) ],'pro'],stages);
+                                                                       return <tr key={index}>
+                                                                        <th scope="row">{defaultvalue.countriescode[item.value].name}</th>
+                                                                        <th scope="row">{applicantstatusvalue[item.entity]}</th>
+                                                                        <th scope="row">{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</th>
+                                                                        <td>{stages.map((item)=>detailservice[item-1]).toString()}</td>
+                                                                        {
+                                                                            (formuladata['breakup']=='yes' ?
+                                                                            <>
+                                                                            <td>{defaultvalue.filinglangcurr[parseddata.part5[0].curr]} {returncost[applicantstatusnumber[(item.entity=='' ? '1' : item.entity) ]]??'0'}</td>
+                                                                        <td>{defaultvalue.filinglangcurr[parseddata.part5[0].curr]} {returncost['pro']??'0'}</td>
+                                                                        <td>{defaultvalue.filinglangcurr[parseddata.part5[0].curr]} {returncost['total']??'0'}</td>
+                                                                  
+                                                                            </>
+                                                                            :
+                                                     <>
+                                                                       <td>{defaultvalue.filinglangcurr[parseddata.part5[0].curr]} {returncost['total']??'0'}</td>
+                                                                  
+                                                     </>
+                                                                            )
+                                                                        }
+                                                                         </tr>
+                                                                                }})
+                                                                     : <></>)
+                                                                    }
+
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="accordion-item mt-3">
+                                                <h2 id="regularHeading11" className="accordion-header">
+                                                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#regularCollapse11" aria-expanded="false" aria-controls="regularCollapse11">
+                                                    Combined  Translation Fee to file the patent application
+                                                    </button>
+                                                </h2>
+                                                <div id="regularCollapse11" className="accordion-collapse collapse show" aria-labelledby="regularHeading11" data-bs-parent="#regularAccordionRobots" >
+
+                                                    <div className="accordion-body pt-0 pb-0 ps-3">
+
+                                                        <div className="table-responsive">
+                                                            <table className="table mb-0">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th scope="col" className="odd-color">Filling Language</th>
+                                                                        <th scope="col" className="even-color">Stages</th>
                                                                         <th scope="col" className="odd-color">Translation fee</th>
-                                                                        <th scope="col" className="even-color">Total</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
@@ -716,16 +812,14 @@ return <>
                                                                         
                                                                         let returncost =getcost(item.value,[applicantstatusnumber[(item.entity=='' ? '1' : item.entity) ],'pro','trans'],stages);
                                                                         let transcost =returntranscost((formuladata.fl!=parseddata.part5[0].fl ? (formuladata.fl!='eng' && parseddata.part5[0].fl!='eng' ? 'eng' : formuladata.fl): ''),parseddata.part5[0].fl,formuladata.word,formuladata.char,formuladata.p);
-                                                                       return <tr key={index}>
-                                                                        <th scope="row">{defaultvalue.countriescode[item.value].name}</th>
-                                                                        <th scope="row">{applicantstatusvalue[item.entity]}</th>
+                                                                      if(typeof(transcost)!='string')
+                                                                      {
+                                                                      return <tr key={index}>
                                                                         <th scope="row">{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</th>
                                                                         <td>{stages.map((item)=>detailservice[item-1]).toString()}</td>
-                                                                        <td>{defaultvalue.filinglangcurr[parseddata.part5[0].curr]} {returncost[applicantstatusnumber[(item.entity=='' ? '1' : item.entity) ]]??'0'}</td>
-                                                                        <td>{defaultvalue.filinglangcurr[parseddata.part5[0].curr]} {returncost['pro']??'0'}</td>
                                                                         <td>{typeof(transcost)=='string' ? '' : defaultvalue.filinglangcurr[parseddata.part5[0].curr]} {transcost}</td>
-                                                                        <td>{defaultvalue.filinglangcurr[parseddata.part5[0].curr]} {(typeof(transcost)=='string' ? 0 : transcost) + returncost['total']??'0'}</td>
                                                                     </tr>
+                                                                      }
                                                                                 }})
                                                                      : <></>)
                                                                     }
@@ -754,16 +848,29 @@ return <>
                                                     <div className="accordion-body pt-0 pb-0 ps-3">
                                                     <p className="card-subtitle">Type of Entity: <b>{applicantstatusvalue[item.entity]}</b></p>
                                                     <p className="card-subtitle">Filing Language: <b>{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</b></p>
+                                                    {(formuladata.fl!=parseddata.part5[0].fl ? <p>Translation cost: <div className="d-flex align-items-center gap-2"><span className="fs-3">{formuladata.fl!='eng' && parseddata.part5[0].fl!='eng' ? defaultvalue.filinglangcode['eng'] : defaultvalue.filinglangcode[formuladata.fl]}</span>  <span><i className="ti ti-arrow-right text-success fs-4 position-relative"></i></span> <span className="fs-3">{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</span></div><b>{(f.length>0 ? f[0].cost : '')}</b></p> : <></>)}
                                                         <div className="table-responsive">
                                                             <table className="table mb-0">
                                                                 <thead>
                                                                     <tr>
                                                                         <th scope="col" className="even-color">Description</th>
                                                                         <th scope="col" className="even-color">Timeline</th>
-                                                                        <th scope="col" className="odd-color">Official fee <br></br> ({defaultvalue.filinglangcurr[parseddata.part5[0].curr]})</th>
+                                                                        {
+                                                                            (formuladata['breakup']=='yes' ?
+                                                                            <>
+  <th scope="col" className="odd-color">Official fee <br></br> ({defaultvalue.filinglangcurr[parseddata.part5[0].curr]})</th>
                                                                         <th scope="col" className="even-color">Professional fee <br></br> ({defaultvalue.filinglangcurr[parseddata.part5[0].curr]})</th>
                                                                         <th scope="col" className="odd-color">Total <br></br> ({defaultvalue.filinglangcurr[parseddata.part5[0].curr]})</th>
-                                                                    </tr>
+                                                                  
+                                                                            </>
+                                                                            :
+                                                     <>
+                                                                        <th scope="col" className="odd-color">Cost <br></br> ({defaultvalue.filinglangcurr[parseddata.part5[0].curr]})</th>
+                                                                                                                                      
+                                                     </>
+                                                                            )
+                                                                        }
+                                                                        </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     {
@@ -785,9 +892,20 @@ return <>
                                                                                         return <tr key={index1}>
                                                                                         <td className="text-wrap width-240">{parti.desc}</td>
                                                                                         <td className="text-wrap width-240">{parti.time??''}</td>
+                                                                                        {
+                                                                            (formuladata['breakup']=='yes' ?
+                                                                            <>
                                                                                         <td> { returncost}</td>
                                                                                         <td> {parti.pro??''}</td>
                                                                                         <td>{total??0}</td>
+                                                                            </>
+                                                                            :
+                                                     <>
+                                                                                         <td>{total??0}</td>                                                                                 
+                                                     </>
+                                                                            )
+                                                                        }
+
                                                                                     </tr>
                                                                                       })
                                                                                       }
@@ -806,9 +924,19 @@ return <>
                                                                                         return <tr key={index1}>
                                                                                         <td className="text-wrap width-240">{parti.desc}</td>
                                                                                         <td className="text-wrap width-240">{parti.time??''}</td>
+                                                                                        {
+                                                                            (formuladata['breakup']=='yes' ?
+                                                                            <>
                                                                                         <td> { returncost}</td>
                                                                                         <td> {parti.pro??''}</td>
                                                                                         <td>{total??0}</td>
+                                                                            </>
+                                                                            :
+                                                     <>
+                                                                                         <td>{total??0}</td>                                                                                 
+                                                     </>
+                                                                            )
+                                                                        }
                                                                                     </tr>
                                                                                       })
                                                                                       }
@@ -818,10 +946,13 @@ return <>
 
                                                                           }): <></>)
                                                                     }
-{(formuladata.fl!=parseddata.part5[0].fl ? <tr><td>Translation cost </td><td className="text-end" colSpan={3}><div className="d-flex align-items-center gap-2"><span className="fs-3">{formuladata.fl!='eng' && parseddata.part5[0].fl!='eng' ? defaultvalue.filinglangcode['eng'] : defaultvalue.filinglangcode[formuladata.fl]}</span>  <span><i className="ti ti-arrow-right text-success fs-4 position-relative"></i></span> <span className="fs-3">{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</span></div></td><td><b>{f[0].cost}</b></td></tr> : <></>)}
+{(formuladata.fl!=parseddata.part5[0].fl ? <tr><td>Translation cost </td><td className="text-end" colSpan={(formuladata['breakup']=='yes' ? 3 : 1)}><div className="d-flex align-items-center gap-2"><span className="fs-3">{formuladata.fl!='eng' && parseddata.part5[0].fl!='eng' ? defaultvalue.filinglangcode['eng'] : defaultvalue.filinglangcode[formuladata.fl]}</span>  <span><i className="ti ti-arrow-right text-success fs-4 position-relative"></i></span> <span className="fs-3">{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</span></div></td><td><b>{(f.length>0 ? f[0].cost : '')}</b></td></tr> : <></>)}
 {/* {(formuladata.fl!=parseddata.part5[0].fl ? <tr><td>Translation cost </td><td className="text-end" colSpan={3}><div className="d-flex align-items-center gap-2"><span className="fs-3">{defaultvalue.filinglangcode[formuladata.fl]}</span>  <span><i className="ti ti-arrow-right text-success fs-4 position-relative"></i></span> {(formuladata.fl!='eng' && parseddata.part5[0].fl!='eng' ? <><span className="fs-3">English</span> <span><i className="ti ti-arrow-right text-success fs-4 position-relative"></i></span></> : <></>)}<span className="fs-3">{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</span></div></td><td><b>{returntranscost((formuladata.fl!='eng' && parseddata.part5[0].fl!='eng' ? 'eng' : formuladata.fl),parseddata.part5[0].fl,formuladata.word)}</b></td></tr> : <></>)} */}
                                                                 </tbody>
-                                                            </table>
+                                                            </table><p><br></br></p>
+                                                            <div
+        dangerouslySetInnerHTML={{ __html: filterc[0].pointers }}
+      />
                                                         </div>
                                                     </div>
                                                 </div>

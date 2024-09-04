@@ -20,7 +20,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import MenuItem from "@mui/material/MenuItem";
 import { costs, standard, defaultvalue } from "../../constant/Constant";
-const Dupeemailprocess = ({
+const TransferDupeemailprocess = ({
   page,
   platform,
   fn,
@@ -232,29 +232,15 @@ const Dupeemailprocess = ({
     }, []);
     e.preventDefault();
     let t = document.querySelector("#templateid");
-    let title = document.querySelector("#crontitle").value;
-    let nextfollowup = document.querySelector("#nextfollowup").value;
-    let today = moment().format("YYYY-MM-DD");
-    let diff = moment(nextfollowup).diff(moment(today), "days");
+    let title = '';
+    let nextfollowup = '';
     if (inprocess.current == true) {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "In process",
       }));
-    } else if (diff <= 2) {
-      setvalidate((validate) => ({
-        ...validate,
-        status: true,
-        message: "Next follow up Date should be greater",
-      }));
-    } else if (crontime == "") {
-      setvalidate((validate) => ({
-        ...validate,
-        status: true,
-        message: "Please Choose Time",
-      }));
-    } else if (t.value == "") {
+    }  else if (t.value == "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
@@ -265,18 +251,6 @@ const Dupeemailprocess = ({
         ...validate,
         status: true,
         message: "Please Choose Account",
-      }));
-    } else if (title == "") {
-      setvalidate((validate) => ({
-        ...validate,
-        status: true,
-        message: "Please Enter Comment",
-      }));
-    } else if (nextfollowup == "") {
-      setvalidate((validate) => ({
-        ...validate,
-        status: true,
-        message: "Please Choose Date",
       }));
     } else {
       inprocess.current = true;
@@ -461,43 +435,10 @@ const Dupeemailprocess = ({
                   />
                 </Suspense>
                 <div className="mb-3 text-center d-md-flex align-items-center mt-3  align-content-md-between gap-3">
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="crontitle"
-                    placeholder="Enter Comment"
-                  />
-                  <input
-                    type="date"
-                    className="form-control"
-                    id="nextfollowup"
-                    placeholder="Choose date"
-                  />
-                  <div className="col-md-2 time-selector">
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <TimePicker
-                        label="Set cron Time"
-                        value={crontime}
-                        onChange={(newValue) => setCrontime(newValue)}
-                      />
-                    </LocalizationProvider>
-                  </div>
                   <select id="templateid" className="form-select">
-                    <option value="">Choose Format</option>
-                    {templatelist.map((item, index) => {
-                      return (
-                        <option value={item["id"]}>{item["title"]}</option>
-                      );
-                    })}
-                    {auth.userid == "191214201403624913" &&
-                    page == "freshdata" ? (
-                      <>
-                        <option value="assigned">Assigned</option>
-                        <option value="transfer">Transfer</option>
-                      </>
-                    ) : (
-                      <></>
-                    )}
+                    <option value="">Choose Type</option>
+                    <option value="assigned">Assigned</option>
+                    <option value="transfer">Transfer</option>
                   </select>
                   <FormControl
                     className="accounts"
@@ -529,13 +470,6 @@ const Dupeemailprocess = ({
                   >
                     Submit
                   </button>
-                  <button
-                    onClick={(e) => choosetype(e, "preview")}
-                    className="btn btn-light-info text-info font-medium"
-                    type="submit"
-                  >
-                    Preview
-                  </button>
                 </div>
               </div>
             </form>
@@ -545,4 +479,4 @@ const Dupeemailprocess = ({
     </>
   );
 };
-export default Dupeemailprocess;
+export default TransferDupeemailprocess;

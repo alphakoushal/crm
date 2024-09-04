@@ -15,7 +15,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Sidebarprofile from "../component/modals/Sidebarprofile";
-import Emailbox from "../component/modals/Emailprocess";
+import ITEmailbox from "../component/modals/Itemailbox";
 import Dupeemailprocess from "../component/modals/Dupeemailprocess";
 import Cronlist from "../component/modals/cron-list";
 function Loading() {
@@ -309,7 +309,7 @@ const MenuProps = {
     <Commentmodal/>
     <Style></Style>
     <Header platform={platform} changedata={changedata}  except={true} alldata={d} showmailbox={showmailbox} showdupemailbox={showdupemailbox} showcronbox={showcronbox}  clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
-    {opensendmailbox ? <Emailbox page='it' platform={platform} alldata={d} changedata={changedata} closeemailsendbox={closeemailsendbox} emailsdata={d.slice(0, document.querySelector('#totalsending').value)} fn={closeemailsendbox}></Emailbox> : <></>}
+    {opensendmailbox ? <ITEmailbox page='itdata' platform={platform} alldata={d} changedata={changedata} closeemailsendbox={closeemailsendbox} emailsdata={d.slice(0, document.querySelector('#totalsending').value)} fn={closeemailsendbox}></ITEmailbox> : <></>}
     {opendupesendmailbox ? <Dupeemailprocess page='it' platform={platform} alldata={d} changedata={changedata} closedupeemailsendbox={closedupeemailsendbox} emailsdata={d} fn={closedupeemailsendbox}></Dupeemailprocess> : <></>}
     {opencronbox ? <Cronlist closecronbox={closecronbox}></Cronlist> : <></>}
     <div className="container-fluid bootstrap-table body-wrapper1">

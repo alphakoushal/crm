@@ -15,11 +15,11 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Sidebarprofile from "../component/modals/Sidebarprofile";
-import Emailbox from "../component/modals/Emailprocess";
-import Dupeemailprocess from "../component/modals/Dupeemailprocess";
+import TransferEmailbox from "../component/modals/Transferunique.js";
+import TransferDupeemailprocess from "../component/modals/Transferdupe.js";
+import Pivotprocess from "../component/modals/Pivot.js";
 import Cronlist from "../component/modals/cron-list";
 import ResizableColumn2 from "../component/Resize-two";
-import Dexie from 'dexie'
 function Loading() {
     return <h2>🌀 Loading...</h2>;
   }
@@ -42,6 +42,7 @@ const Freshdata =() =>{
     const platform =useRef('anuation');
     const auth= JSON.parse(localStorage.getItem("user")); 
     const valued=useSelector((state)=>state.userdata.value);
+    const pivotmodalstate =useSelector((state)=>state.crmstyle.pivot);
     const dispatch=useDispatch();
  useEffect(()=>{
     clearfilter();
@@ -79,15 +80,8 @@ const changedata =  useCallback ( (data,modal='') =>{
 })
    const loaddata =  useCallback  ( async (formdata,refreshmode='') =>
     {
-      document.querySelector('.sheet.active').classList.remove('active');
-      document.querySelector('#'+(formdata.sheet??'current')).classList.add('active');
       let abortc= new AbortController();
       let {signal}=abortc;
-
-    // if(processing.current)
-    // {
-    //   abortc.abort();
-    // }
     processing.current=true;
      let datas={};
         document.querySelector('.ti-refresh').classList.add('rotate');document.querySelector('.body-wrapper1').classList.add('loader');
@@ -317,7 +311,6 @@ const MenuProps = {
    const handlecountry = (e) =>{
 if(e.target.value.includes('all'))
 {
-    //setcountry(countries.current)
     setdefaultdata((prev)=>({...prev,countrydata:e.target.value}))
     filterdata(3,countries.current.toString())
 }
@@ -338,13 +331,11 @@ else
    const handlemonthdata = (e) =>{
     if(e.target.value.includes('all'))
     {
-      //  setmonth(months.current)
         setdefaultdata((prev)=>({...prev,monthdata:e.target.value}))
         filterdata(55,months.current.toString())
     }
     else if(e.target.value.includes('unall'))
     {
-      //setmonth([])
       setdefaultdata((prev)=>({...prev,monthdata:[]}))
         filterdata(55,[].toString())
     }
@@ -416,8 +407,9 @@ function getColumnLetter(columnNumber) {
     <Commentmodal/>
     <Style></Style>
     <Header platform={platform} changedata={changedata}  except={true} completedata={d2} alldata={d} showmailbox={showmailbox} showdupemailbox={showdupemailbox} showcronbox={showcronbox}  clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
-    {defaultdata.opensendmailbox ? <Emailbox page='ip' platform={platform} alldata={d} changedata={changedata} closeemailsendbox={closeemailsendbox} emailsdata={d.slice(0, document.querySelector('#totalsending').value)} fn={closeemailsendbox}></Emailbox> : <></>}
-    {defaultdata.opendupesendmailbox ? <Dupeemailprocess page='ip' platform={platform} alldata={d} changedata={changedata} closedupeemailsendbox={closedupeemailsendbox} emailsdata={d} fn={closedupeemailsendbox}></Dupeemailprocess> : <></>}
+    {defaultdata.opensendmailbox ? <TransferEmailbox page='freshdata' platform={platform} alldata={d} changedata={changedata} closeemailsendbox={closeemailsendbox} emailsdata={d.slice(0, document.querySelector('#totalsending').value)} fn={closeemailsendbox}></TransferEmailbox> : <></>}
+    {defaultdata.opendupesendmailbox ? <TransferDupeemailprocess page='freshdata' platform={platform} alldata={d} changedata={changedata} closedupeemailsendbox={closedupeemailsendbox} emailsdata={d} fn={closedupeemailsendbox}></TransferDupeemailprocess> : <></>}
+    {pivotmodalstate ? <Pivotprocess column='63' page='freshdata' platform={platform} alldata={d} ></Pivotprocess> : <></>}
     {defaultdata.opencronbox ? <Cronlist closecronbox={closecronbox}></Cronlist> : <></>}
     <div className="container-fluid bootstrap-table body-wrapper1">
         <div className="fixed-table-container fixed-height d-flex">
@@ -714,7 +706,8 @@ function getColumnLetter(columnNumber) {
 </th>
 <th style={{  background: 'white' }}><div className="headers">Sent on<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,56)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(56,e.target.value)} type='text'></input></th>
 <th style={{  background: 'white' }}><div className="headers">Cron Status<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,57)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(57,e.target.value)} type='text'></input></th>
-<th style={{  background: 'white' }}><div className="headers">Assigned<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,58)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(58,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">Prev Assigned<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,58)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(58,e.target.value)} type='text'></input></th>
+<th style={{  background: 'white' }}><div className="headers">New Assigned<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,63)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(63,e.target.value)} type='text'></input></th>
 <th style={{  background: 'white' }}><div className="headers">Agent Unique/Dupe<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,61)}}></i> </div>
 
 <FormControl sx={{ m: 0, width: '100%' }}>
@@ -826,15 +819,16 @@ function getColumnLetter(columnNumber) {
 <td  onClick={(e)=>{pickvalue(e,53,55)}} className="column-value" style={{  }}>{user[56]}</td>
 <td  onClick={(e)=>{pickvalue(e,54,56)}} className="column-value" style={{  }}>{user[57]}</td>
 <td  onClick={(e)=>{pickvalue(e,55,57)}} className="column-value" style={{  }}>{user[58]}</td>
-<td  onClick={(e)=>{pickvalue(e,56,58)}} className="column-value" style={{  }}>{user[61]}</td>
-<td  onClick={(e)=>{pickvalue(e,57,59)}} className="column-value" style={{  }}>{user[62]}</td>
+<td  onClick={(e)=>{pickvalue(e,56,58)}} className="column-value" style={{  }}>{user[63]}</td>
+<td  onClick={(e)=>{pickvalue(e,57,59)}} className="column-value" style={{  }}>{user[61]}</td>
+<td  onClick={(e)=>{pickvalue(e,58,60)}} className="column-value" style={{  }}>{user[62]}</td>
 
         </>
       )} 
       
     />
     </Suspense>
-    <div className="footable-pagination-wrapper text-center fixed"><div className="divider"><span id='current' className="active sheet" onClick={()=>loaddata({...formdata,'sheet':'current'})}>Current</span><span id='statussheet' className={`sheet`} onClick={()=>loaddata({...formdata,'sheet':'statussheet'})}>Status Sheet</span><span className={`sheet`} id='exhausted' onClick={()=>loaddata({...formdata,'sheet':'exhausted'})}>Exhausted</span><span className={`sheet`} id='converted' onClick={()=>loaddata({...formdata,'sheet':'converted'})}>Converted</span><span className={`sheet`} id='pipeline' onClick={()=>loaddata({...formdata,'sheet':'pipeline'})}>Pipeline</span><span className={`sheet`} id='dnc' onClick={()=>loaddata({...formdata,'sheet':'dnc'})}>Dnc</span></div><span className="label label-default"><span className="text-white">Total Filtered Record {valued}</span></span></div>
+    <div className="footable-pagination-wrapper text-center fixed"><span className="label label-default"><span className="text-white">Total Filtered Record {valued}</span></span></div>
     </div>
     </div>
     <Uploadsidebar/>

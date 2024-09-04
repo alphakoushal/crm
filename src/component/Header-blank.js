@@ -1,7 +1,7 @@
 import React,{useState,memo,useEffect } from "react";
 import { useDispatch,useSelector } from "react-redux";
 import { BrowserRouter, Routes, Route,Link,useNavigate, json } from "react-router-dom";
-import TextareaAutosize from '@mui/base/TextareaAutosize';
+import {TextareaAutosize} from '@mui/base/TextareaAutosize';
 import { styled } from '@mui/system';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';

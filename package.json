@@ -1,7 +1,7 @@
 {
   "name": "crm",
   "version": "0.1.0",
-  "homepage": "https://anuation.com/crm/#/portal",
+  "homepage": "https://www.anuation.com/crm/",
   "private": true,
   "dependencies": {
     "@ckeditor/ckeditor5-basic-styles": "^41.0.0",
@@ -14,13 +14,16 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@faker-js/faker": "^8.0.2",
+    "@mui/base": "^5.0.0-beta.40",
     "@mui/material": "^5.14.2",
+    "@mui/x-date-pickers": "^7.12.1",
     "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.4.0",
     "bootstrap": "^5.3.0",
+    "dayjs": "^1.11.12",
     "dexie": "^3.2.4",
     "export-xlsx": "^0.1.4",
     "faker": "^6.6.6",
@@ -37,6 +40,7 @@
     "react-virtuoso": "^4.4.0",
     "redux-thunk": "^2.4.2",
     "smtp-protocol": "^2.4.7",
+    "socket.io": "^4.7.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

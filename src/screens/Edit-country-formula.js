@@ -6,20 +6,28 @@ import Toast from "../component/New-toast";
 import { useSearchParams } from "react-router-dom";
 import '../component/style/cost.css'
 import { defaultvalue } from "../constant/Constant";
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 const Editcountryformula =() =>{
 
     const [restdata, setrestdata] = useState({'loader':'hide','loadermessage':'Update','title':'','subject':'','clienttype':'','templatetype':''});
     const [searchParams, setSearchParams] = useSearchParams();
     const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:''});
-    const [count,setcount]=useState({'part5':[{'hidebasic':'false','word':0,'p':5,'c':10,'i':1,'pr':10,'fl':'eng','curr':''}],'part1':[{'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':'','time':''}],'part2':[{'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':'','time':''}],'part3':[{'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':'','time':''}],'part4':[{'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':'','time':''}]});
+    const [count,setcount]=useState({'part5':[{'editorData':'','hidebasic':'false','word':0,'p':5,'c':10,'i':1,'pr':10,'fl':'eng','curr':''}],'part1':[{'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':'','time':''}],'part2':[{'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':'','time':''}],'part3':[{'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':'','time':''}],'part4':[{'desc':'filing','p':'','c':'','pr':'','i':'','pc':'','cc':'','prc':'','pcs':'','ccs':'','prcs':'','pcl':'','ccl':'','prcl':'','mc':'','sc':'','lc':'','pro':'','trans':'','time':''}]});
+    const [editorData, setEditorData] = useState('');
     let auth= localStorage.getItem("user"); 
     const selectedcountry=useRef(searchParams.get("id"));
     auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''});
+    const handleEditorChange = (event, editor) => {
+        const data = editor.getData();
+        setEditorData(data);
+      };
     const fetchrecord = async (country) =>{
         let fetch = await Fetchdata.fetchformula({country:country,posttype:'fetchformula'}).then((response)=>{ return response});
         fetch=fetch.data;
         if(fetch.success)
         {
+            setEditorData(fetch.pointers);
            setcount(JSON.parse(fetch.data));
           }
     }
@@ -35,7 +43,8 @@ useEffect(()=>{
 },[])
 
  const  submitformula = async () => {
-    let formdata = {'data':JSON.stringify(count),'country':searchParams.get('id'),'type':'uploadformula','posttype':'uploadformula'};
+
+    let formdata = {'data':JSON.stringify(count),'country':searchParams.get('id'),'type':'uploadformula','posttype':'uploadformula','pointers':editorData};
     let submit  = await Uploaddata.uploadformula(formdata).then((resposne) => { return resposne});
     
     if(submit.data.success)
@@ -94,7 +103,7 @@ if(parseInt(count['part5'][0]['pr'])>parseInt(item['pr']) && item['pr']!='' && i
 return cost;
 }
 async function updatevalue(parent,key,value,index){
-let nested ={...count};
+    let nested ={...count};
     nested[parent][index] = {...nested[parent][index],[key]:value};
     setcount(nested);
 }
@@ -115,45 +124,45 @@ setcount(prevRows => {
     <div className="container-fluid bootstrap-table">
     <div className="card ">
                 <div className="card-body py-3 d-flex justify-content-between position-relative">
-                    <div class="mb-3 mb-sm-0">
-                      <h4 class="card-title fw-semibold">{defaultvalue.countriescode[selectedcountry.current].name??''} Quotation</h4>
-                      <p class="card-subtitle mb-0">Overview</p>
+                    <div className="mb-3 mb-sm-0">
+                      <h4 className="card-title fw-semibold">{defaultvalue.countriescode[selectedcountry.current].name??''} Quotation</h4>
+                      <p className="card-subtitle mb-0">Overview</p>
                     </div>
-                <div class="d-sm-flex d-block align-items-center justify-content-end mb-9">
+                <div className="d-sm-flex d-block align-items-center justify-content-end mb-9">
                     <div className="mb-3 mx-2">
-                    <label class="form-label">Filling Language</label>
-                    <select  onChange={(e)=>updatevalue('part5','fl',e.target.value,'0')} class="form-select w-auto">
+                    <label className="form-label">Filling Language</label>
+                    <select  onChange={(e)=>updatevalue('part5','fl',e.target.value,'0')} className="form-select w-auto">
                       <option value=''>Choose Option</option>
                       {
                           defaultvalue.filinglang.map((item,index)=>{
-                           return <option Selected={count.part5[0]['fl']==item.code ? '' : false} value={item.code}>{item.value}</option>
+                           return <option key={index} Selected={count.part5[0]['fl']==item.code ? '' : false} value={item.code}>{item.value}</option>
 
                         })
                       }
                     </select>
                     </div>
                     <div className="mb-3">
-                    <label class="form-label">Filling Currecny</label>
-                    <select  onChange={(e)=>updatevalue('part5','curr',e.target.value,'0')} class="form-select w-auto">
+                    <label className="form-label">Filling Currecny</label>
+                    <select  onChange={(e)=>updatevalue('part5','curr',e.target.value,'0')} className="form-select w-auto">
                       <option value=''>Choose Option</option>
                       {
                           defaultvalue.fillingcurrency.map((item,index)=>{
-                           return <option Selected={count.part5[0]['curr']==item.code ? '' : false} value={item.code}>{item.value}</option>
+                           return <option key={index} Selected={count.part5[0]['curr']==item.code ? '' : false} value={item.code}>{item.value}</option>
 
                         })
                       }
                     </select>
                     </div>
                   </div>
-                  <i onClick={(e)=>updatevalue('part5','hidebasic',(count.part5[0]['hidebasic']=='true' ? 'false' : 'true'),'0')} class={`ti ${(count.part5[0]['hidebasic']=='true' ? 'ti-eye-off' : 'ti-eye')} fs-6 text-primary`} style={{"position": "absolute","right":"15px","bottom":"0"}}></i>
+                  <i onClick={(e)=>updatevalue('part5','hidebasic',(count.part5[0]['hidebasic']=='true' ? 'false' : 'true'),'0')} className={`ti ${(count.part5[0]['hidebasic']=='true' ? 'ti-eye-off' : 'ti-eye')} fs-6 text-primary`} style={{"position": "absolute","right":"15px","bottom":"0"}}></i>
                 </div>
                 <div className={`card-body py-3  ${(count.part5[0]['hidebasic']=='true' ? 'hide' : 'show')}`}>
                   <div className="d-flex border p-2" style={{'flexWrap': 'wrap'}}>
-                  <div class="mb-3 mx-1"><label class="form-label">Pages</label><input value={count.part5[0]['p']} type="text" class="form-control" onChange={(e)=>updatevalue('part5','p',e.target.value,'0')} /></div>
-                  <div class="mb-3 mx-1"><label class="form-label">Claim</label><input value={count.part5[0]['c']} type="text" class="form-control" onChange={(e)=>updatevalue('part5','c',e.target.value,'0')} /></div>
-                  <div class="mb-3 mx-1"><label class="form-label">Priority</label><input value={count.part5[0]['pr']} type="text" class="form-control" onChange={(e)=>updatevalue('part5','pr',e.target.value,'0')} /></div>
-                  <div class="mb-3 mx-1"><label class="form-label">ISA</label><input value={count.part5[0]['i']} type="text" class="form-control" onChange={(e)=>updatevalue('part5','i',e.target.value,'0')} /></div>
-                  <div class="mb-3"><label class="form-label">Word Count</label><input value={count.part5[0]['word']} type="text" class="form-control" onChange={(e)=>updatevalue('part5','word',e.target.value,'0')} /></div>
+                  <div className="mb-3 mx-1"><label className="form-label">Pages</label><input value={count.part5[0]['p']} type="text" className="form-control" onChange={(e)=>updatevalue('part5','p',e.target.value,'0')} /></div>
+                  <div className="mb-3 mx-1"><label className="form-label">Claim</label><input value={count.part5[0]['c']} type="text" className="form-control" onChange={(e)=>updatevalue('part5','c',e.target.value,'0')} /></div>
+                  <div className="mb-3 mx-1"><label className="form-label">Priority</label><input value={count.part5[0]['pr']} type="text" className="form-control" onChange={(e)=>updatevalue('part5','pr',e.target.value,'0')} /></div>
+                  <div className="mb-3 mx-1"><label className="form-label">ISA</label><input value={count.part5[0]['i']} type="text" className="form-control" onChange={(e)=>updatevalue('part5','i',e.target.value,'0')} /></div>
+                  <div className="mb-3"><label className="form-label">Word Count</label><input value={count.part5[0]['word']} type="text" className="form-control" onChange={(e)=>updatevalue('part5','word',e.target.value,'0')} /></div>
 
         </div></div></div>
 
@@ -170,7 +179,7 @@ setcount(prevRows => {
                   
                 </div>
               </div>
-                    <table className="table " style={{"borderCollapse": "separate","borderSpacing":"0 1rem","margin-top": "-1rem","margin-bottom": "-1rem"}}>
+                    <table className="table " style={{"borderCollapse": "separate","borderSpacing":"0 1rem","marginTop": "-1rem","marginBottom": "-1rem"}}>
                         <thead>
                             <tr>
                                 <th className="r-1 text-center">S.No</th>
@@ -325,7 +334,7 @@ setcount(prevRows => {
                   </button>
                 </div>
               </div>
-                <table className="table" style={{"borderCollapse": "separate","borderSpacing":"0 1rem","margin-top": "-1rem","margin-bottom": "-1rem"}}>
+                <table className="table" style={{"borderCollapse": "separate","borderSpacing":"0 1rem","marginTop": "-1rem","marginBottom": "-1rem"}}>
 <thead>
     <tr>
         <th className="r-1 text-center">S.No</th>
@@ -477,7 +486,7 @@ return <tr key={index} id="addRow">
                   </button>
                 </div>
               </div>
-                <table className="table" style={{"borderCollapse": "separate","borderSpacing":"0 1rem","margin-top": "-1rem","margin-bottom": "-1rem"}}>
+                <table className="table" style={{"borderCollapse": "separate","borderSpacing":"0 1rem","marginTop": "-1rem","marginBottom": "-1rem"}}>
 <thead>
     <tr>
         <th className="r-1 text-center">S.No</th>
@@ -629,7 +638,7 @@ return <tr key={index} id="addRow">
                   </button>
                 </div>
               </div>
-                <table className="table" style={{"border-collapse": "separate","border-spacing":"0 1rem","margin-top": "-1rem","margin-bottom": "-1rem"}}>
+                <table className="table" style={{"borderCollapse": "separate","borderSpacing":"0 1rem","marginTop": "-1rem","marginBottom": "-1rem"}}>
 <thead>
     <tr>
         <th className="r-1 text-center">S.No</th>
@@ -770,6 +779,30 @@ return <tr key={index} id="addRow">
                             </tr>
 </tbody>
 </table>
+<div className="col-12">
+<h4 className="card-title mb-0">Additonal Pointer</h4>
+                        <div className="country-ck align-items-center mt-3">
+                          <div className="form-check">
+                          <CKEditor
+                    editor={ ClassicEditor }
+                    config={ {
+                        toolbar: ["undo","redo","|","heading","|","bold","italic","|","link","uploadImage","insertTable","blockQuote","mediaEmbed","|","bulletedList","numberedList","outdent","indent"]
+                    } }
+                    data={editorData??''}
+                    onReady={ editor => {
+                    } }
+                    onChange={handleEditorChange}
+                    onBlur={ ( event, editor ) => {
+                        console.log( 'Blur.', editor );
+                    } }
+                    onFocus={ ( event, editor ) => {
+                        console.log( 'Focus.', editor );
+                    } }
+                />
+                          </div>
+                        
+                        </div>
+                      </div>
                     <div className="col-12 d-flex"><div className="m-auto mt-3"><button type="submit" onClick={()=>submitformula()} className="btn btn-info font-medium rounded-pill px-4"><div className="d-flex align-items-center"><i className="ti ti-send me-2 fs-4"></i>Update<i className="ti ti-refresh rotate ms-2 hide"></i></div></button></div></div>
                     </div>
                 </div>
