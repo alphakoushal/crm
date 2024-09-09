@@ -34,7 +34,7 @@ const Pivotprocess = ({ alldata, column }) => {
           let userdata = alldata.filter((item) => item[column] == e);
           let returned = getcounts(userdata);
 
-          dupedata.push([e, returned[0],returned[1],returned[2],returned[3],returned[4]]);
+          dupedata.push([e, returned[0],returned[1],returned[2],returned[3],returned[4],returned[5],returned[6],returned[7],returned[8],returned[9],returned[10]]);
         });
         resolve(dupedata);
       });
@@ -47,11 +47,17 @@ const Pivotprocess = ({ alldata, column }) => {
   }, []);
   function getcounts(alldata) {
     let s = alldata.filter((item) => item[8] == "Small");
+    let sb = s.filter((item) => item[9] == "Both - Individual & Agent");
+    let si = s.filter((item) => item[9] == "Individual");
+    let sa = s.filter((item) => item[9] == "Agent");
     let l = alldata.filter((item) => item[8] == "Large");
+    let la = l.filter((item) => item[9] == "Agent");
+    let li = l.filter((item) => item[9] == "Individual");
+    let lb = l.filter((item) => item[9] == "Both - Individual & Agent");
     let a = alldata.filter((item) => item[9] == "Agent");
     let i = alldata.filter((item) => item[9] == "Individual");
     let b = alldata.filter((item) => item[9] == "Both - Individual & Agent");
-    return [s.length, l.length, a.length, i.length, b.length];
+    return [s.length, l.length, a.length, i.length, b.length,sa.length, si.length, sb.length,la.length, li.length, lb.length];
   }
   function Loading() {
     return <h2>🌀 Loading...</h2>;
@@ -113,6 +119,24 @@ const Pivotprocess = ({ alldata, column }) => {
                         <th className="small">
                           <div className="headers">Both</div>
                         </th>
+                        <th className="small">
+                          <div className="headers">Small Agent</div>
+                        </th>
+                        <th className="small">
+                          <div className="headers">Small Individual</div>
+                        </th>
+                        <th className="small">
+                          <div className="headers">Small Both</div>
+                        </th>
+                        <th className="small">
+                          <div className="headers">Large Agent</div>
+                        </th>
+                        <th className="small">
+                          <div className="headers">Large Individual</div>
+                        </th>
+                        <th className="small">
+                          <div className="headers">Large Both</div>
+                        </th>
                         {country.map((item) => {
                           return (
                             <th className="small">
@@ -141,6 +165,24 @@ const Pivotprocess = ({ alldata, column }) => {
                         </td>
                         <td className="column-value small text-break">
                           {user[5]}
+                        </td>
+                        <td className="column-value small text-break">
+                          {user[6]}
+                        </td>
+                        <td className="column-value small text-break">
+                          {user[7]}
+                        </td>
+                        <td className="column-value small text-break">
+                          {user[8]}
+                        </td>
+                        <td className="column-value small text-break">
+                          {user[9]}
+                        </td>
+                        <td className="column-value small text-break">
+                          {user[10]}
+                        </td>
+                        <td className="column-value small text-break">
+                          {user[11]}
                         </td>
                         {country.map((items, index) => {
                           return (

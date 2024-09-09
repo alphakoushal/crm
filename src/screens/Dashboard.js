@@ -382,6 +382,7 @@ const Dashboard = () => {
         email: e.target.closest("tr").querySelectorAll("td")[12].innerText,
         domain: e.target.closest("tr").querySelectorAll("td")[13].innerText,
         type: "3",
+        table:'ip'
       };
       const fetchcomment = await Uploaddata.fetchcomment(formdata).then(
         (response) => {

@@ -395,6 +395,49 @@ const tablesetting = {
 {
     return (d.filter((e1)=>{return e1[numbermatch].trim()===email}).length>=2 ? true : false);
 },
+itreturndata:function(collection,value,key)
+{
+  value=(value!='' && value !=null ? value: '');
+  value = typeof(value)=='number' ? value.toString() : value.toLowerCase();
+
+let t=-1;
+    for(let i=0;i<collection.length;i++)
+    {
+     
+        if(key=='emailtype' || key=='calltype')
+        {
+            if(value==collection[i])
+    {
+       t= 0;
+    } 
+        }
+        else
+        {
+    if(value.indexOf(collection[i])>-1)
+    {
+       t= 0;
+       
+    }
+    else if(collection[i]=='_blank' && value=='')
+    {
+       t= 0;
+    }
+    else if(collection[i]=='!n/a' && value!='n/a')
+    {
+       t= 0;
+       
+    }
+    else if(collection[i].indexOf('!')>-1 && value!=collection[i].split('!')[1])
+    {
+       t= 0;
+       
+    }
+    }
+}
+
+    return t;
+}
+,
 returndata: function(collection,value,key)
 {
   value=(value!='' && value !=null ? value: '');
