@@ -292,7 +292,7 @@ return <>
                                                     </div>
                                                     <div className="col-3">
                                                         <div className="text-center mb-n5">
-                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/breadcrumb/ChatBc.png" alt="modernize-img" className="img-fluid mb-n4"/>
+                                                            <img src="https://www.anuation.com/crm/assets/images/https://www.anuation.com/crm/assets/icons/svg/icon-dd-chat.svg" alt="modernize-img" className="img-fluid mb-n4"/>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -427,7 +427,7 @@ return <>
                                                     </div>
                                                     <div className="col-3">
                                                         <div className="text-center mb-n5">
-                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/breadcrumb/ChatBc.png" alt="modernize-img" className="img-fluid mb-n4"/>
+                                                            <img src="https://www.anuation.com/crm/assets/images/https://www.anuation.com/crm/assets/icons/svg/icon-dd-chat.svg" alt="modernize-img" className="img-fluid mb-n4"/>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -500,7 +500,7 @@ return <>
                                                     </div>
                                                     <div className="col-3">
                                                         <div className="text-center mb-n5">
-                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/breadcrumb/ChatBc.png" alt="modernize-img" className="img-fluid mb-n4"/>
+                                                            <img src="https://www.anuation.com/crm/assets/images/https://www.anuation.com/crm/assets/icons/svg/icon-dd-chat.svg" alt="modernize-img" className="img-fluid mb-n4"/>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -586,7 +586,7 @@ return <>
                                                     </div>
                                                     <div className="col-3">
                                                         <div className="text-center mb-n5">
-                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/breadcrumb/ChatBc.png" alt="modernize-img" className="img-fluid mb-n4"/>
+                                                            <img src="https://www.anuation.com/crm/assets/images/https://www.anuation.com/crm/assets/icons/svg/icon-dd-chat.svg" alt="modernize-img" className="img-fluid mb-n4"/>
                                                         </div>
                                                     </div>
                                                 </div>

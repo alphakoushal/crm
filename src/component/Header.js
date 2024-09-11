@@ -296,19 +296,41 @@ clientObject[e] = {
                           <div className="row">
                             <div className="col-3">
                             <div className="position-relative">
-                                
+                            {auth.type=='1' || auth.type=='2' ? 
+                                <>
                                 <Link to="/dashboard" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Patent</h6>
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
+                                <Link to="/calculate" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Calculate</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                </>
+                                :<></>
+                                }
+                                {auth.type=='4' || auth.type=='2' ? 
+                                <>
                                 <Link to="/analytic" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Analytic</h6>
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
+                                </> : <></>}
+                                {auth.type=='3' || auth.type=='2' ? 
+                                <>
+                                <Link to="/it-dashboard" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">IT Data</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                </> : <></>}
                                 <Link to="/templates" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Templates</h6>
@@ -321,17 +343,18 @@ clientObject[e] = {
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
-                                <Link to="/calculate" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Calculate</h6>
-                                    <span className="fs-2 d-block text-dark">Dashboard</span>
-                                  </div>
-                                </Link>
+                               
                                 {auth.type=='2' ? 
                                 <>
                                 <Link to="/freshdata" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">PCT New Data</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                <Link to="/iip-freshdata" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">IIP New Data</h6>
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
@@ -365,7 +388,7 @@ clientObject[e] = {
                               <div className="position-relative">
                                 <Link onClick={(e)=>handleClickOpen(e,'email_comment_react','Email Comments')}  className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div  className="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
-                                    <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-dd-chat.svg" alt="" className="img-fluid" width="24" height="24"/>
+                                    <img src="https://www.anuation.com/crm/assets/icons/svg/icon-dd-chat.svg" alt="" className="img-fluid" width="24" height="24"/>
                                   </div>
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary"> Email Comment</h6>
@@ -374,7 +397,7 @@ clientObject[e] = {
                                 </Link>
                                 <Link onClick={(e)=>handleClickOpen(e,'call_comment_react','Call Comments')} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div  className="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
-                                    <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-dd-chat.svg" alt="" className="img-fluid" width="24" height="24"/>
+                                    <img src="https://www.anuation.com/crm/assets/icons/svg/icon-dd-chat.svg" alt="" className="img-fluid" width="24" height="24"/>
                                   </div>
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary"> Call Comment</h6>
@@ -383,7 +406,7 @@ clientObject[e] = {
                                 </Link>
                                 <Link onClick={(e)=>followboxevent(e)} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div  className="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
-                                    <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-dd-chat.svg" alt="" className="img-fluid" width="24" height="24"/>
+                                    <img src="https://www.anuation.com/crm/assets/icons/svg/icon-dd-chat.svg" alt="" className="img-fluid" width="24" height="24"/>
                                   </div>
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Followup</h6>
@@ -392,7 +415,7 @@ clientObject[e] = {
                                 </Link>
                                 <Link onClick={(e)=>addentry(e)} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div  className="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
-                                    <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/svgs/icon-dd-chat.svg" alt="" className="img-fluid" width="24" height="24"/>
+                                    <img src="https://www.anuation.com/crm/assets/icons/svg/icon-dd-chat.svg" alt="" className="img-fluid" width="24" height="24"/>
                                   </div>
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Add Application</h6>

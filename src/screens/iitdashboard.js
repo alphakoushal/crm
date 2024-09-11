@@ -699,6 +699,22 @@ const ITDashboard = () => {
                         type="text"
                       ></input>
                     </th>
+                    <th style={{ background: "white" }}>
+                      <div className="headers">
+                        Filename
+                        <i
+                          className="ti ti-sort-ascending"
+                          onClick={() => {
+                            sortdata('filename');
+                          }}
+                        ></i>{" "}
+                      </div>
+                      <input
+                        className="filter"
+                        onKeyUp={(e) => filterdata('filename', e.target.value)}
+                        type="text"
+                      ></input>
+                    </th>
                   </tr>
                   </>
                 )}
@@ -830,6 +846,15 @@ const ITDashboard = () => {
                       style={{}}
                     >
                       {user["assigned"]}
+                    </td>
+                    <td
+                      onClick={(e) => {
+                        pickvalue(e, 15, 14);
+                      }}
+                      className="column-value"
+                      style={{}}
+                    >
+                      {user["filename"]}
                     </td>
                   </>
                 )}

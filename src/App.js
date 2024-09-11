@@ -11,6 +11,7 @@ import Dashboard from "./screens/Dashboard";
 import IIPDashboard from "./screens/IIPDashboard.js";
 import ITDashboard from "./screens/iitdashboard.js";
 import Freshdata from "./screens/Freshdata.js";
+import IIPFreshdata from "./screens/IIPFreshdata.js";
 import Analytic from "./screens/Analytics";
 import Emailemplate from "./screens/Emailemplate.js";
 import TemplateList from "./screens/Templatelist.js";
@@ -46,6 +47,7 @@ function App() {
                 <Route path="/countrylist" element={<Countrylist />}></Route>
                 <Route path="/comparedata" element={<Comparedata />}></Route>
                 <Route path="/freshdata" element={<Freshdata />}></Route>
+                <Route path="/iip-freshdata" element={<IIPFreshdata />}></Route>
                 <Route
                   path="edit-country-formula"
                   element={<Editcountryformula />}

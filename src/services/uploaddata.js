@@ -81,6 +81,16 @@ const emailformat = (data) =>{
         data : data
     }).then(response => { return response});
 }
+const iiprecordtransfer = (data) =>{
+    let assignedurl='https://www.anuation.com/oldcrm/employee/auth/reactauth/iip-allocate-record-from-fresh-data-to-bd-team.php';
+    let urls= assignedurl;
+    return axios({
+        method :'POST',
+        headers : axiosConfig,
+        url: urls,
+        data : data
+    }).then(response => { return response});
+}
 const ITemailformat = (data) =>{
     let itemailurl='https://www.anuation.com/oldcrm/employee/auth/reactauth/itemail.php';
     return axios({
@@ -128,6 +138,14 @@ return axios({
     url: "https://www.anuation.com/oldcrm/employee/auth/react-index",
 }).then(response=>{return response})
 }
+const transferdatatoiippct = (formdata) =>{
+return axios({
+    method:'POST',
+    headers:axiosConfig,
+    data:formdata,
+    url: "https://www.anuation.com/oldcrm/employee/auth/react-index",
+}).then(response=>{return response})
+}
 const createpdf = (formdata) =>{
     return axios({
         method:'POST',
@@ -138,7 +156,7 @@ const createpdf = (formdata) =>{
 }
 
 const Uploaddata = {
-  uploaddata,uploadformula,transferdatatopct,createpdf,fetchcomment,assignsheet,updateinfo,addpct,createssheet,updatepct,uploadanalyticdata,emailformat,ITemailformat,mailtemplate,sendtome
+  uploaddata,uploadformula,iiprecordtransfer,transferdatatopct,transferdatatoiippct,createpdf,fetchcomment,assignsheet,updateinfo,addpct,createssheet,updatepct,uploadanalyticdata,emailformat,ITemailformat,mailtemplate,sendtome
 }
 
 export default Uploaddata;

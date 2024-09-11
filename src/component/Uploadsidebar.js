@@ -63,6 +63,38 @@ const Uploadsidebar = () => {
       }
     }
   };
+  const transferdatatoiippct = async () => {
+    if (currentfetch.current) {
+      setOpen({ status: true, message: "In process" });
+    } else {
+      currentfetch.current = true;
+      document.querySelector(".transferdatatoiippct").classList.add("rotate");
+      document.querySelector(".body-wrapper1").classList.add("loader");
+      let transferdatatoiippctstatus = await Uploaddata.transferdatatoiippct({
+        type: "transferdatatoiippct",
+        posttype: "transferdatatoiippct",
+      }).then((response) => {
+        return response;
+      });
+      if (transferdatatoiippctstatus.data.success) {
+        currentfetch.current = false;
+        document.querySelector(".transferdatatoiippct").classList.remove("rotate");
+        document.querySelector(".body-wrapper1").classList.remove("loader");
+        setOpen({
+          status: true,
+          message: transferdatatoiippctstatus.data.message,
+        });
+      } else {
+        currentfetch.current = false;
+        document.querySelector(".transferdatatoiippct").classList.remove("rotate");
+        document.querySelector(".body-wrapper1").classList.remove("loader");
+        setOpen({
+          status: true,
+          message: transferdatatoiippctstatus.data.errors.error,
+        });
+      }
+    }
+  };
   const updatepct = async () => {
     if (currentfetch.current) {
       setOpen({ status: true, message: "In process" });
@@ -471,6 +503,24 @@ const Uploadsidebar = () => {
                     className="d-flex align-items-center"
                   >
                     Transfer &nbsp;<i className="ti ti-refresh transferdatatopct"></i>
+                  </div>
+                </button>
+              </div>
+              <div className="card card-body">
+                <div className="mb-3 d-flex">
+                  <label htmlFor="formFileSm" className="form-label">
+                    Transfer IIP Data
+                  </label>
+                </div>
+                <button
+                  type="submit"
+                  className="btn btn-info font-medium rounded-pill px-4 ms-auto"
+                >
+                  <div
+                    onClick={() => transferdatatoiippct()}
+                    className="d-flex align-items-center"
+                  >
+                    Transfer &nbsp;<i className="ti ti-refresh transferdatatoiippct"></i>
                   </div>
                 </button>
               </div>

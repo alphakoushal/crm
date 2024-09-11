@@ -63,7 +63,7 @@ const Login =function()
                 <img src="https://www.anuation.com/public/assets//img/logo/2d_logo-01.png" width="180" alt=""/>
               </a>
               <div className="d-none d-xl-flex align-items-center justify-content-center" style={{"height": "calc(100vh - 80px)"}}>
-                <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/backgrounds/login-security.svg" alt="" className="img-fluid" width="500"/>
+                <img src="https://www.anuation.com/crm/assets/icons/svg/login-security.svg" alt="" className="img-fluid" width="500"/>
               </div>
             </div>
             <div className="col-xl-5 col-xxl-4">
