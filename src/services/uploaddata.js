@@ -92,7 +92,7 @@ const iiprecordtransfer = (data) =>{
     }).then(response => { return response});
 }
 const ITemailformat = (data) =>{
-    let itemailurl='https://www.anuation.com/oldcrm/employee/auth/reactauth/itemail.php';
+    let itemailurl='https://www.anuation.com/oldcrm/employee/auth/reactauth/IT/itemail.php';
     return axios({
         method :'POST',
         headers : axiosConfig,
@@ -109,11 +109,27 @@ const mailtemplate =(data) =>{
         data : data
     }).then(response =>{ return response})
 }
+const ITmailtemplate =(data) =>{
+    return axios({
+        method :'POST',
+        headers : axiosConfig,
+        url: "https://www.anuation.com/oldcrm/employee/auth/reactauth/email-template/itmailtemplate.php",
+        data : data
+    }).then(response =>{ return response})
+}
 const sendtome =(data) =>{
     return axios({
         method :'POST',
         headers : axiosConfig,
         url: "https://www.anuation.com/oldcrm/employee/auth/reactauth/sendtome.php",
+        data : data
+    }).then(response =>{ return response})
+}
+const sendtomeitemail =(data) =>{
+    return axios({
+        method :'POST',
+        headers : axiosConfig,
+        url: "https://www.anuation.com/oldcrm/employee/auth/reactauth/IT/sendtomeitemail.php",
         data : data
     }).then(response =>{ return response})
 }
@@ -156,7 +172,7 @@ const createpdf = (formdata) =>{
 }
 
 const Uploaddata = {
-  uploaddata,uploadformula,iiprecordtransfer,transferdatatopct,transferdatatoiippct,createpdf,fetchcomment,assignsheet,updateinfo,addpct,createssheet,updatepct,uploadanalyticdata,emailformat,ITemailformat,mailtemplate,sendtome
+  uploaddata,uploadformula,iiprecordtransfer,transferdatatopct,transferdatatoiippct,createpdf,fetchcomment,assignsheet,updateinfo,addpct,createssheet,updatepct,uploadanalyticdata,emailformat,ITemailformat,mailtemplate,ITmailtemplate,sendtome,sendtomeitemail
 }
 
 export default Uploaddata;

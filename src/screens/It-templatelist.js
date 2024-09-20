@@ -7,7 +7,7 @@ import moment from 'moment'
 import Headerblank from "../component/Header-blank";
 import Uploaddata from "../services/uploaddata";
 import { Link } from "react-router-dom";
-const TemplateList = () =>{
+const ITTemplateList = () =>{
   const [templatelist,settemplate]=useState([]);
   const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:''});
 
@@ -16,13 +16,13 @@ const TemplateList = () =>{
   const sendtome = async(e,id) =>{
     e.preventDefault();
     let email  = document.querySelector('#sendtome').value;
-    let res =await Uploaddata.sendtome({'email':email,'id':id}).then((resposne)=>{return resposne});
+    let res =await Uploaddata.sendtomeitemail({'email':email,'id':id,matter:'2'}).then((resposne)=>{return resposne});
     if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true, message: res.data.message,color:'success',icon:'success' })) }
 else {setvalidate((validate)=>({...validate,status:true,message:res.data.errors.error,color:'error',icon:'error'}));}
 setTimeout(()=>{},1000);
   }
   const fetchlist = async (type) =>{
-let data=await Fetchdata.fetchtemplate({'type':type,matter:'1'}).then((response)=>{ return response});
+let data=await Fetchdata.fetchITtemplate({'type':type,matter:'2'}).then((response)=>{ return response});
 settemplate(data.data.data);
   }
   useEffect(()=>{
@@ -55,8 +55,6 @@ settemplate(data.data.data);
 
  <th><div className="headers">Tile</div></th>
  <th><div className="headers">Email Subject</div></th>
- <th><div className="headers">Client Type</div></th>
- <th><div className="headers">Mail Type</div></th>
  <th><div className="headers">Edit</div></th>
  <th><div className="headers">Test Email <input type='text' id='sendtome'></input></div></th>
         </tr>
@@ -71,13 +69,7 @@ settemplate(data.data.data);
                               <p className="mb-0 fs-1">{user['subject']}</p>
                             </td>
                             <td>
-                              <p className="mb-0 fs-1">{clienttype[user['client_type']]}</p>
-                            </td>
-                            <td>
-                              <p className="mb-0 fs-1">{templatetype[user['template_type']]}</p>
-                            </td>
-                            <td>
-                              <p className="mb-0 fs-1"><Link to={"/edit-template?id="+user['id']}>Edit</Link></p>
+                              <p className="mb-0 fs-1"><Link to={"/edit-it-template?id="+user['id']}>Edit</Link></p>
                             </td>
                             <td>
                               <p className="mb-0 fs-1"><a href="#" onClick={(e)=>{sendtome(e,user['id'])}} className="text-bg-light rounded py-1 px-8 d-flex align-items-center text-decoration-none">
@@ -98,4 +90,4 @@ settemplate(data.data.data);
     )
 }
 
-export default TemplateList;
+export default ITTemplateList;

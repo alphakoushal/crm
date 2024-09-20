@@ -17,6 +17,7 @@ import Uploadsidebar from "../component/Uploadsidebar";
 import Commentmodal from "../component/modals/comments";
 import Uploaddata from "../services/uploaddata";
 import Style from "../component/style/style";
+import Clock from "../component/Clock.js";
 import Editmodal from "../component/modals/Editmodal";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import {
@@ -63,7 +64,7 @@ const Dashboard = () => {
     monthdata: [],
   });
   const [columns, setColumns] = useState([
-    { width: 110, css: "", type: "", key: "APPLN.NO." },
+    { width: 140, css: "", type: "", key: "APPLN.NO." },
     { width: 110, css: "", type: "", key: "Title" },
     { width: 110, css: "", type: "select", key: "COUNTRY" },
     { width: 110, css: "", type: "", key: "PRIOTITY DATE" },
@@ -78,6 +79,7 @@ const Dashboard = () => {
     { width: 110, css: "", type: "", key: "EMAIL ID" },
     { width: 110, css: "", type: "", key: "Domain" },
     { width: 110, css: "", type: "", key: "PH. NO." },
+    { width: 110, css: "", type: "", key: "Timezone" },
     { width: 110, css: "", type: "", key: "Pages" },
     { width: 110, css: "", type: "", key: "Claim" },
     { width: 110, css: "", type: "", key: "Priority" },
@@ -121,6 +123,7 @@ const Dashboard = () => {
     { width: 110, css: "", type: "", key: "Sent on" },
     { width: 110, css: "", type: "", key: "Cron Status" },
     { width: 110, css: "", type: "", key: "Assigned" },
+    { width: 110, css: "", type: "", key: "Email sent from" },
     { width: 110, css: "", type: "", key: "Agent Unique/Dupe" },
     { width: 110, css: "", type: "", key: "Agent Gen/Non Gen" },
   ]);
@@ -241,10 +244,6 @@ const Dashboard = () => {
     let abortc = new AbortController();
     let { signal } = abortc;
 
-    // if(processing.current)
-    // {
-    //   abortc.abort();
-    // }
     processing.current = true;
     let datas = {};
     document.querySelector(".ti-refresh").classList.add("rotate");
@@ -257,7 +256,6 @@ const Dashboard = () => {
         document.querySelector(".ti-refresh").classList.remove("rotate");
         document.querySelector(".body-wrapper1").classList.remove("loader");
       });
-    console.log(data.data.success);
     if (data.data.success) {
       datas = data.data.data;
       countries.current = data.data.country;
@@ -309,10 +307,10 @@ const Dashboard = () => {
     setdefaultdata((prev) => ({ ...prev, opendupesendmailbox: false }));
   };
 
-  function filterdata(index, value) {
+  function filterdata(index, value,keys={}) {
     let i = 0;
     let filters = document.querySelectorAll(".filter");
-
+    index =(Object.keys(keys).length>0 && keys.key=='timezone' ? 'timezone' : index);
     let obj = { key: index, value: value };
 
     if (filtered.length == 0) {
@@ -357,12 +355,16 @@ const Dashboard = () => {
       dispatch(userprofileupdate(copy.length));
     }
   }
-  async function pickvalue(e, i, ni) {
+  function timezone(code)
+  {
+    code=(code=='N/A' || code=='' ? '' : code.split(' '));
+    let timezone = (code.length>=2 && typeof(defaultvalue.timezone[code[0]])!=='undefined' && defaultvalue.timezone[code[0]].timezone!=='' ? defaultvalue.timezone[code[0]].timezone : 'Asia/Kolkata');
+return timezone;
+  }
+  async function pickvalue(e, i, ni,key) {
     e.stopPropagation();
     if (e.detail == 1) {
-      document.querySelector(".cell-name").value = document
-        .querySelectorAll(".custom-table table thead tr+tr th")
-      [ni + 1].querySelector(".headers").innerText;
+      document.querySelector(".cell-name").value = key.key;
       document.querySelector(".cell-value").innerHTML =
         i == "11" && e.target.tagName == "TD"
           ? e.target.getElementsByTagName("span")[0].innerHTML
@@ -412,7 +414,7 @@ const Dashboard = () => {
     event.nativeEvent.stopImmediatePropagation();
     event.stopPropagation();
   }
-  function sortdata(event, index = 0) {
+  function sortdata(event, index = 0,key={}) {
     console.log(event);
     const copy = [...d];
     if (event.detail == 1) {
@@ -1048,6 +1050,22 @@ const Dashboard = () => {
                         <input
                           className="filter"
                           onKeyUp={(e) => filterdata(13, e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                        Timezone
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 13,{key:'timezone'});
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata(13, e.target.value,{key:'timezone'})}
                           type="text"
                         ></input>
                       </th>
@@ -1883,6 +1901,22 @@ const Dashboard = () => {
                       </th>
                       <th style={{ background: "white" }}>
                         <div className="headers">
+                          Assigned2
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 63);
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata(63, e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
                           Agent Unique/Dupe
                           <i
                             className="ti ti-sort-ascending"
@@ -1947,7 +1981,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 2, 0);
+                        pickvalue(e, 2, 0,{key:'APPLN.NO.'});
                       }}
                       className="column-value"
                       style={{
@@ -1958,6 +1992,7 @@ const Dashboard = () => {
                       }}
                     >
                       {/* <input className='appno' value={user[2]} onClick={(event)=>pushdata(event,user[2])} style={{'position':"absolute",'top':'18px','left':'0'}} type='checkbox'></input> */}
+                      <img className='flagwidth' src={`https://www.anuation.com/crm/assets/flags/${user[3].toLowerCase()}.png`}/>
                       <a
                         target="blank"
                         href={
@@ -1989,7 +2024,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 1, 1);
+                        pickvalue(e, 1, 1,{key:'Title'});
                       }}
                       className="column-value"
                       style={{}}
@@ -1998,7 +2033,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 3, 2);
+                        pickvalue(e, 3, 2,{key:'COUNTRY'});
                       }}
                       className="column-value small"
                       style={{}}
@@ -2007,7 +2042,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 4, 3);
+                        pickvalue(e, 4, 3,{key:'PRIOTITY DATE'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2016,7 +2051,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 5, 4);
+                        pickvalue(e, 5, 4,{key:'DEADLINE - 30 mth'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2025,7 +2060,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 6, 5);
+                        pickvalue(e, 6, 5,{key:'DEADLINE - 31 mth'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2034,7 +2069,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 7, 6);
+                        pickvalue(e, 7, 6,{key:'APPLICANT NAME'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2043,7 +2078,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 53, 7);
+                        pickvalue(e, 53, 7,{key:'Unique/Dupe'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2052,7 +2087,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 54, 8);
+                        pickvalue(e, 54, 8,{key:'Gen/Non Gen'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2061,7 +2096,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 8, 9);
+                        pickvalue(e, 8, 9,{key:'Applicant Status'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2070,7 +2105,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 9, 10);
+                        pickvalue(e, 9, 10,{key:'CONTACT INFO OF'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2079,7 +2114,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 10, 11);
+                        pickvalue(e, 10, 11,{key:'CONTACT PERSON'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2088,7 +2123,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 11, 12);
+                        pickvalue(e, 11, 12,{key:'EMAIL ID'});
                       }}
                       className={`cursor-pointer text-primary column-value align-items-center ${tablesetting.countred(user[11], 11, d) ? "red-dupe" : ""
                         }`}
@@ -2099,7 +2134,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 12, 13);
+                        pickvalue(e, 12, 13,{key:'Domain'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2108,7 +2143,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 13, 14);
+                        pickvalue(e, 13, 14,{key:'PH. NO.'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2117,7 +2152,16 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 14, 15);
+                        pickvalue(e, 13, 14,{key:'Timezone'});
+                      }}
+                      className="column-value"
+                      style={{}}
+                    >
+                    <Clock country={user[3]} timezone={timezone(user[13])} />
+                    </td>
+                    <td
+                      onClick={(e) => {
+                        pickvalue(e, 14, 15,{key:'Pages'});
                       }}
                       className="column-value small"
                       style={{}}
@@ -2126,7 +2170,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 15, 16);
+                        pickvalue(e, 15, 16,{key:'Claim'});
                       }}
                       className="column-value small"
                       style={{}}
@@ -2135,7 +2179,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 16, 17);
+                        pickvalue(e, 16, 17,{key:'Priority'});
                       }}
                       className="column-value small"
                       style={{}}
@@ -2144,7 +2188,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 17, 18);
+                        pickvalue(e, 17, 18,{key:'Drawings'});
                       }}
                       className="column-value small"
                       style={{}}
@@ -2153,7 +2197,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 18, 19);
+                        pickvalue(e, 18, 19,{key:'ISR'});
                       }}
                       className="column-value small"
                       style={{}}
@@ -2162,7 +2206,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 19, 20);
+                        pickvalue(e, 19, 20,{key:'REF. NO.'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2171,7 +2215,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 20, 21);
+                        pickvalue(e, 20, 21,{key:'First Email Date'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2180,7 +2224,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 21, 22);
+                        pickvalue(e, 21, 22,{key:'FollowUp date'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2189,7 +2233,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 22, 23);
+                        pickvalue(e, 22, 23,{key:'Next Follow Up'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2198,7 +2242,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 23, 24);
+                        pickvalue(e, 23, 24,{key:'Previous Status'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2207,7 +2251,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 23, 25);
+                        pickvalue(e, 23, 25,{key:'Email Status'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2216,7 +2260,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 24, 26);
+                        pickvalue(e, 24, 26,{key:'Call Status'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2225,7 +2269,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 25, 27);
+                        pickvalue(e, 25, 27,{key:'Comment'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2235,7 +2279,7 @@ const Dashboard = () => {
                     />
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 26, 28);
+                        pickvalue(e, 26, 28,{key:'Agent name'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2244,7 +2288,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 27, 29);
+                        pickvalue(e, 27, 29,{key:'Agent Email Id'});
                       }}
                       className={`column-value ${tablesetting.countred(user[27], 27, d) ? "red-dupe" : ""
                         }`}
@@ -2254,7 +2298,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 28, 30);
+                        pickvalue(e, 28, 30,{key:'Agent Domain'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2263,7 +2307,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 29, 31);
+                        pickvalue(e, 29, 31,{key:'Agent Phone'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2272,7 +2316,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 30, 32);
+                        pickvalue(e, 30, 32,{key:'Previous Email Status'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2281,7 +2325,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 31, 33);
+                        pickvalue(e, 31, 33,{key:'Company'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2294,7 +2338,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 32, 34);
+                        pickvalue(e, 32, 34,{key:'IN'});
                       }}
                       style={{}}
                     >
@@ -2317,7 +2361,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 33, 35);
+                        pickvalue(e, 33, 35,{key:'CA'});
                       }}
                       style={{}}
                     >
@@ -2340,7 +2384,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 34, 36);
+                        pickvalue(e, 34, 36,{key:'CN'});
                       }}
                       style={{}}
                     >
@@ -2363,7 +2407,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 35, 37);
+                        pickvalue(e, 35, 37,{key:'JP'});
                       }}
                       style={{}}
                     >
@@ -2386,7 +2430,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 36, 38);
+                        pickvalue(e, 36, 38,{key:'AU'});
                       }}
                       style={{}}
                     >
@@ -2409,7 +2453,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 37, 39);
+                        pickvalue(e, 37, 39,{key:'BR'});
                       }}
                       style={{}}
                     >
@@ -2432,7 +2476,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 38, 40);
+                        pickvalue(e, 38, 40,{key:'US'});
                       }}
                       style={{}}
                     >
@@ -2455,7 +2499,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 39, 41);
+                        pickvalue(e, 39, 41,{key:'KR'});
                       }}
                       style={{}}
                     >
@@ -2478,7 +2522,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 40, 42);
+                        pickvalue(e, 40, 42,{key:'EP'});
                       }}
                       style={{}}
                     >
@@ -2501,7 +2545,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 41, 43);
+                        pickvalue(e, 41, 43,{key:'RU'});
                       }}
                       style={{}}
                     >
@@ -2524,7 +2568,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 42, 44);
+                        pickvalue(e, 42, 44,{key:'MX'});
                       }}
                       style={{}}
                     >
@@ -2547,7 +2591,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 43, 45);
+                        pickvalue(e, 43, 45,{key:'MY'});
                       }}
                       style={{}}
                     >
@@ -2570,7 +2614,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 44, 46);
+                        pickvalue(e, 44, 46,{key:'PH'});
                       }}
                       style={{}}
                     >
@@ -2593,7 +2637,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 45, 47);
+                        pickvalue(e, 45, 47,{key:'TH'});
                       }}
                       style={{}}
                     >
@@ -2616,7 +2660,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 46, 48);
+                        pickvalue(e, 46, 48,{key:'ID'});
                       }}
                       style={{}}
                     >
@@ -2639,7 +2683,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 47, 49);
+                        pickvalue(e, 47, 49,{key:'NZ'});
                       }}
                       style={{}}
                     >
@@ -2662,7 +2706,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 48, 50);
+                        pickvalue(e, 48, 50,{key:'ZA'});
                       }}
                       style={{}}
                     >
@@ -2685,7 +2729,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 49, 51);
+                        pickvalue(e, 49, 51,{key:'VN'});
                       }}
                       style={{}}
                     >
@@ -2708,7 +2752,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 50, 52);
+                        pickvalue(e, 50, 52,{key:'SG'});
                       }}
                       style={{}}
                     >
@@ -2731,7 +2775,7 @@ const Dashboard = () => {
                         (defaultdata.showcurrencytab ? "" : " hiddencol")
                       }
                       onClick={(e) => {
-                        pickvalue(e, 51, 53);
+                        pickvalue(e, 51, 53,{key:'CO'});
                       }}
                       style={{}}
                     >
@@ -2750,7 +2794,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 52, 54);
+                        pickvalue(e, 52, 54,{key:'Month'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2759,7 +2803,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 53, 55);
+                        pickvalue(e, 53, 55,{key:'Sent on'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2768,7 +2812,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 54, 56);
+                        pickvalue(e, 54, 56,{key:'Cron Status'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2777,7 +2821,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 55, 57);
+                        pickvalue(e, 55, 57,{key:'Assigned'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2786,7 +2830,16 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 56, 58);
+                        pickvalue(e, 55, 57,{key:'Assigned2'});
+                      }}
+                      className="column-value"
+                      style={{}}
+                    >
+                      {user[63]}
+                    </td>
+                    <td
+                      onClick={(e) => {
+                        pickvalue(e, 56, 58,{key:'Agent Unique/Dupe'});
                       }}
                       className="column-value"
                       style={{}}
@@ -2795,7 +2848,7 @@ const Dashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 57, 59);
+                        pickvalue(e, 57, 59,{key:'Agent Gen/Non Gen'});
                       }}
                       className="column-value"
                       style={{}}

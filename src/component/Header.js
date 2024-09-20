@@ -27,7 +27,8 @@ const Header = React.memo(({platform,alldata,changedata,completedata,showmailbox
   const dispatch =useDispatch();
   let auth= localStorage.getItem("user"); 
   auth =(auth!='' ? JSON.parse(auth) : '');
-  let accounts =(defaultvalue.accounts[auth.userid]!==undefined ? defaultvalue.accounts[auth.userid] :Object.values(defaultvalue.accounts).flat());
+  let platformaccount = (platform.current==='it' ? defaultvalue.itaccounts : defaultvalue.accounts);
+  let accounts =(platformaccount[auth.userid]!==undefined ? platformaccount[auth.userid] :Object.values(platformaccount).flat());
   const [openemailbox, setOpen] = useState({status:false,type:'',title:''});
   const [openfollowbox, setOpenfollow] = useState(false);
   const [openaddbox, setaddbox] = useState(false);
@@ -119,7 +120,8 @@ window.location.reload();
       else
       {
       appno.forEach((e,index)=>{
-        let getdata=alldata.filter((fv)=>{return fv[2]==e});
+        let getdata=(platform.current=='it' ? alldata.filter((fv)=>{return fv['email'].toLowerCase()==e.toLowerCase()}) : alldata.filter((fv)=>{return fv[2]==e})); 
+        console.log(getdata,platform.current,appno);
         if(getdata.length>0)
         {
 clientObject[e] = {
@@ -148,12 +150,12 @@ clientObject[e] = {
    let cstatus= await commentprocess.updatecomments(salesdata).then((response)=>{return response});
    if (cstatus.data.success) { setvalidate((prev)=>({ ...prev,loader:'hide',loadermessage:'Submit', status: true,inprocess:false, message: cstatus.data.message,color:'success',icon:'success' }));
    setOpen({status:false,type:'',title:''}); 
-   if(type=='email_comment_react')
+   if(type=='email_comment_react' && platform.current!='it')
    {
     let newarray=completedata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[25]:item[25]+"="+commenttext,[58]:a.options[a.selectedIndex].text,[21]:commentdate,[23]:status,[22]:""} : item) });
     changedata(newarray);
    }
-   else
+   else if(platform.current!='it')
    {
     let newarray=completedata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[25]:item[25]+"="+commenttext,[58]:a.options[a.selectedIndex].text,[21]:commentdate,[24]:status} : item) });
     changedata(newarray);
@@ -310,9 +312,36 @@ clientObject[e] = {
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
+                                <Link to="/templates" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Templates</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                <Link to="/templates-list" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Templates List</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
                                 </>
                                 :<></>
                                 }
+                                 {auth.type=='5' ? 
+                                <>
+                                 <Link to="/calculate" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Calculate</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                 <Link to="/countrylist" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Country List</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                </> : <></>}
                                 {auth.type=='4' || auth.type=='2' ? 
                                 <>
                                 <Link to="/analytic" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
@@ -330,19 +359,21 @@ clientObject[e] = {
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
-                                </> : <></>}
-                                <Link to="/templates" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                <Link to="/it-templates" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Templates</h6>
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">IT Templates</h6>
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
-                                <Link to="/templates-list" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                <Link to="/it-templates-list" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Templates List</h6>
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
+                                </> : <></>}
+
+                               
                                
                                 {auth.type=='2' ? 
                                 <>
@@ -508,13 +539,13 @@ clientObject[e] = {
                 </Link>
                 <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-center">
                 <li  className="nav-item dropdown">
-                    <Link onClick={(e)=>{showuserprofile(e)}} className="nav-link pe-0 show" id="drop1" data-bs-toggle="dropdown" aria-expanded="true">
+                    <a href="#" onClick={(e)=>{showuserprofile(e)}} className="nav-link pe-0 show" id="drop1" data-bs-toggle="dropdown" aria-expanded="true">
                       <div className="d-flex align-items-center">
                         <div className="user-profile-img">
                           <img src={"../crm/assets/images/profile/"+(auth.gender=='f' ? 'user-2' : 'user-1')+".jpg"} className={`rounded-circle ${(isOnline ? 'border-green' : 'border-red')}`} width="35" height="35" alt=""/>
                         </div>
                       </div>
-                    </Link>
+                    </a>
                     <div className="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up user-profile" aria-labelledby="drop1" data-bs-popper="static">
                       <div className="profile-dropdown position-relative" data-simplebar="init"><div className="simplebar-wrapper" style={{"margin": "0px"}}><div className="simplebar-height-auto-observer-wrapper"><div className="simplebar-height-auto-observer"></div></div><div className="simplebar-mask"><div className="simplebar-offset" style={{"right": "0px","bottom": "0px"}}><div className="simplebar-content-wrapper" tabIndex="0" role="region" aria-label="scrollable content" style={{"height": "auto","overflow": "hidden scroll"}}><div className="simplebar-content" style={{"padding": "0px"}}>
                         <div className="py-3 px-7 pb-0">

@@ -33,12 +33,488 @@ const defaultvalue = {
       {'key':'7','value':'Ringing'},
       {'key':'8','value':'Dnc'}
         ],
-        filinglang:[{'code':'eng','value':'English'},{'code':'ger','value':'German'},{'code':'spa','value':'Spanish'},{'code':'por','value':'Portuguese'},{'code':'kor','value':'Korean'},{'code':'jap','value':'Japanese'},{'code':'chn','value':'Chinese'},{'code':'rus','value':'Russian'},{'code':'arb','value':'Arabic'},{'code':'far','value':'Farsi'},{'code':'tha','value':'Thai'},{'code':'fre','value':'French'}],
+        timezone: {
+          "93": { timezone: "Asia/Kabul"
+          },
+          "355": { timezone: "Europe/Tirane"
+          },
+          "213": { timezone: "Africa/Algiers"
+          },
+          "1-684": { timezone: "Pacific/Pago_Pago"
+          },
+          "376": { timezone: "Europe/Andorra"
+          },
+          "244": { timezone: "Africa/Luanda"
+          },
+          "1-264": { timezone: "America/Anguilla"
+          },
+          "672": { timezone: "Antarctica/Casey",timezone: "Antarctica/Davis",timezone: "Antarctica/DumontDUrville",timezone: "Antarctica/Mawson",timezone: "Antarctica/McMurdo",timezone: "Antarctica/Palmer",timezone: "Antarctica/Rothera",timezone: "Antarctica/Syowa",timezone: "Antarctica/Troll",timezone: "Antarctica/Vostok",timezone: "America/Guayaquil"
+          },
+          "1-268": { timezone: "America/Antigua"
+          },
+          "54": { timezone: "America/Argentina/Buenos_Aires"
+          },
+          "374": { timezone: "Asia/Yerevan"
+          },
+          "297": { timezone: "America/Aruba"
+          },
+          "61": { timezone: "Australia/Sydney"
+          },
+          "43": { timezone: "Europe/Vienna"
+          },
+          "994": { timezone: "Asia/Baku"
+          },
+          "1-242": { timezone: "America/Nassau"
+          },
+          "973": { timezone: "Asia/Bahrain"
+          },
+          "880": { timezone: "Asia/Dhaka"
+          },
+          "1-246": { timezone: "America/Barbados"
+          },
+          "375": { timezone: "Europe/Minsk"
+          },
+          "32": { timezone: "Europe/Brussels"
+          },
+          "501": { timezone: "America/Belize"
+          },
+          "229": { timezone: "Africa/Porto-Novo"
+          },
+          "1-441": { timezone: "Atlantic/Bermuda"
+          },
+          "975": { timezone: "Asia/Thimphu"
+          },
+          "591": { timezone: "America/La_Paz"
+          },
+          "387": { timezone: "Europe/Sarajevo"
+          },
+          "267": { timezone: "Africa/Gaborone"
+          },
+          "55": { timezone: "America/Araguaina",timezone: "America/Bahia",timezone: "America/Belem",timezone: "America/Boa_Vista",timezone: "America/Campo_Grande",timezone: "America/Cuiaba",timezone: "America/Eirunepe",timezone: "America/Fortaleza",timezone: "America/Maceio",timezone: "America/Manaus",timezone: "America/Noronha",timezone: "America/Porto_Velho",timezone: "America/Recife",timezone: "America/Rio_Branco",timezone: "America/Sao_Paulo",timezone:"America/Santarem"
+          },
+          "246": { timezone: "America/Barbados"
+          },
+          "1-284": { timezone: "America/Tortola"
+          },
+          "673": { timezone: "Asia/Brunei"
+          },
+          "359": { timezone: "Europe/Sofia"
+          },
+          "226": { timezone: "Africa/Ouagadougou"
+          },
+          "257": { timezone: "Africa/Bujumbura"
+          },
+          "855": { timezone: "Asia/Phnom_Penh"
+          },
+          "237": { timezone: "Africa/Douala"
+          },
+          "1": { timezone: "America/New_York"
+          },
+          "238": { timezone: "Atlantic/Cape_Verde"
+          },
+          "1-345": { timezone: "America/Cayman"
+          },
+          "236": { timezone: "Africa/Bangui"
+          },
+          "235": { timezone: "Africa/Ndjamena"
+          },
+          "56": { timezone: "	America/Punta_Arenas",timezone: "America/Santiago",timezone: "Pacific/Easter"
+          },
+          "86": { timezone: "Asia/Shanghai",timezone: "Asia/Urumqi",timezone: "Asia/Taipei"
+          },
+          "57": { timezone: "America/Bogota"
+          },
+          "269": { timezone: "Indian/Comoro"
+          },
+          "682": { timezone: "Pacific/Rarotonga"
+          },
+          "506": { timezone: "America/Costa_Rica"
+          },
+          "385": { timezone: "Europe/Zagreb"
+          },
+          "53": { timezone: "America/Havana"
+          },
+          "599": { timezone: "Europe/Amsterdam"
+          },
+          "357": { timezone: "Asia/Famagusta",timezone: "Asia/Nicosia"
+          },
+          "420": { timezone: "Europe/Prague"
+          },
+          "243": { timezone: "Africa/Brazzaville",timezone: "Africa/Kinshasa",timezone: "Africa/Lubumbashi"
+          },
+          "45": { timezone: "Europe/Copenhagen"
+          },
+          "253": { timezone: "Africa/Djibouti"
+          },
+          "1-767": { timezone: "America/Dominica",timezone: "America/Santo_Domingo"
+          },
+          "1-809, 1-829, 1-849": { timezone: "America/Santo_Domingo"
+          },
+          "670": { timezone: "Asia/Dili"
+          },
+          "593": { timezone: "America/Guayaquil",timezone: "Pacific/Galapagos"
+          },
+          "20": { timezone: "Africa/Cairo"
+          },
+          "503": { timezone: "America/El_Salvador"
+          },
+          "240": { timezone: "Africa/Malabo"
+          },
+          "291": { timezone: "Africa/Asmara"
+          },
+          "372": { timezone: "Europe/Tallinn"
+          },
+          "251": { timezone: "Africa/Addis_Ababa"
+          },
+          "500": { timezone: "Atlantic/Stanley"
+          },
+          "298": { timezone: "Atlantic/Faroe"
+          },
+          "679": { timezone: "Pacific/Fiji"
+          },
+          "358": { timezone: "Europe/Helsinki"
+          },
+          "33": { timezone: "Europe/Paris"
+          },
+          "689": { timezone: "Pacific/Gambier",timezone: "Pacific/Marquesas",timezone: "Pacific/Tahiti"
+          },
+          "241": { timezone: "Africa/Libreville"
+          },
+          "220": { timezone: "Africa/Banjul"
+          },
+          "995": { timezone: "Asia/Tbilisi",timezone: "Atlantic/South_Georgia"
+          },
+          "49": { timezone: "Europe/Berlin",timezone: "Europe/Busingen"
+          },
+          "233": { timezone: "Africa/Accra"
+          },
+          "350": { timezone: "Europe/Gibraltar"
+          },
+          "30": { timezone: "Europe/Athens"
+          },
+          "299": { timezone: "America/Danmarkshavn",timezone: "America/Nuuk",timezone: "America/Scoresbysund",timezone: "America/Thule"
+          },
+          "1-473": { timezone: "America/Grenada"
+          },
+          "1-671": { timezone: "Pacific/Guam"
+          },
+          "502": { timezone: "America/Guatemala"
+          },
+          "44-1481": { timezone: "Europe/Guernsey"
+          },
+          "224": { timezone: "Africa/Conakry"
+          },
+          "245": { timezone: "Africa/Bissau"
+          },
+          "592": { timezone: "America/Guyana"
+          },
+          "509": { timezone: "America/Port-au-Prince"
+          },
+          "504": { timezone: "America/Tegucigalpa"
+          },
+          "852": { timezone: "Asia/Hong_Kong"
+          },
+          "36": { timezone: "Europe/Budapest"
+          },
+          "354": { timezone: "Atlantic/Reykjavik"
+          },
+          "91": { timezone: "Asia/Kolkata"
+          },
+          "62": { timezone: "Asia/Jakarta",timezone: "Asia/Jayapura",timezone: "Asia/Makassar",timezone: "Asia/Pontianak"
+          },
+          "98": { timezone: "Asia/Tehran"
+          },
+          "964": { timezone: "Asia/Baghdad"
+          },
+          "353": { timezone: "Europe/Dublin"
+          },
+          "44-1624": { timezone: "Europe/Isle_of_Man"
+          },
+          "972": { timezone: "Asia/Jerusalem"
+          },
+          "39": { timezone: "Europe/Rome"
+          },
+          "225": { timezone: "Africa/Abidjan"
+          },
+          "1-876": { timezone: "America/Jamaica"
+          },
+          "81": { timezone: "Asia/Tokyo"
+          },
+          "44-1534": { timezone: "Europe/Jersey"
+          },
+          "962": { timezone: "Asia/Amman"
+          },
+          "7": { timezone: ""
+          },
+          "254": { timezone: "Africa/Nairobi"
+          },
+          "686": { timezone: "Pacific/Kanton",timezone: "Pacific/Kiritimati",timezone: "Pacific/Tarawa"
+          },
+          "383": { timezone: ""
+          },
+          "965": { timezone: "Asia/Kuwait"
+          },
+          "996": { timezone: "Asia/Bishkek"
+          },
+          "856": { timezone: "Asia/Vientiane"
+          },
+          "371": { timezone: "Europe/Riga"
+          },
+          "961": { timezone: "Asia/Beirut"
+          },
+          "266": { timezone: "Lesotho"
+          },
+          "231": { timezone: "Africa/Monrovia"
+          },
+          "218": { timezone: "Africa/Tripoli"
+          },
+          "423": { timezone: "Europe/Vaduz"
+          },
+          "370": { timezone: "Europe/Vilnius"
+          },
+          "352": { timezone: "Europe/Luxembourg"
+          },
+          "853": { timezone: "Asia/Macau"
+          },
+          "389": { timezone: "Europe/Skopje"
+          },
+          "261": { timezone: "Indian/Antananarivo"
+          },
+          "265": { timezone: "Africa/Blantyre"
+          },
+          "60": { timezone: "	Asia/Kuala_Lumpur",timezone: "Asia/Kuching"
+          },
+          "960": { timezone: "Indian/Maldives"
+          },
+          "223": { timezone: "Africa/Bamako"
+          },
+          "356": { timezone: "Europe/Malta"
+          },
+          "692": { timezone: "Pacific/Kwajalein", timezone: "Pacific/Majuro"
+          },
+          "222": { timezone: "Africa/Nouakchott"
+          },
+          "230": { timezone: "Indian/Mauritius"
+          },
+          "262": { timezone: "Indian/Reunion"
+          },
+          "52": { timezone: "America/Bahia_Banderas",timezone: "America/Cancun",timezone: "America/Chihuahua",timezone: "America/Ciudad_Juarez",timezone: "America/Hermosillo",timezone: "America/Matamoros",timezone: "America/Mazatlan",timezone: "	America/Merida",timezone: "America/Mexico_City",timezone: "America/Monterrey",timezone: "America/Ojinaga",timezone: "America/Tijuana"
+          },
+          "691": { timezone: "Pacific/Chuuk",timezone: "Pacific/Kosrae",timezone: "Pacific/Pohnpei"
+          },
+          "373": { timezone: "Europe/Chisinau"
+          },
+          "377": { timezone: "Europe/Monaco"
+          },
+          "976": { timezone: "Asia/Hovd",timezone: "Asia/Ulaanbaatar"
+          },
+          "382": { timezone: "Europe/Podgorica"
+          },
+          "1-664": { timezone: "America/Montserrat"
+          },
+          "212": { timezone: "Africa/Casablanca",timezone: "Africa/El_Aaiun"
+          },
+          "258": { timezone: "Africa/Maputo"
+          },
+          "95": { timezone: "Asia/Yangon"
+          },
+          "264": { timezone: "Africa/Windhoek"
+          },
+          "674": { timezone: "Pacific/Nauru"
+          },
+          "977": { timezone: "Asia/Kathmandu"
+          },
+          "31": { timezone: "Europe/Amsterdam"
+          },
+          "599": { timezone: "America/Curacao"
+          },
+          "687": { timezone: "Pacific/Noumea"
+          },
+          "64": { timezone: "Pacific/Auckland",timezone: "Pacific/Chatham"
+          },
+          "505": { timezone: "America/Managua"
+          },
+          "227": { timezone: "Africa/Niamey"
+          },
+          "234": { timezone: "Africa/Lagos"
+          },
+          "683": { timezone: "Pacific/Niue"
+          },
+          "850": { timezone: "Asia/Pyongyang"
+          },
+          "1-670": { timezone: "Pacific/Saipan"
+          },
+          "47": { timezone: "Europe/Oslo"
+          },
+          "968": { timezone: "Asia/Muscat"
+          },
+          "92": { timezone: "Europe/Bucharest"
+          },
+          "680": { timezone: "Pacific/Palau"
+          },
+          "970": { timezone: "Asia/Gaza",timezone: "Asia/Hebron"
+          },
+          "507": { timezone: "America/Panama"
+          },
+          "675": { timezone: "Pacific/Bougainville",timezone: "Pacific/Port_Moresby"
+          },
+          "595": { timezone: "America/Asuncion"
+          },
+          "51": { timezone: "America/Lima"
+          },
+          "63": { timezone: "Asia/Manila"
+          },
+          "64": { timezone: ""
+          },
+          "48": { timezone: "Europe/Warsaw"
+          },
+          "351": { timezone: "Atlantic/Azores",timezone: "Atlantic/Madeira",timezone: "Europe/Lisbon"
+          },
+          "1-787, 1-939": { timezone: "America/Puerto_Rico"
+          },
+          "974": { timezone: "Asia/Qatar"
+          },
+          "242": { timezone: "Africa/Brazzaville"
+          },
+          "262": { timezone: "Indian/Mayotte"
+          },
+          "40": { timezone: "Europe/Bucharest"
+          },
+          "7": { timezone: ""
+          },
+          "250": { timezone: "Africa/Kigali"
+          },
+          "590": { timezone: ""
+          },
+          "290": { timezone: "Atlantic/St_Helena"
+          },
+          "1-869": { timezone: "America/St_Kitts"
+          },
+          "1-758": { timezone: "America/St_Lucia"
+          },
+          "590": { timezone: "America/Guadeloupe"
+          },
+          "508": { timezone: "America/Miquelon"
+          },
+          "1-784": { timezone: "America/St_Vincent"
+          },
+          "685": { timezone: "Pacific/Pago_Pago",timezone: "Pacific/Apia"
+          },
+          "378": { timezone: "Europe/San_Marino"
+          },
+          "239": { timezone: "Africa/Sao_Tome"
+          },
+          "966": { timezone: "Asia/Riyadh"
+          },
+          "221": { timezone: "Africa/Dakar"
+          },
+          "381": { timezone: "Europe/Belgrade"
+          },
+          "248": { timezone: "Indian/Mahe"
+          },
+          "232": { timezone: "Africa/Freetown"
+          },
+          "65": { timezone: "Asia/Singapore"
+          },
+          "1-721": { timezone: "America/Lower_Princes"
+          },
+          "421": { timezone: "Europe/Bratislava"
+          },
+          "386": { timezone: "Europe/Ljubljana"
+          },
+          "677": { timezone: "Pacific/Guadalcanal"
+          },
+          "252": { timezone: "Africa/Mogadishu"
+          },
+          "27": { timezone: "	Africa/Johannesburg"
+          },
+          "82": { timezone: "Asia/Seoul"
+          },
+          "211": { timezone: "Africa/Juba"
+          },
+          "34": { timezone: "Africa/Ceuta",timezone: "Atlantic/Canary",timezone: "Europe/Madrid"
+          },
+          "94": { timezone: "Asia/Colombo"
+          },
+          "249": { timezone: "Africa/Khartoum"
+          },
+          "597": { timezone: "America/Paramaribo"
+          },
+          "47": { timezone: "Europe/Oslo"
+          },
+          "268": { timezone: "Africa/Mbabane"
+          },
+          "46": { timezone: "Europe/Stockholm"
+          },
+          "41": { timezone: "Europe/Zurich"
+          },
+          "963": { timezone: "Asia/Damascus"
+          },
+          "886": { timezone: "Asia/Taipei"
+          },
+          "992": { timezone: "Asia/Dushanbe"
+          },
+          "255": { timezone: "Africa/Dar_es_Salaam"
+          },
+          "66": { timezone: "Asia/Bangkok"
+          },
+          "228": { timezone: "Africa/Lome"
+          },
+          "690": { timezone: "Pacific/Fakaofo"
+          },
+          "676": { timezone: "Pacific/Tongatapu"
+          },
+          "1-868": { timezone: "America/Port_of_Spain"
+          },
+          "216": { timezone: "Africa/Tunis"
+          },
+          "90": { timezone: "Europe/Istanbul"
+          },
+          "993": { timezone: "Asia/Ashgabat"
+          },
+          "1-649": { timezone: "America/Grand_Turk"
+          },
+          "688": { timezone: "Pacific/Funafuti"
+          },
+          "1-340": { timezone: "America/St_Thomas"
+          },
+          "256": { timezone: "Africa/Kampala"
+          },
+          "380": { timezone: "Europe/Kyiv", timezone: "Europe/Simferopol"
+          },
+          "971": { timezone: "Asia/Dubai"
+          },
+          "44": { timezone: "Europe/London"
+          },
+          "598": { timezone: "America/Montevideo"
+          },
+          "998": { timezone: "Asia/Samarkand",timezone: "Asia/Tashkent"
+          },
+          "678": { timezone: "Pacific/Efate"
+          },
+          "379": { timezone: "Europe/Vatican"
+          },
+          "58": { timezone: "America/Caracas"
+          },
+          "84": { timezone: "Asia/Ho_Chi_Minh"
+          },
+          "681": { timezone: "Pacific/Wallis"
+          },
+          "212": { timezone: "Africa/Casablanca",timezone: "Africa/El_Aaiun"
+          },
+          "967": { timezone: "Asia/Aden"
+          },
+          "260": { timezone: "Africa/Lusaka"
+          },
+          "263": { timezone: "Africa/Harare"
+          }
+        },      
+              filinglang:[{'code':'eng','value':'English'},{'code':'ger','value':'German'},{'code':'spa','value':'Spanish'},{'code':'por','value':'Portuguese'},{'code':'kor','value':'Korean'},{'code':'jap','value':'Japanese'},{'code':'chn','value':'Chinese'},{'code':'rus','value':'Russian'},{'code':'arb','value':'Arabic'},{'code':'far','value':'Farsi'},{'code':'tha','value':'Thai'},{'code':'fre','value':'French'}],
         fillingcurrency : [{'code':'usd','value':'USD'},{'code':'eur','value':'EUR'},{'code':'inr','value':'INR'}],
         filinglangcurr : {'usd':'USD','eur':'EURO','inr':'INR'},
         filinglangcode:{'eng':'English','ger':'German','spa':'Spanish','por':'Portuguese','kor':'Korean','jap':'Japanese','chn':'Chinese','rus':'Russian','arb':'Arabic','far':'Farsi','tha':'Thai','fre':'French'},
         transcost :[{ "from": "eng", "to": "jap", "currency": "USD", "cost": "0.17", "type": "word" },{ "from": "jap", "to": "eng", "currency": "USD", "cost": "0.15", "type": "char" },{ "from": "eng", "to": "kor", "currency": "USD", "cost": "0.12", "type": "word" },{ "from": "kor", "to": "eng", "currency": "USD", "cost": "0.12", "type": "char" },{ "from": "eng", "to": "por", "currency": "USD", "cost": "0.13", "type": "word" },{ "from": "por", "to": "eng", "currency": "USD", "cost": "0.13", "type": "word" },{ "from": "eng", "to": "spa", "currency": "USD", "cost": "0.12", "type": "word" },{ "from": "spa", "to": "eng", "currency": "USD", "cost": "0.12", "type": "word" },{ "from": "eng", "to": "ger", "currency": "USD", "cost": "0.17", "type": "word" },{ "from": "ger", "to": "eng", "currency": "USD", "cost": "0.17", "type": "word" },{ "from": "eng", "to": "chn", "currency": "USD", "cost": "0.10", "type": "word" },{ "from": "chn", "to": "eng", "currency": "USD", "cost": "0.10", "type": "word" },{ "from": "eng", "to": "rus", "currency": "USD", "cost": "0.06", "type": "word" },{ "from": "rus", "to": "eng", "currency": "USD", "cost": "0.06", "type": "word" },{ "from": "eng", "to": "arb", "currency": "USD", "cost": "25", "type": "page" },{ "from": "arb", "to": "eng", "currency": "USD", "cost": "25", "type": "page" },{ "from": "eng", "to": "far", "currency": "USD", "cost": "25", "type": "page" },{ "from": "far", "to": "eng", "currency": "USD", "cost": "25", "type": "page" },{ "from": "eng", "to": "tha", "currency": "USD", "cost": "0.08", "type": "word" },{ "from": "tha", "to": "eng", "currency": "USD", "cost": "0.08", "type": "word" },{ "from": "eng", "to": "fre", "currency": "USD", "cost": "0.12", "type": "word" },{ "from": "fre", "to": "eng", "currency": "USD", "cost": "0.14", "type": "word" }],
-        accounts:{'191214150648429653':[{name:'Divi',account:15},{name:'Priya',account:16},{name:'Meenu',account:4},{name:'Kim',account:5},{name:'Ojas',account:6},{name:'Naina',account:7}],'231220121357187063':[{name:'Amy',account:11},{name:'Mohini',account:8},{name:'Eva',account:9},{name:'Nancy',account:10}],'191220121357187063':[{name:'Ria',account:14},{name:'Anu',account:12},{name:'Neha',account:13}],'240120121357187064':[{name:'Sia',account:17},{name:'Komal',account:18}],'240513115857792863':[{name:'Gary',account:19}]},
+        accounts:{'191214150648429653':[{name:'Divi',account:15},{name:'Meenu',account:4},{name:'Kim',account:5},{name:'Ojas',account:6},{name:'Naina',account:7}],'231220121357187063':[{name:'Amy',account:11},{name:'Mohini',account:8},{name:'Eva',account:9},{name:'Nancy',account:10}],'191220121357187063':[{name:'Ria',account:14},{name:'Anu',account:12},{name:'Neha',account:13},{name:'Priya',account:16}],'240120121357187064':[{name:'Sia',account:17},{name:'Komal',account:18}],'240513115857792863':[{name:'Gary',account:19}]},
         username:{'191214150648429653':'Kim','231220121357187063':'Mohini','191220121357187063':'Ria','240120121357187064':'Komal','240513115857792863':'Gary'},
         usernames:[{'key':'191214150648429653','name':'Kim'},{'key':'231220121357187063','name':'Mohini'},{'key':'191220121357187063','name':'Ria'},{'key':'240120121357187064','name':'Komal'},{'key':'240513115857792863','name':'Garry'}],
         usernames2:[{'account':'191214150648429653','name':'Kim'},{'account':'231220121357187063','name':'Mohini'},{'account':'191220121357187063','name':'Ria'},{'account':'240120121357187064','name':'Komal'},{'account':'240513115857792863','name':'Garry'}],
@@ -394,7 +870,7 @@ const defaultvalue = {
 const tablesetting = {
   countred:function(email,numbermatch,d)
 {
-    return (d.filter((e1)=>{return e1[numbermatch].trim()===email}).length>=2 ? true : false);
+    return (d.filter((e1)=>{return e1[numbermatch].trim().toLowerCase()===email.toLowerCase()}).length>=2 ? true : false);
 },
 itreturndata:function(collection,value,key)
 {

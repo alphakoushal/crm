@@ -37,7 +37,8 @@ useEffect(()=>{
     async function submittemplate()
     {
         let mail_subject=document.querySelector('#emailsubject').value;
-        let template_type =document.querySelector('#templatetype').value; let client_type =document.querySelector('#clienttype').value;
+        let template_type =document.querySelector('#templatetype').value;
+         let client_type =document.querySelector('#clienttype').value;
        let title=document.querySelector('#emailtitle').value;
        if(restdata.loader=='block')
        {
@@ -72,6 +73,7 @@ useEffect(()=>{
             'mail_subject':mail_subject,
             'template_type':template_type,
             'userid':auth.userid,
+            'matter':'1',
             'client_type':client_type,
             'title':title,
             'uniqueid':searchParams.get("id")

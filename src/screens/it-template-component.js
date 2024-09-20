@@ -6,7 +6,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Uploaddata from "../services/uploaddata";
-const Emailemplate =() =>{
+const ITEmailemplate =() =>{
     const [editorData, setEditorData] = useState('');
     const [validate,setvalidate]=useState({'loader':'hide','loadermessage':'Submit',status:false,color:'error',icon:'error',message:''});
     let auth= localStorage.getItem("user"); 
@@ -20,7 +20,6 @@ const Emailemplate =() =>{
     async function submittemplate()
     {
         let mail_subject=document.querySelector('#emailsubject').value;
-        let template_type =document.querySelector('#templatetype').value; let client_type =document.querySelector('#clienttype').value;
        let title=document.querySelector('#emailtitle').value;
        if(validate.loader=='block')
        {
@@ -35,14 +34,6 @@ const Emailemplate =() =>{
        {
         setvalidate((validate)=>({...validate,status:true,message:'Please Enter Email Subject'}));
        }
-       else if(template_type=='')
-       {
-        setvalidate((validate)=>({...validate,status:true,message:'Please Choose Template Type'}));
-       }
-       else if(client_type=='')
-       {
-        setvalidate((validate)=>({...validate,status:true,message:'Please Choose Client Type'}));
-       }
        else if(editorData=='')
        {
         console.log(editorData);
@@ -54,14 +45,12 @@ const Emailemplate =() =>{
         let formdata={
             'mail_body':editorData,
             'mail_subject':mail_subject,
-            'template_type':template_type,
-            'matter':'1',
             'userid':auth.userid,
-            'client_type':client_type,
+            'matter':'2',
             'title':title
             
           }
-         let res =await Uploaddata.mailtemplate(formdata).then((resposne)=>{return resposne});
+         let res =await Uploaddata.ITmailtemplate(formdata).then((resposne)=>{return resposne});
          if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true, message: res.data.message,color:'success',icon:'success' })) 
          document.querySelector('input').value='';
         }
@@ -87,50 +76,21 @@ setvalidate((data)=>({...data,'loader': 'hide','loadermessage':'Submit'}));
                   <h5 className="mb-3">Email Template</h5>
                   <div className="d-flex border p-2" style={{'flexWrap': 'wrap'}}>
             <small className="border rounded me-1 mb-1 bg-light p-1">@contact_person@</small>
-            <small className="border rounded me-1 mb-1 bg-light p-1">@title@</small>
-            <small className="border rounded me-1 mb-1 bg-light p-1">@application_no@</small>
-            <small className="border rounded me-1 mb-1 bg-light p-1">@email_id@</small>
-            <small className="border rounded me-1 mb-1 bg-light p-1">@applicant_name@</small>
-            <small className="border rounded me-1 mb-1 bg-light p-1">@deadline_30_month@</small>
-            <small className="border rounded me-1 mb-1 bg-light p-1">@deadline_31_month@</small>
-            <small className="border rounded me-1 mb-1 bg-light p-1">@incost@</small>
             <small className="border rounded me-1 mb-1 bg-light p-1">@best@</small>
 
 
         </div>
                     <div className="row">
-                    <div className="col-md-3">
+                    <div className="col-md-6">
                         <div className="form-floating mb-3">
                           <input type="text" className="form-control" id="emailtitle" placeholder="Enter Name here"/>
                           <label htmlFor="tb-fname">Title</label>
                         </div>
                       </div>
-                      <div className="col-md-3">
+                      <div className="col-md-6">
                         <div className="form-floating mb-3">
                           <input type="text" className="form-control" id="emailsubject" placeholder="Enter Name here"/>
                           <label htmlFor="tb-fname">Email Subject</label>
-                        </div>
-                      </div>
-                      <div className="col-md-3">
-                        <div className="form-floating mb-3">
-                        <select className="form-select mr-sm-2" id="clienttype">
-                        <option defaultValue="">Choose...</option>
-                        <option value="1">Agent</option>
-                        <option value="2">Individual</option>
-                        <option value="3">Both</option>
-                      </select>
-                          <label htmlFor="tb-email">Client Type</label>
-                          
-                        </div>
-                      </div>
-                      <div className="col-md-3">
-                        <div className="form-floating">
-                        <select className="form-select mr-sm-2" id="templatetype">
-                        <option defaultValue="">Choose...</option>
-                        <option value="1">Individual</option>
-                        <option value="2">Dupe</option>
-                      </select>
-                          <label htmlFor="tb-pwd">Template Type</label>
                         </div>
                       </div>
                       <div className="col-12">
@@ -176,4 +136,4 @@ setvalidate((data)=>({...data,'loader': 'hide','loadermessage':'Submit'}));
 </>
     );
 }
-export default Emailemplate;
+export default ITEmailemplate;

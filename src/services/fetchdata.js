@@ -68,6 +68,14 @@ url: API_URL+'employee/auth/reactauth/fetchtemplatedata',
 data :data
 }).then((response)=> {return response})
 }
+const fetchITtemplate = (data) =>{
+  return axios({
+    method :"POST",
+headers :axiosConfig,
+url: API_URL+'employee/auth/reactauth/fetchtemplatedata',
+data :data
+}).then((response)=> {return response})
+}
 const fetchtemp = (data) =>{
   return axios({
     method :"POST",
@@ -120,7 +128,7 @@ method:'POST'
   }).then((response)=>{return response;})
 }
 const Fetchdata = {
-  fetchapp,deletecron,reschedulecron,fetchformula,fetchcountry,fetchdomain,freshdata,fetchdata,fetchcomment,fetchstatusheetdata,fetchitdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchtemp,fetchtemplate
+  fetchapp,deletecron,reschedulecron,fetchformula,fetchcountry,fetchdomain,freshdata,fetchdata,fetchcomment,fetchstatusheetdata,fetchitdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchtemp,fetchITtemplate,fetchtemplate
 }
 
 export default Fetchdata;

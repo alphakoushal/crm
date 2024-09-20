@@ -64,17 +64,18 @@ window.location.reload();
                           <div className="row">
                             
                             <div className="col-3">
-                              <div className="position-relative">
-                                
+                            <div className="position-relative">
+                            {auth.type=='1' || auth.type=='2' ? 
+                                <>
                                 <Link to="/dashboard" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Patent</h6>
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
-                                <Link to="/analytic" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                <Link to="/calculate" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Analytic</h6>
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Calculate</h6>
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
@@ -90,20 +91,80 @@ window.location.reload();
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
-                                {auth.type=='2' ? <>
+                                </>
+                                :<></>
+                                }
+                                           {auth.type=='5' ? 
+                                <>
+                                <Link to="/calculate" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Calculate</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                 <Link to="/countrylist" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Country List</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                </> : <></>}
+                                {auth.type=='4' || auth.type=='2' ? 
+                                <>
+                                <Link to="/analytic" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Analytic</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                </> : <></>}
+                                {auth.type=='3' || auth.type=='2' ? 
+                                <>
+                                <Link to="/it-dashboard" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">IT Data</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                <Link to="/it-templates" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">IT Templates</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                <Link to="/it-templates-list" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Templates List</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                </> : <></>}
+
+                               
+                               
+                                {auth.type=='2' ? 
+                                <>
+                                <Link to="/freshdata" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">PCT New Data</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                <Link to="/iip-freshdata" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">IIP New Data</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
                                 <Link to="/countrylist" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Country List</h6>
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
-                                <Link to="/calculate" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Calculate Cost</h6>
-                                    <span className="fs-2 d-block text-dark">Dashboard</span>
-                                  </div>
-                                </Link>
-                                </> : <></>}
+                                </>
+                                 : <></>
+                                }
                               </div>
                             </div>
                           </div>
@@ -130,13 +191,13 @@ window.location.reload();
                 </Link>
                 <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-center">
                   <li onClick={showuserprofile} className="nav-item dropdown">
-                    <Link className="nav-link pe-0 show" id="drop1" data-bs-toggle="dropdown" aria-expanded="true">
+                    <a href="#" className="nav-link pe-0 show" id="drop1" data-bs-toggle="dropdown" aria-expanded="true">
                       <div className="d-flex align-items-center">
                         <div className="user-profile-img">
                           <img src={"../crm/assets/images/profile/"+(auth.gender=='f' ? 'user-2' : 'user-1')+".jpg"} className="rounded-circle" width="35" height="35" alt=""/>
                         </div>
                       </div>
-                    </Link>
+                    </a>
                     <div className="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up user-profile" aria-labelledby="drop1" data-bs-popper="static">
                       <div className="profile-dropdown position-relative" data-simplebar="init"><div className="simplebar-wrapper" style={{"margin": "0px"}}><div className="simplebar-height-auto-observer-wrapper"><div className="simplebar-height-auto-observer"></div></div><div className="simplebar-mask"><div className="simplebar-offset" style={{"right": "0px","bottom": "0px"}}><div className="simplebar-content-wrapper" tabIndex="0" role="region" aria-label="scrollable content" style={{"height": "auto","overflow": "hidden scroll"}}><div className="simplebar-content" style={{"padding": "0px"}}>
                         <div className="py-3 px-7 pb-0">

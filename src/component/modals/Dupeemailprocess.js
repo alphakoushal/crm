@@ -102,8 +102,9 @@ const Dupeemailprocess = ({
               e[6].trim(),
               incost,
               e[27].trim(),
-              e[58],
+              e[65],
               e[63],
+              e[64]
             ]);
           }
         } else {
@@ -137,8 +138,9 @@ const Dupeemailprocess = ({
               e[6],
               incost,
               e[27],
-              e[58],
+              e[65],
               e[63],
+              e[64]
             ]);
           }
         }
@@ -208,6 +210,7 @@ const Dupeemailprocess = ({
             agentemail_id: val[10],
             fromemail: val[12],
             fromname: val[11],
+            lastsenton: val[13],
           };
         })
       ),
@@ -414,10 +417,10 @@ const Dupeemailprocess = ({
                           <div className="headers">In cost</div>
                         </th>
                         <th className="small">
-                          <div className="headers">Sent From</div>
+                          <div className="headers">Last Sent From</div>
                         </th>
                         <th className="small">
-                          <div className="headers">Sent From Email</div>
+                          <div className="headers">Last Sent From Email</div>
                         </th>
                       </tr>
                     )}

@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React,{useState,useEffect} from "react";
 import Style from "../reducers/Style";
 import Headerblank from "../component/Header-blank";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
@@ -6,23 +6,39 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Uploaddata from "../services/uploaddata";
-const Emailemplate =() =>{
+import Fetchdata from "../services/fetchdata";
+import { useSearchParams } from "react-router-dom";
+import userEvent from "@testing-library/user-event";
+const EditITemailemplate =() =>{
     const [editorData, setEditorData] = useState('');
-    const [validate,setvalidate]=useState({'loader':'hide','loadermessage':'Submit',status:false,color:'error',icon:'error',message:''});
+    const [restdata, setrestdata] = useState({'loader':'hide','loadermessage':'Update','title':'','subject':'','clienttype':'','templatetype':''});
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:''});
     let auth= localStorage.getItem("user"); 
     auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
     const handleEditorChange = (event, editor) => {
       const data = editor.getData();
-  
+      console.log(data);
       setEditorData(data);
     };
-
+    function updatestate(value, key) {
+        setrestdata((data)=>({...data,[key]: value}));
+      }
+    const fetchtemps = async (id) =>{
+        let data= await Fetchdata.fetchtemp({'id':id}).then((response)=>{ return response});
+        data=data.data.data;
+        setEditorData(data.mail_body);
+        setrestdata({'loader':'hide','loadermessage':'Update','title':data.title,'subject':data.subject,'templatetype':data.template_type,'clienttype':data.client_type});
+          }
+useEffect(()=>{
+  setrestdata((data)=>({...data,'loader': 'block','loadermessage':'Fetching'}));
+  fetchtemps(searchParams.get("id"));
+},[])
     async function submittemplate()
     {
         let mail_subject=document.querySelector('#emailsubject').value;
-        let template_type =document.querySelector('#templatetype').value; let client_type =document.querySelector('#clienttype').value;
        let title=document.querySelector('#emailtitle').value;
-       if(validate.loader=='block')
+       if(restdata.loader=='block')
        {
         setvalidate((validate)=>({...validate,status:true,message:'In process'}));
 
@@ -35,39 +51,29 @@ const Emailemplate =() =>{
        {
         setvalidate((validate)=>({...validate,status:true,message:'Please Enter Email Subject'}));
        }
-       else if(template_type=='')
-       {
-        setvalidate((validate)=>({...validate,status:true,message:'Please Choose Template Type'}));
-       }
-       else if(client_type=='')
-       {
-        setvalidate((validate)=>({...validate,status:true,message:'Please Choose Client Type'}));
-       }
        else if(editorData=='')
        {
-        console.log(editorData);
         setvalidate((validate)=>({...validate,status:true,message:'Please Enter Mail body.'}));
        }
        else
        {
-        setvalidate((data)=>({...data,'loader': 'block','loadermessage':'Submitting'}));
+        setrestdata((data)=>({...data,'loader': 'block','loadermessage':'Updating'}));
         let formdata={
             'mail_body':editorData,
             'mail_subject':mail_subject,
-            'template_type':template_type,
-            'matter':'1',
+            'template_type':'1',
             'userid':auth.userid,
-            'client_type':client_type,
-            'title':title
+            'client_type':'1',
+            'matter':'2',
+            'title':title,
+            'uniqueid':searchParams.get("id")
             
           }
-         let res =await Uploaddata.mailtemplate(formdata).then((resposne)=>{return resposne});
-         if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true, message: res.data.message,color:'success',icon:'success' })) 
-         document.querySelector('input').value='';
-        }
+         let res =await Uploaddata.ITmailtemplate(formdata).then((resposne)=>{return resposne});
+         if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true, message: res.data.message,color:'success',icon:'success' })) }
 else {setvalidate((validate)=>({...validate,status:true,message:res.data.errors.error,color:'error',icon:'error'}));}
 setTimeout(()=>{},1000);
-setvalidate((data)=>({...data,'loader': 'hide','loadermessage':'Submit'}));
+setrestdata((data)=>({...data,'loader': 'hide','loadermessage':'Update'}));
         }
     }
     return(
@@ -85,54 +91,26 @@ setvalidate((data)=>({...data,'loader': 'hide','loadermessage':'Submit'}));
               <div className="card">
                 <div className="card-body">
                   <h5 className="mb-3">Email Template</h5>
-                  <div className="d-flex border p-2" style={{'flexWrap': 'wrap'}}>
+                  <div className="d-flex border p-2" style={{'flex-wrap': 'wrap'}}>
             <small className="border rounded me-1 mb-1 bg-light p-1">@contact_person@</small>
-            <small className="border rounded me-1 mb-1 bg-light p-1">@title@</small>
-            <small className="border rounded me-1 mb-1 bg-light p-1">@application_no@</small>
-            <small className="border rounded me-1 mb-1 bg-light p-1">@email_id@</small>
-            <small className="border rounded me-1 mb-1 bg-light p-1">@applicant_name@</small>
-            <small className="border rounded me-1 mb-1 bg-light p-1">@deadline_30_month@</small>
-            <small className="border rounded me-1 mb-1 bg-light p-1">@deadline_31_month@</small>
-            <small className="border rounded me-1 mb-1 bg-light p-1">@incost@</small>
             <small className="border rounded me-1 mb-1 bg-light p-1">@best@</small>
 
 
         </div>
                     <div className="row">
-                    <div className="col-md-3">
+                    <div className="col-md-6">
                         <div className="form-floating mb-3">
-                          <input type="text" className="form-control" id="emailtitle" placeholder="Enter Name here"/>
+                          <input type="text" className="form-control" id="emailtitle" onChange={(e) => (updatestate(e.target.value, 'title'))} value={restdata.title} placeholder="Enter Name here"/>
                           <label htmlFor="tb-fname">Title</label>
                         </div>
                       </div>
-                      <div className="col-md-3">
+                      <div className="col-md-6">
                         <div className="form-floating mb-3">
-                          <input type="text" className="form-control" id="emailsubject" placeholder="Enter Name here"/>
+                          <input type="text" className="form-control" id="emailsubject" onChange={(e) => (updatestate(e.target.value, 'subject'))} value={restdata.subject} placeholder="Enter Name here"/>
                           <label htmlFor="tb-fname">Email Subject</label>
                         </div>
                       </div>
-                      <div className="col-md-3">
-                        <div className="form-floating mb-3">
-                        <select className="form-select mr-sm-2" id="clienttype">
-                        <option defaultValue="">Choose...</option>
-                        <option value="1">Agent</option>
-                        <option value="2">Individual</option>
-                        <option value="3">Both</option>
-                      </select>
-                          <label htmlFor="tb-email">Client Type</label>
-                          
-                        </div>
-                      </div>
-                      <div className="col-md-3">
-                        <div className="form-floating">
-                        <select className="form-select mr-sm-2" id="templatetype">
-                        <option defaultValue="">Choose...</option>
-                        <option value="1">Individual</option>
-                        <option value="2">Dupe</option>
-                      </select>
-                          <label htmlFor="tb-pwd">Template Type</label>
-                        </div>
-                      </div>
+
                       <div className="col-12">
                         <div className="d-md-flex align-items-center mt-3">
                           <div className="form-check">
@@ -141,7 +119,7 @@ setvalidate((data)=>({...data,'loader': 'hide','loadermessage':'Submit'}));
                     config={ {
                         toolbar: ["undo","redo","|","heading","|","bold","italic","|","link","uploadImage","insertTable","blockQuote","mediaEmbed","|","bulletedList","numberedList","outdent","indent"]
                     } }
-                    data="<p>Hello from CKEditor&nbsp;5!</p>"
+                    data={editorData}
                     onReady={ editor => {
                     } }
                     onChange={handleEditorChange}
@@ -161,8 +139,9 @@ setvalidate((data)=>({...data,'loader': 'hide','loadermessage':'Submit'}));
                             <button type="submit" className="btn btn-info font-medium rounded-pill px-4">
                               <div onClick={()=>{submittemplate()}} className="d-flex align-items-center">
                                 <i className="ti ti-send me-2 fs-4"></i>
-                                {validate.loadermessage}
-                                <i className={`ti ti-refresh rotate ms-2 ${validate.loader}`}></i>
+                                
+                                {restdata.loadermessage} 
+                                <i className={`ti ti-refresh rotate ms-2 ${restdata.loader}`}></i>
                               </div>
                             </button>
                           </div>
@@ -176,4 +155,4 @@ setvalidate((data)=>({...data,'loader': 'hide','loadermessage':'Submit'}));
 </>
     );
 }
-export default Emailemplate;
+export default EditITemailemplate;

@@ -42,16 +42,30 @@ let filtered = [];
 const ITDashboard = () => {
   const [d, sd] = useState([]);
   const [d2, gd] = useState([]);
+  const [defaultdata, setdefaultdata] = useState({
+    totalpages: [],
+    profilebar: { status: false, email: "" },
+    opencronbox: false,
+    opendupesendmailbox: false,
+    opensendmailbox: false,
+    sortDown: true,
+    countrydata: [],
+    dupedata: [],
+    applicantstatusdata: [],
+    cio: [],
+    callstatus: [],
+    emailstatus: [],
+    gendata: [],
+    monthdata: [],
+  });
   const [profilebar, setprofilebar] = useState({ status: false, email: "" });
   const [sortDown, setSortDown] = useState(true);
   const [emailstatusdata, setemail] = useState([]);
   const [callstatusdata, setcall] = useState([]);
   const [showcurrencytab, setcurrency] = useState(false);
   const [showeditmodal, updateeditmodal] = useState({ state: false, data: {} });
-  const [opensendmailbox, setsendmailbox] = useState(false);
-  const [opendupesendmailbox, setdupesendmailbox] = useState(false);
-  const [opencronbox, setcronbox] = useState(false);
   const countries = useRef([]);
+  const offset = useRef({ limit: 0, page: 0 });
   const processing = useRef(false);
   const months = useRef([]);
   const platform = useRef("it");
@@ -104,6 +118,32 @@ const ITDashboard = () => {
     sd(data);
     gd(data);
   });
+  const callpages = (e, type) => {
+    let sheet = document.querySelector(".sheet.active").getAttribute("id");
+    let pages = document.querySelector("#pages").value,
+      recordlimit = document.querySelector("#recordlimit").value;
+    let user = auth.userid;
+    console.log(user.value);
+    if (type == "limit") {
+      loaddata({
+        ...formdata1,
+        sheet: sheet,
+        recordlimit: recordlimit,
+        accounttype: user.value == "All" ? 2 : 1,
+        offset: 1,
+        anuationuser_uniqueid: user.value == "" ? auth.userid : user.value,
+      });
+    } else {
+      loaddata({
+        ...formdata1,
+        sheet: sheet,
+        recordlimit: recordlimit,
+        accounttype: 1,
+        offset: pages == "" ? 1 : pages,
+        anuationuser_uniqueid: user.value == "" ? auth.userid : user.value,
+      });
+    }
+  };
   const loaddata = useCallback(async (formdata) => {
     let abortc = new AbortController();
     let { signal } = abortc;
@@ -127,6 +167,16 @@ const ITDashboard = () => {
       countries.current = data.data.country;
       months.current = data.data.monthdata;
       processing.current = false;
+      offset.current = {
+        page: data.data.currentpage,
+        limit: data.data.recordlimit,
+      };
+      setdefaultdata((prev) => ({
+        ...prev,
+        totalpages: new Array(data.data.totalpage)
+          .fill(0)
+          .map((_, index) => index + 1),
+      }));
     } else {
       processing.current = false;
     }
@@ -142,28 +192,27 @@ const ITDashboard = () => {
     loaddata(formdata);
   }, []);
   const showmailbox = () => {
-    setsendmailbox(true);
-  };
-  const showdupemailbox = () => {
-    setdupesendmailbox(true);
-  };
-  const showcronbox = () => {
-    setcronbox(true);
-  };
-  const closecronbox = () => {
-    setcronbox(false);
+    setdefaultdata((prev) => ({ ...prev, opensendmailbox: true }));
   };
   const closeemailsendbox = () => {
-    setsendmailbox(false);
+    setdefaultdata((prev) => ({ ...prev, opensendmailbox: false }));
+  };
+  const showdupemailbox = () => {
+    setdefaultdata((prev) => ({ ...prev, opendupesendmailbox: true }));
   };
   const closedupeemailsendbox = () => {
-    setdupesendmailbox(false);
+    setdefaultdata((prev) => ({ ...prev, opendupesendmailbox: false }));
+  };
+  const showcronbox = () => {
+    setdefaultdata((prev) => ({ ...prev, opencronbox: true }));
+  };
+  const closecronbox = () => {
+    setdefaultdata((prev) => ({ ...prev, opencronbox: false }));
   };
 
-  function filterdata(index, value) {
+  function filterdata(index, value,keys={}) {
     let i = 0;
     let filters = document.querySelectorAll(".filter");
-
     let obj = { key: index, value: value };
 
     if (filtered.length == 0) {
@@ -198,7 +247,7 @@ const ITDashboard = () => {
       } else {
         sv = sv !== "" ? sv.toLowerCase().split(",") : "";
         copy = copy.filter((f) => {
-          return tablesetting.itreturndata(sv, f[e.key], e.key) > -1;
+          return tablesetting.returndata(sv, f[e.key], e.key) > -1;
         });
       }
       i++;
@@ -221,15 +270,14 @@ const ITDashboard = () => {
           : i == "22" && e.target.tagName == "TD"
           ? e.target.getElementsByTagName("a")[0].innerHTML
           : e.target.innerHTML;
-    }
-    else if (e.detail == 2 && i == "11") {
+    } else if (e.detail == 2 && i == "11") {
       let formdata = {
         publication_value: e.target.closest("tr").querySelectorAll("td")[2]
           .innerText,
         email: e.target.closest("tr").querySelectorAll("td")[2].innerText,
         domain: e.target.closest("tr").querySelectorAll("td")[3].innerText,
         type: "3",
-        table:'it'
+        table: "it",
       };
       const fetchcomment = await Uploaddata.fetchcomment(formdata).then(
         (response) => {
@@ -308,7 +356,7 @@ const ITDashboard = () => {
 
   const handlechange = (e) => {
     setemail(e.target.value);
-    filterdata('emailtype', e.target.value.toString());
+    filterdata("emailtype", e.target.value.toString());
   };
   function getColumnLetter(columnNumber) {
     let dividend = columnNumber;
@@ -332,7 +380,7 @@ const ITDashboard = () => {
   };
   const handlecallchange = (e) => {
     setcall(e.target.value);
-    filterdata('calltype', e.target.value.toString());
+    filterdata("calltype", e.target.value.toString());
   };
   const showprofilesidebar = (i, v) => {
     if (document.querySelector("i.profilefetch.show")) {
@@ -385,7 +433,7 @@ const ITDashboard = () => {
           formdatas={formdata}
           showcurrencies={showcurrency}
         ></Header>
-        {opensendmailbox ? (
+        {defaultdata.opensendmailbox ? (
           <ITEmailbox
             page="itdata"
             platform={platform}
@@ -401,20 +449,23 @@ const ITDashboard = () => {
         ) : (
           <></>
         )}
-        {opendupesendmailbox ? (
-          <Dupeemailprocess
-            page="it"
+        {defaultdata.opendupesendmailbox ? (
+          <ITEmailbox
+            page="itdata"
             platform={platform}
             alldata={d}
             changedata={changedata}
-            closedupeemailsendbox={closedupeemailsendbox}
-            emailsdata={d}
+            closeemailsendbox={closedupeemailsendbox}
+            emailsdata={d.slice(
+              0,
+              document.querySelector("#totalsending").value
+            )}
             fn={closedupeemailsendbox}
-          ></Dupeemailprocess>
+          ></ITEmailbox>
         ) : (
           <></>
         )}
-        {opencronbox ? (
+        {defaultdata.opencronbox ? (
           <Cronlist closecronbox={closecronbox}></Cronlist>
         ) : (
           <></>
@@ -446,7 +497,7 @@ const ITDashboard = () => {
                 data={d}
                 fixedHeaderContent={() => (
                   <>
-                  <tr>
+                    <tr>
                       <th></th>
                       {columns.map((column, index) => (
                         <ResizableColumn2
@@ -462,268 +513,293 @@ const ITDashboard = () => {
                         </ResizableColumn2>
                       ))}
                     </tr>
-                  <tr>
-                  <th>
+                    <tr>
+                      <th>
                         <div className="headers">Sr. no</div>
                       </th>
-                    <th style={{ background: "white" }}>
-                      <div className="headers">
-                        CONTACT PERSON
-                        <i
-                          className="ti ti-sort-ascending"
-                          onClick={() => {
-                            sortdata('cp');
-                          }}
-                        ></i>{" "}
-                      </div>
-                      <input
-                        className="filter"
-                        onKeyUp={(e) => filterdata('cp', e.target.value)}
-                        type="text"
-                      ></input>
-                    </th>
-                    <th style={{ background: "white" }}>
-                      <div className="headers">
-                        EMAIL ID
-                        <i
-                          className="ti ti-sort-ascending"
-                          onClick={() => {
-                            sortdata('email');
-                          }}
-                        ></i>{" "}
-                      </div>
-                      <input
-                        className="filter"
-                        onKeyUp={(e) => filterdata('email', e.target.value)}
-                        type="text"
-                      ></input>
-                    </th>
-                    <th style={{ background: "white" }}>
-                      <div className="headers">
-                        Domain
-                        <i
-                          className="ti ti-sort-ascending"
-                          onClick={() => {
-                            sortdata('domain');
-                          }}
-                        ></i>{" "}
-                      </div>
-                      <input
-                        className="filter"
-                        onKeyUp={(e) => filterdata('domain', e.target.value)}
-                        type="text"
-                      ></input>
-                    </th>
-                    <th style={{ background: "white" }}>
-                      <div className="headers">
-                        PH. NO.
-                        <i
-                          className="ti ti-sort-ascending"
-                          onClick={() => {
-                            sortdata('p_h_n');
-                          }}
-                        ></i>{" "}
-                      </div>
-                      <input
-                        className="filter"
-                        onKeyUp={(e) => filterdata('p_h_n', e.target.value)}
-                        type="text"
-                      ></input>
-                    </th>
-                    <th style={{ background: "white" }}>
-                      <div className="headers">
-                        First Email Date
-                        <i
-                          className="ti ti-sort-ascending"
-                          onClick={() => {
-                            sortdata('firstemail');
-                          }}
-                        ></i>{" "}
-                      </div>
-                      <input
-                        className="filter"
-                        onKeyUp={(e) => filterdata('firstemail', e.target.value)}
-                        type="text"
-                      ></input>
-                    </th>
-                    <th style={{ background: "white" }}>
-                      <div className="headers">
-                        FollowUp date
-                        <i
-                          className="ti ti-sort-ascending"
-                          onClick={() => {
-                            sortdata('followup');
-                          }}
-                        ></i>{" "}
-                      </div>
-                      <input
-                        className="filter"
-                        onKeyUp={(e) => filterdata('followup', e.target.value)}
-                        type="text"
-                      ></input>
-                    </th>
-                    <th style={{ background: "white" }}>
-                      <div className="headers">
-                        Next Follow Up
-                        <i
-                          className="ti ti-sort-ascending"
-                          onClick={() => {
-                            sortdata('nextfollowup');
-                          }}
-                        ></i>{" "}
-                      </div>
-                      <input
-                        className="filter"
-                        onKeyUp={(e) => filterdata('nextfollowup', e.target.value)}
-                        type="text"
-                      ></input>
-                    </th>
-                    <th style={{ background: "white" }}>
-                      <div className="headers">
-                        Email Status
-                        <i
-                          className="ti ti-sort-ascending"
-                          onClick={() => {
-                            sortdata('emailtype');
-                          }}
-                        ></i>{" "}
-                      </div>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          CONTACT PERSON
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={() => {
+                              sortdata("cp");
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata("cp", e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          EMAIL ID
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={() => {
+                              sortdata("email");
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata("email", e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Domain
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={() => {
+                              sortdata("domain");
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata("domain", e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          PH. NO.
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={() => {
+                              sortdata("p_h_n");
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata("p_h_n", e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                        Website.
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={() => {
+                              sortdata("website");
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata("website", e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          First Email Date
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={() => {
+                              sortdata("firstemail");
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) =>
+                            filterdata("firstemail", e.target.value)
+                          }
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          FollowUp date
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={() => {
+                              sortdata("followup");
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) =>
+                            filterdata("followup", e.target.value)
+                          }
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Next Follow Up
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={() => {
+                              sortdata("nextfollowup");
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) =>
+                            filterdata("nextfollowup", e.target.value)
+                          }
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Email Status
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={() => {
+                              sortdata("emailtype");
+                            }}
+                          ></i>{" "}
+                        </div>
 
-                      <FormControl sx={{ m: 0, width: 100 }}>
-                        <Select
-                          labelId="demo-multiple-name-label"
-                          id="demo-multiple-name"
-                          multiple
-                          value={emailstatusdata}
-                          onChange={handlechange}
-                          input={<OutlinedInput label="Name" />}
-                          MenuProps={MenuProps}
-                        >
-                          {defaultvalue.names.map((name) => (
-                            <MenuItem key={name.key} value={name.key}>
-                              {name.value}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </th>
-                    <th style={{ background: "white" }}>
-                      <div className="headers">
-                        Call Status
-                        <i
-                          className="ti ti-sort-ascending"
-                          onClick={() => {
-                            sortdata('calltype');
-                          }}
-                        ></i>{" "}
-                      </div>
-                      <FormControl sx={{ m: 0, width: 100 }}>
-                        <Select
-                          labelId="call-name-label"
-                          id="call-name"
-                          multiple
-                          value={callstatusdata}
-                          onChange={handlecallchange}
-                          input={<OutlinedInput label="Name" />}
-                          MenuProps={MenuProps}
-                        >
-                          {defaultvalue.callnames.map((name) => (
-                            <MenuItem key={name.key} value={name.key}>
-                              {name.value}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </th>
-                    <th style={{ background: "white" }}>
-                      <div className="headers">
-                        Comment
-                        <i
-                          className="ti ti-sort-ascending"
-                          onClick={() => {
-                            sortdata('comment');
-                          }}
-                        ></i>{" "}
-                      </div>
-                      <input
-                        className="filter"
-                        onKeyUp={(e) => filterdata('comment', e.target.value)}
-                        type="text"
-                      ></input>
-                    </th>
-                    <th style={{ background: "white" }}>
-                      <div className="headers">
-                        Sent on
-                        <i
-                          className="ti ti-sort-ascending"
-                          onClick={() => {
-                            sortdata('senton');
-                          }}
-                        ></i>{" "}
-                      </div>
-                      <input
-                        className="filter"
-                        onKeyUp={(e) => filterdata('senton', e.target.value)}
-                        type="text"
-                      ></input>
-                    </th>
-                    <th style={{ background: "white" }}>
-                      <div className="headers">
-                        Cron Status
-                        <i
-                          className="ti ti-sort-ascending"
-                          onClick={() => {
-                            sortdata('crondate');
-                          }}
-                        ></i>{" "}
-                      </div>
-                      <input
-                        className="filter"
-                        onKeyUp={(e) => filterdata('crondate', e.target.value)}
-                        type="text"
-                      ></input>
-                    </th>
-                    <th style={{ background: "white" }}>
-                      <div className="headers">
-                        Assigned
-                        <i
-                          className="ti ti-sort-ascending"
-                          onClick={() => {
-                            sortdata('assigned');
-                          }}
-                        ></i>{" "}
-                      </div>
-                      <input
-                        className="filter"
-                        onKeyUp={(e) => filterdata('assigned', e.target.value)}
-                        type="text"
-                      ></input>
-                    </th>
-                    <th style={{ background: "white" }}>
-                      <div className="headers">
-                        Filename
-                        <i
-                          className="ti ti-sort-ascending"
-                          onClick={() => {
-                            sortdata('filename');
-                          }}
-                        ></i>{" "}
-                      </div>
-                      <input
-                        className="filter"
-                        onKeyUp={(e) => filterdata('filename', e.target.value)}
-                        type="text"
-                      ></input>
-                    </th>
-                  </tr>
+                        <FormControl sx={{ m: 0, width: 100 }}>
+                          <Select
+                            labelId="demo-multiple-name-label"
+                            id="demo-multiple-name"
+                            multiple
+                            value={emailstatusdata}
+                            onChange={handlechange}
+                            input={<OutlinedInput label="Name" />}
+                            MenuProps={MenuProps}
+                          >
+                            {defaultvalue.names.map((name) => (
+                              <MenuItem key={name.key} value={name.key}>
+                                {name.value}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Call Status
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={() => {
+                              sortdata("calltype");
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <FormControl sx={{ m: 0, width: 100 }}>
+                          <Select
+                            labelId="call-name-label"
+                            id="call-name"
+                            multiple
+                            value={callstatusdata}
+                            onChange={handlecallchange}
+                            input={<OutlinedInput label="Name" />}
+                            MenuProps={MenuProps}
+                          >
+                            {defaultvalue.callnames.map((name) => (
+                              <MenuItem key={name.key} value={name.key}>
+                                {name.value}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Comment
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={() => {
+                              sortdata("comment");
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata("comment", e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Sent on
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={() => {
+                              sortdata("senton");
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata("senton", e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Cron Status
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={() => {
+                              sortdata("crondate");
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) =>
+                            filterdata("crondate", e.target.value)
+                          }
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Assigned
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={() => {
+                              sortdata("assigned");
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) =>
+                            filterdata("assigned", e.target.value)
+                          }
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Filename
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={() => {
+                              sortdata("filename");
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) =>
+                            filterdata("filename", e.target.value)
+                          }
+                          type="text"
+                        ></input>
+                      </th>
+                    </tr>
                   </>
                 )}
                 itemContent={(index, user) => (
                   <>
-                  <td>
-                      {500 * (1 - 1) +
-                        (index + 1)}
-                    </td>
+                    <td>{500 * (1 - 1) + (index + 1)}</td>
                     <td
                       onClick={(e) => {
                         pickvalue(e, 1, 1);
@@ -737,34 +813,32 @@ const ITDashboard = () => {
                       onClick={(e) => {
                         pickvalue(e, 2, 2);
                       }}
-                      className={`cursor-pointer text-primary column-value d-flex align-items-center ${
-                        tablesetting.countred(user["email"], "email", d)
-                          ? "red-dupe"
-                          : ""
-                      }`}
+                      className={`cursor-pointer text-primary column-value align-items-center ${tablesetting.countred(user["email"], "email", d) ? "red-dupe" : ""
+                        }`}
                       style={{}}
-                    >
-                      <i className="ti ti-refresh rotate hide profilefetch"></i>
-                      <span className="email-id">{user["email"]}</span>
-                    </td>
-                    <td
+                    > <i className="ti ti-refresh rotate hide profilefetch"></i>
+                    <span className="email-id">{user["email"]}</span>
+                  </td>
+                  <td
                       onClick={(e) => {
                         pickvalue(e, 4, 3);
                       }}
-                      className="column-value"
+                      className={`cursor-pointer text-primary column-value align-items-center ${tablesetting.countred(user["domain"], "domain", d) ? "red-dupe" : ""
+                        }`}
                       style={{}}
-                    >
-                      {user["domain"]}
-                    </td>
-                    <td
+                    > <i className="ti ti-refresh rotate hide profilefetch"></i>
+                    <span className="email-id">{user["domain"]}</span>
+                  </td>
+                  <td
                       onClick={(e) => {
                         pickvalue(e, 5, 4);
                       }}
-                      className="column-value"
+                      className={`cursor-pointer text-primary column-value align-items-center ${tablesetting.countred(user["p_h_n"], "p_h_n", d) ? "red-dupe" : ""
+                        }`}
                       style={{}}
-                    >
-                      {user["p_h_n"]}
-                    </td>
+                    > <i className="ti ti-refresh rotate hide profilefetch"></i>
+                    <span className="email-id">{user["p_h_n"]}</span>
+                  </td>
                     <td
                       onClick={(e) => {
                         pickvalue(e, 6, 5);
@@ -772,7 +846,7 @@ const ITDashboard = () => {
                       className="column-value"
                       style={{}}
                     >
-                      {user["firstemail"]}
+                      {user["website"]}
                     </td>
                     <td
                       onClick={(e) => {
@@ -781,7 +855,7 @@ const ITDashboard = () => {
                       className="column-value"
                       style={{}}
                     >
-                      {user["followup"]}
+                      {user["firstemail"]}
                     </td>
                     <td
                       onClick={(e) => {
@@ -790,7 +864,7 @@ const ITDashboard = () => {
                       className="column-value"
                       style={{}}
                     >
-                      {user["nextfollowup"]}
+                      {user["followup"]}
                     </td>
                     <td
                       onClick={(e) => {
@@ -799,7 +873,7 @@ const ITDashboard = () => {
                       className="column-value"
                       style={{}}
                     >
-                      {emailstatus[user["emailtype"]] ?? ""}
+                      {user["nextfollowup"]}
                     </td>
                     <td
                       onClick={(e) => {
@@ -808,11 +882,20 @@ const ITDashboard = () => {
                       className="column-value"
                       style={{}}
                     >
-                      {callstatus[user["calltype"]] ?? ""}
+                      {emailstatus[user["emailtype"]] ?? ""}
                     </td>
                     <td
                       onClick={(e) => {
                         pickvalue(e, 11, 10);
+                      }}
+                      className="column-value"
+                      style={{}}
+                    >
+                      {callstatus[user["calltype"]] ?? ""}
+                    </td>
+                    <td
+                      onClick={(e) => {
+                        pickvalue(e, 12, 11);
                       }}
                       className="column-value"
                       style={{}}
@@ -822,7 +905,7 @@ const ITDashboard = () => {
                     />
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 12, 11);
+                        pickvalue(e, 13, 12);
                       }}
                       className="column-value"
                       style={{}}
@@ -831,7 +914,7 @@ const ITDashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 13, 12);
+                        pickvalue(e, 14, 13);
                       }}
                       className="column-value"
                       style={{}}
@@ -840,7 +923,7 @@ const ITDashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 14, 13);
+                        pickvalue(e, 15, 14);
                       }}
                       className="column-value"
                       style={{}}
@@ -849,7 +932,7 @@ const ITDashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 15, 14);
+                        pickvalue(e, 16, 15);
                       }}
                       className="column-value"
                       style={{}}
@@ -860,13 +943,28 @@ const ITDashboard = () => {
                 )}
               />
             </Suspense>
-            <div className="footable-pagination-wrapper text-center fixed">
-              <div className="divider"></div>
+            <div className="footable-pagination-wrapper text-center fixed d-inline-grid">
+              <div className="divider">
+                <span
+                  id="current"
+                  className="active sheet"
+                  onClick={() => loaddata({ ...formdata, sheet: "current" })}
+                >
+                  Current
+                </span>
+              </div>
               <span className="label label-default">
                 <span className="text-white">
                   Total Filtered Record {valued}
                 </span>
               </span>
+              <div className="divider text-start d-flex">
+                {
+                  <>
+
+                  </>
+                }
+              </div>
             </div>
           </div>
         </div>

@@ -93,7 +93,8 @@ const Emailbox = ({
             email_id: mailtypeaccount == "2" ? val[27] : val[11],
             agentname: val[26],
             fromemail: val[63],
-            fromname: val[58],
+            fromname: val[65],
+            lastsenton: val[64],
             agentemail_id: val[27],
             deadline_30_month: val[5],
             applicant_name: val[7],
@@ -318,10 +319,10 @@ const Emailbox = ({
                           <div className="headers">Contact Person Name</div>
                         </th>
                         <th>
-                          <div className="headers">Sent From</div>
+                          <div className="headers">Last Sent From</div>
                         </th>
                         <th>
-                          <div className="headers">Sent From Email</div>
+                          <div className="headers">Last Sent From Email</div>
                         </th>
                       </tr>
                     )}
@@ -336,7 +337,7 @@ const Emailbox = ({
                         <td className="column-value">{user[27]}</td>
                         <td className="column-value">{user[7]}</td>
                         <td className="column-value">{user[10]}</td>
-                        <td className="column-value">{user[58]}</td>
+                        <td className="column-value">{user[65]}</td>
                         <td className="column-value">{user[63]}</td>
                       </>
                     )}

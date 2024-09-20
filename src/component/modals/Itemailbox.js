@@ -42,7 +42,7 @@ import React, {
       modalstatus: true,
     });
     const fetchlist = async (type) => {
-      let data = await Fetchdata.fetchtemplate({ type: type }).then(
+      let data = await Fetchdata.fetchtemplate({ type: type,matter:'2' }).then(
         (response) => {
           return response;
         }
