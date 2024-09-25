@@ -238,7 +238,6 @@ function pushdata(event,w)
 }
 function sortdata(event,index=0)
 {
-  console.log(event);
     const copy = [...d];
     if(event.detail==1){
 if(defaultdata.sortDown)

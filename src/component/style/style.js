@@ -9,7 +9,6 @@ const [style,updatestyle] = useState({wrap:{'style':'white-space:nowrap;overflow
 let getstyle=localStorage.getItem('style');
 let headers = [...document.querySelectorAll('thead tr th .headers')];
 useEffect(()=>{
-  console.log(headers);
   if(getstyle!=null)
   {
     updatestyle(JSON.parse(getstyle));

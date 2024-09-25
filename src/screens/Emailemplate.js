@@ -6,8 +6,10 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Uploaddata from "../services/uploaddata";
+import DynamicTable from "../component/Dynamictable";
 const Emailemplate =() =>{
     const [editorData, setEditorData] = useState('');
+    const [tables, setTables] = useState([]);
     const [validate,setvalidate]=useState({'loader':'hide','loadermessage':'Submit',status:false,color:'error',icon:'error',message:''});
     let auth= localStorage.getItem("user"); 
     auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
@@ -16,7 +18,19 @@ const Emailemplate =() =>{
   
       setEditorData(data);
     };
-
+    const addTable = () => {
+      const newTable = {
+        title: `Table ${tables.length + 1}`,
+        columns: ['Column 1', 'Column 2', 'Column 3'],
+        rows: [[]],
+      };
+      setTables([...tables, newTable]);
+    };
+    const updateTable = (index, newRows,type) => {
+      const updatedTables = [...tables];
+      updatedTables[index][type] = newRows;
+      setTables(updatedTables);
+    };
     async function submittemplate()
     {
         let mail_subject=document.querySelector('#emailsubject').value;
@@ -45,7 +59,6 @@ const Emailemplate =() =>{
        }
        else if(editorData=='')
        {
-        console.log(editorData);
         setvalidate((validate)=>({...validate,status:true,message:'Please Enter Mail body.'}));
        }
        else
@@ -58,7 +71,8 @@ const Emailemplate =() =>{
             'matter':'1',
             'userid':auth.userid,
             'client_type':client_type,
-            'title':title
+            'title':title,
+            'tables':tables
             
           }
          let res =await Uploaddata.mailtemplate(formdata).then((resposne)=>{return resposne});
@@ -98,7 +112,8 @@ setvalidate((data)=>({...data,'loader': 'hide','loadermessage':'Submit'}));
 
 
         </div>
-                    <div className="row">
+                    <div className="card w-100">
+                      <div className="row">
                     <div className="col-md-3">
                         <div className="form-floating mb-3">
                           <input type="text" className="form-control" id="emailtitle" placeholder="Enter Name here"/>
@@ -146,17 +161,40 @@ setvalidate((data)=>({...data,'loader': 'hide','loadermessage':'Submit'}));
                     } }
                     onChange={handleEditorChange}
                     onBlur={ ( event, editor ) => {
-                        console.log( 'Blur.', editor );
                     } }
                     onFocus={ ( event, editor ) => {
-                        console.log( 'Focus.', editor );
                     } }
                 />
                           </div>
                         
                         </div>
                       </div>
-                      <div className="col-12 d-flex">
+                      </div>
+</div>
+              <div className="card w-100">
+                    <div className="col-12">
+                
+                <div className="p-4 mt-n4 text-center">
+                  <div className="position-relative mt-n4">
+                  <button onClick={addTable} className="rounded-circle border border-3 border-white btn bg-primary-subtle text-primary  btn-sm" title="View Code"><i className="ti ti-circle-plus fs-5 d-flex"></i></button>
+
+                  </div>
+                  <div>
+                    <h6 className="mb-0 fw-semibold mt-2">Add Tables</h6>
+                  </div>
+                  {tables.map((tableData, index) => (
+        <DynamicTable
+          key={index}
+          tableData={tableData}
+          updateTable={(newRows,type) => updateTable(index, newRows,type)}
+        />
+      ))}
+                  
+                </div>
+              </div>
+            </div>
+
+                            <div className="col-12 d-flex">
                       <div className="m-auto mt-3">
                             <button type="submit" className="btn btn-info font-medium rounded-pill px-4">
                               <div onClick={()=>{submittemplate()}} className="d-flex align-items-center">
@@ -167,7 +205,6 @@ setvalidate((data)=>({...data,'loader': 'hide','loadermessage':'Submit'}));
                             </button>
                           </div>
                       </div>
-                    </div>
                 </div>
               </div>
             </div>

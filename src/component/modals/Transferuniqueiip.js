@@ -113,7 +113,6 @@ const TransferiipEmailbox = ({
         })
       ),
     };
-    // console.log(formdata);
     return Uploaddata.iiprecordtransfer(formdata).then((resposne) => {
       return resposne;
     });

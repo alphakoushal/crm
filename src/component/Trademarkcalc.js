@@ -167,7 +167,6 @@ const Tradenarkclac = ({ setvalidate, selectedcountry, matter }) => {
   };
   const returncostoverall = (parts, s) => {
     let cost = 0;
-    console.log(parts, s);
     parts.map((item, index) => {
       if (parseInt(count["part5"][0]["c"]) > parseInt(item["c"])) {
         cost =
@@ -363,7 +362,7 @@ const Tradenarkclac = ({ setvalidate, selectedcountry, matter }) => {
                                           htmlFor="example-text-input"
                                           className="col-md-2 p-0 col-form-label"
                                         >
-                                          Class Cost:
+                                          Extra Class Cost:
                                         </label>
                                         <input
                                           className="form-control page-no2"
@@ -426,7 +425,7 @@ const Tradenarkclac = ({ setvalidate, selectedcountry, matter }) => {
                                           htmlFor="example-text-input"
                                           className="col-md-2 p-0 col-form-label"
                                         >
-                                          Class Cost:
+                                          Extra Class Cost:
                                         </label>
                                         <input
                                           className="form-control page-no2"
@@ -491,7 +490,7 @@ const Tradenarkclac = ({ setvalidate, selectedcountry, matter }) => {
                                   htmlFor="example-text-input"
                                   className="col-md-2 p-0 col-form-label"
                                 >
-                                  Class Cost:
+                                  Extra Class Cost:
                                 </label>
                                 <input
                                   className="form-control page-no2"
@@ -715,7 +714,7 @@ const Tradenarkclac = ({ setvalidate, selectedcountry, matter }) => {
                                           htmlFor="example-text-input"
                                           className="col-md-2 p-0 col-form-label"
                                         >
-                                          Class Cost:
+                                          Extra Class Cost:
                                         </label>
                                         <input
                                           className="form-control page-no2"
@@ -778,7 +777,7 @@ const Tradenarkclac = ({ setvalidate, selectedcountry, matter }) => {
                                           htmlFor="example-text-input"
                                           className="col-md-2 p-0 col-form-label"
                                         >
-                                          Class Cost:
+                                          Extra Class Cost:
                                         </label>
                                         <input
                                           className="form-control page-no2"
@@ -843,7 +842,7 @@ const Tradenarkclac = ({ setvalidate, selectedcountry, matter }) => {
                                   htmlFor="example-text-input"
                                   className="col-md-2 p-0 col-form-label"
                                 >
-                                  Class Cost:
+                                  Extra Class Cost:
                                 </label>
                                 <input
                                   className="form-control page-no2"
@@ -1067,7 +1066,7 @@ const Tradenarkclac = ({ setvalidate, selectedcountry, matter }) => {
                                           htmlFor="example-text-input"
                                           className="col-md-2 p-0 col-form-label"
                                         >
-                                          Class Cost:
+                                          Extra Class Cost:
                                         </label>
                                         <input
                                           className="form-control page-no2"
@@ -1130,7 +1129,7 @@ const Tradenarkclac = ({ setvalidate, selectedcountry, matter }) => {
                                           htmlFor="example-text-input"
                                           className="col-md-2 p-0 col-form-label"
                                         >
-                                          Class Cost:
+                                          Extra Class Cost:
                                         </label>
                                         <input
                                           className="form-control page-no2"
@@ -1195,7 +1194,7 @@ const Tradenarkclac = ({ setvalidate, selectedcountry, matter }) => {
                                   htmlFor="example-text-input"
                                   className="col-md-2 p-0 col-form-label"
                                 >
-                                  Class Cost:
+                                  Extra Class Cost:
                                 </label>
                                 <input
                                   className="form-control page-no2"
@@ -1419,7 +1418,7 @@ const Tradenarkclac = ({ setvalidate, selectedcountry, matter }) => {
                                           htmlFor="example-text-input"
                                           className="col-md-2 p-0 col-form-label"
                                         >
-                                          Class Cost:
+                                          Extra Class Cost:
                                         </label>
                                         <input
                                           className="form-control page-no2"
@@ -1482,7 +1481,7 @@ const Tradenarkclac = ({ setvalidate, selectedcountry, matter }) => {
                                           htmlFor="example-text-input"
                                           className="col-md-2 p-0 col-form-label"
                                         >
-                                          Class Cost:
+                                          Extra Class Cost:
                                         </label>
                                         <input
                                           className="form-control page-no2"
@@ -1547,7 +1546,7 @@ const Tradenarkclac = ({ setvalidate, selectedcountry, matter }) => {
                                   htmlFor="example-text-input"
                                   className="col-md-2 p-0 col-form-label"
                                 >
-                                  Class Cost:
+                                  Extra Class Cost:
                                 </label>
                                 <input
                                   className="form-control page-no2"
@@ -1666,10 +1665,8 @@ const Tradenarkclac = ({ setvalidate, selectedcountry, matter }) => {
                     } }
                     onChange={handleEditorChange}
                     onBlur={ ( event, editor ) => {
-                        console.log( 'Blur.', editor );
                     } }
                     onFocus={ ( event, editor ) => {
-                        console.log( 'Focus.', editor );
                     } }
                 />
                           </div>

@@ -180,7 +180,6 @@ if(sv=='')
 else
 {
     sv=(sv!=='' ? sv.toLowerCase().split(',') : '');
-    console.log(sv,'check');
     copy=copy.filter((f)=>{return tablesetting.returndata(sv,f[e.key],e.key)>-1;});
 }
 i++;
@@ -192,13 +191,11 @@ async function pickvalue(e,i,ni)
   e.stopPropagation();
     if(e.detail==1)
     {
-       // console.log(e.target.childNodes[0]);
     document.querySelector('.cell-name').value=document.querySelectorAll('.custom-table table thead tr th')[ni].querySelector('.headers').innerText;
     document.querySelector('.cell-value').value=(i=='11' && e.target.tagName=='TD'  ? e.target.getElementsByTagName('span')[0].innerHTML : (i=='2' && e.target.tagName=='TD' ? e.target.getElementsByTagName('a')[0].innerHTML : e.target.innerHTML));
     }
     else if(e.detail==2 && i=='11')
     {
-      console.log(e.target);
       showprofilesidebar(e,e.target.getElementsByTagName('span')[0].innerHTML);
     }
     else if(e.detail==2 && i=='25')
@@ -235,7 +232,6 @@ function pushdata(event,w)
 }
 function sortdata(index=0)
 {
-  console.log(index);
     const copy = [...d];
 if(sortDown)
 {

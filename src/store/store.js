@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import userdata from '../reducers/Userdata'
 import  Crmstyle from '../reducers/Style'
-import { globaldata } from '../reducers/Gloabldata'
+import globaldata  from '../reducers/Gloabldata'
 export default configureStore({
   reducer: {
     userdata:userdata,

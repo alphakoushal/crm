@@ -3,7 +3,7 @@ import Fetchdata from "../../services/fetchdata";
 import Details from "./Details";
 import Toast from "../New-toast";
 import Popup from "../Popup";
-const Sidebarprofile = ({email,type,closebar}) =>{
+const Sidebarprofile = ({email,type,closebar,userid,accountytpe}) =>{
 const [clienthistory,sethistory]=useState({type:type,data:[],assigned:0,agent:0,converted:[],response:[],pipeline:[]});
 const [currenttab,settab]=useState('');
 const [currentsheet,setsheet]=useState(0);
@@ -41,7 +41,7 @@ const startsearching = (e) =>{
           {
             document.querySelector('.loader').classList.remove('hide');
            timeout= setTimeout( async ()=>{
-              const data =await Fetchdata.fetchdomain({type:t,'posttype':'searchrecord','data':v}).then((response)=>{return response;});
+              const data =await Fetchdata.fetchdomain({type:t,'posttype':'searchrecord','data':v,accountytpe:accountytpe,userid:userid}).then((response)=>{return response;});
              if(data.data.success)
              {
               setsearchdata(data.data.data);
@@ -76,7 +76,7 @@ gethistory(v,t)
 }
 async function gethistory(email,type){
   document.querySelector('.loader').classList.remove('hide');
-  let d=await Fetchdata.fetchhistory({email:email,type:type}).then((Response)=>{return Response;});
+  let d=await Fetchdata.fetchhistory({posttype:'fetch-history',email:email,type:type,userid:userid,accountytpe:accountytpe}).then((Response)=>{return Response;});
  if(d.data.data.length>0)
  {
   let commentdata= d.data.data.map((item)=> ({'app':item['apps'],'comment':(item['comment']!=='' && item['comment']!=null ? JSON.parse(item['comment'])['freshcomment'] : []).map((item)=>item.comment_type)}));

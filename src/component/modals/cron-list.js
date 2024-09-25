@@ -23,7 +23,6 @@ let d = await Fetchdata.deletecron(auth).then((response)=>{return response});
       const reschedule = async(data) =>{
         let last =moment(data[9]).add(5, 'minutes').format('YYYY-MM-DD H:mm:ss');
         let now =moment(data[10]).format('YYYY-MM-DD H:mm:ss');
-        console.log(last>now ? 'yes' : 'no',last,now,data[8]);
         let auth ={'posttype':'reschedulecron','id':data[8]};
         let d = await Fetchdata.reschedulecron(auth).then((response)=>{return response});
       }
@@ -31,7 +30,6 @@ let d = await Fetchdata.deletecron(auth).then((response)=>{return response});
     let crond = await Fetchdata.fetchcrondata(auth).then((response)=>{return response});
    
     setcrondata(crond.data.data);
-    console.log(crond.data.data[0]);
  }
       useEffect(()=>{
         document.querySelector('table').classList.add("table","table-bordered","table-hover");

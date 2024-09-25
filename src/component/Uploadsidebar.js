@@ -211,7 +211,6 @@ const Uploadsidebar = () => {
   const assignfile = async () => {
     let l = document.querySelector("#assignfile").files;
     let u = document.querySelector("#userid").value;
-    console.log(u);
     if (currentfetch.current) {
       setOpen({ status: true, message: "In process" });
     } else if (u == "" || typeof u == "undefined") {

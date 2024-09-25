@@ -123,7 +123,6 @@ const ITDashboard = () => {
     let pages = document.querySelector("#pages").value,
       recordlimit = document.querySelector("#recordlimit").value;
     let user = auth.userid;
-    console.log(user.value);
     if (type == "limit") {
       loaddata({
         ...formdata1,

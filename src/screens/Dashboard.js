@@ -201,7 +201,6 @@ const Dashboard = () => {
       pages = document.querySelector("#pages").value,
       recordlimit = document.querySelector("#recordlimit").value;
     user = user ?? { value: auth.userid };
-    console.log(user.value);
     if (type == "limit") {
       loaddata({
         ...formdata1,
@@ -415,7 +414,6 @@ return timezone;
     event.stopPropagation();
   }
   function sortdata(event, index = 0,key={}) {
-    console.log(event);
     const copy = [...d];
     if (event.detail == 1) {
       if (defaultdata.sortDown) {
@@ -2985,6 +2983,8 @@ return timezone;
             closebar={closebar}
             type={defaultdata.profilebar.type}
             email={defaultdata.profilebar.email}
+            userid={auth.userid}
+            accountytpe={auth.type}
           />
         ) : (
           <></>

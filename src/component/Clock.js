@@ -9,7 +9,6 @@ const Clock = React.memo(({ timezone,country }) => {
     const interval = setInterval(() => {
       setCurrentTime(moment.tz(timezone).format('hh:mm:ss a'));
     }, 1000); // Update every second
-    console.log(timezone);
     // Clean up the interval when the component unmounts
     return () => clearInterval(interval);
   }, [timezone]);

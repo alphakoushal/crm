@@ -121,7 +121,6 @@ window.location.reload();
       {
       appno.forEach((e,index)=>{
         let getdata=(platform.current=='it' ? alldata.filter((fv)=>{return fv['email'].toLowerCase()==e.toLowerCase()}) : alldata.filter((fv)=>{return fv[2]==e})); 
-        console.log(getdata,platform.current,appno);
         if(getdata.length>0)
         {
 clientObject[e] = {

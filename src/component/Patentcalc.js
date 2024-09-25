@@ -989,10 +989,8 @@ return <tr key={index} id="addRow">
                     } }
                     onChange={handleEditorChange}
                     onBlur={ ( event, editor ) => {
-                        console.log( 'Blur.', editor );
                     } }
                     onFocus={ ( event, editor ) => {
-                        console.log( 'Focus.', editor );
                     } }
                 />
                           </div>

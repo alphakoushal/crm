@@ -84,7 +84,6 @@ const callpages = (e,type) =>{
   let sheet=document.querySelector('.sheet.active').getAttribute('id');
  let user=document.querySelector('#username'), pages=document.querySelector('#pages').value, recordlimit =document.querySelector('#recordlimit').value;
  user = user??{value:auth.userid}
- console.log(user.value);
  if (type=='limit')
  {
 
@@ -267,7 +266,6 @@ function pushdata(event,w)
 }
 function sortdata(event,index=0)
 {
-  console.log(event);
     const copy = [...d];
     if(event.detail==1){
 if(defaultdata.sortDown)

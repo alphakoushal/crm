@@ -22,12 +22,9 @@ const Editcountryformula = () => {
       {matter == "1" ? (
         <Patentclac matter={matter} setvalidate={setvalidate} selectedcountry={selectedcountry}
         ></Patentclac>
-      ) : matter == 2 ? (
-        <Tradenarkclac matter={matter} setvalidate={setvalidate} selectedcountry={selectedcountry}
-        ></Tradenarkclac>
       ) : (
-        <></>
-      )}
+        <Tradenarkclac matter={matter} setvalidate={setvalidate} selectedcountry={selectedcountry}
+        ></Tradenarkclac>)}
     </>
   );
 };

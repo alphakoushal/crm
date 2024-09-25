@@ -36,7 +36,6 @@ const ITEmailemplate =() =>{
        }
        else if(editorData=='')
        {
-        console.log(editorData);
         setvalidate((validate)=>({...validate,status:true,message:'Please Enter Mail body.'}));
        }
        else
@@ -106,10 +105,8 @@ setvalidate((data)=>({...data,'loader': 'hide','loadermessage':'Submit'}));
                     } }
                     onChange={handleEditorChange}
                     onBlur={ ( event, editor ) => {
-                        console.log( 'Blur.', editor );
                     } }
                     onFocus={ ( event, editor ) => {
-                        console.log( 'Focus.', editor );
                     } }
                 />
                           </div>

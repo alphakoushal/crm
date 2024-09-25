@@ -18,7 +18,6 @@ const EditITemailemplate =() =>{
     auth =(auth!='' ? JSON.parse(auth) : {'userid':'','type':'','org':''})
     const handleEditorChange = (event, editor) => {
       const data = editor.getData();
-      console.log(data);
       setEditorData(data);
     };
     function updatestate(value, key) {
@@ -124,10 +123,8 @@ setrestdata((data)=>({...data,'loader': 'hide','loadermessage':'Update'}));
                     } }
                     onChange={handleEditorChange}
                     onBlur={ ( event, editor ) => {
-                        console.log( 'Blur.', editor );
                     } }
                     onFocus={ ( event, editor ) => {
-                        console.log( 'Focus.', editor );
                     } }
                 />
                           </div>

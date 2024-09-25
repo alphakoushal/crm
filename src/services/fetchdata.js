@@ -53,11 +53,12 @@ const Analyticdata = (data,signal) => {
 };
 
 const fetchhistory = (data) =>{
+  axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
   return axios({
     method: 'POST',
     data: data,
 headers:axiosConfig,
-url: API_URL+'employee/auth/reactauth/fetch-history',
+url: API_URL+'employee/auth/react-index',
   }).then((response)=>{ return response})
 }
 const fetchtemplate = (data) =>{

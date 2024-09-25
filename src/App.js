@@ -11,7 +11,7 @@ import Dashboard from "./screens/Dashboard";
 import IIPDashboard from "./screens/IIPDashboard.js";
 import ITDashboard from "./screens/iitdashboard.js";
 import Freshdata from "./screens/Freshdata.js";
-import IIPFreshdata from "./screens/IIPFreshdata.js";
+import IIPFreshdata from "./screens/Iipreshdata.js";
 import Analytic from "./screens/Analytics";
 import Emailemplate from "./screens/Emailemplate.js";
 import ITEmailemplate from "./screens/it-template-component.js";

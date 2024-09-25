@@ -81,11 +81,11 @@ import React, {
             return {
               email_id: val.email,
               contact_person: val.cp,
+              lastsenton :  (val.nextfollowup=='' ? val.firstemail : val.followup)
             };
           })
         ),
       };
-      // console.log(formdata);
       return Uploaddata.ITemailformat(formdata).then((resposne) => {
         return resposne;
       });

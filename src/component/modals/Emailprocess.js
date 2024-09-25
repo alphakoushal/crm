@@ -117,7 +117,6 @@ const Emailbox = ({
         })
       ),
     };
-    // console.log(formdata);
     return Uploaddata.emailformat(formdata).then((resposne) => {
       return resposne;
     });

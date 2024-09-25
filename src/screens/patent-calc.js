@@ -4,18 +4,14 @@ import { defaultvalue } from "../constant/Constant";
 import Headerblank from "../component/Header-blank";
 import Fetchdata from "../services/fetchdata";
 import Uploaddata from "../services/uploaddata";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import InputLabel from '@mui/material/InputLabel'; 
 import '../component/style/calcost.css'
-const Trademarkcalculator = ({calcstate,updatevalue}) =>{
+const Patentcalculator = ({updatevalue,calcstate}) =>{
 let coststage=[{'value':"IP Type Selection"},{'value':"Country Selection"},{'value':"Stages Selection"},{'value':"Detailed Report"}]
 let service = ['Patent','Trademark','Design'];
 let detailservice = ['Filing','Examination','Granting','Annuity'];
-let applicantstatus = [{'name':'Large','key':'3'},{'name':'Small','key':'2'}];
-let applicantstatusnumber = {'2':'s','3':'l'};
-let applicantstatusvalue = {'2':'Small','3':'Large'};
+let applicantstatus = [{'name':'Large','key':'3'},{'name':'Small','key':'2'},{'name':'Micro','key':'1'}];
+let applicantstatusnumber = {'1':'','2':'s','3':'l'};
+let applicantstatusvalue = {'1':'Micro','2':'Small','3':'Large'};
 const [getdata,setdata]=useState([]);
 const [tab,settab]=useState('tab1');
 const [countrytab,setcountrytab]=useState('');
@@ -23,18 +19,12 @@ const currenttrans=useRef([]);
 const [currenttrans1,updatecurrenttrans1]=useState([]);
 const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:'',file:''});
 const [qtab,setqtab]=useState('');
-const [formuladata,setformuladata]=useState({'matter':calcstate,'ref':'','breakup':'no','appno':'ES2022/070522','applicant':'Koushal sethi','c':0,'classes':[],'as':'','country':[]});
+const [formuladata,setformuladata]=useState({'ref':'','breakup':'no','appno':'ES2022/070522','applicant':'Koushal sethi','p':'12','c':'12','fl':'ger','i':'ES','pr':'1','word':20,'char':10,'as':'','country':[]});
 const updatedata = (k,value) =>{
     setformuladata((prev)=>({...prev,[k]:value}))
 }
-function handleclass(e) {
-    const {
-      target: { value },
-    } = e;
-    setformuladata((prev)=>({...prev,['classes']:e.target.value,['c']:e.target.value.length}))
-  }
 const createpdf = async () =>{
-    let createpdf = await Uploaddata.createpdf({'data':JSON.stringify(formuladata),'country':JSON.stringify(getdata),'posttype':'createtradepdf'}).then((response)=>{return response;});
+    let createpdf = await Uploaddata.createpdf({'data':JSON.stringify(formuladata),'country':JSON.stringify(getdata),'posttype':'createpdf'}).then((response)=>{return response;});
     if(createpdf.data.success)
     {
         setvalidate((prev)=>({...prev,file:createpdf.data.file,status:true,message:`${createpdf.data.message} ${createpdf.data.file}`,color:'success',icon:'success'}))
@@ -44,10 +34,7 @@ const createpdf = async () =>{
     setvalidate((prev)=>({...prev,file:'',status:false,message:createpdf.errors.error,color:'error',icon:'error'}))
 }
 }
-const handleClose = (event,reason) =>{
-    if (reason === 'clickaway') {
-        return;
-      }
+const handleClose = () =>{
     setvalidate((prev)=>({...prev,file:'',status:false,message:``,color:'success',icon:'success'}))
 
 }
@@ -67,7 +54,7 @@ if(keys==1)
 }
         }
        })
-       costs[(status=='' ? 'pro' : status)]=cost;
+       costs[status]=cost;
        total = total + cost;
        cost=0;
     })
@@ -78,33 +65,69 @@ if(keys==1)
     return costs;
 }
 const returncostoverall = (parts,s,partkey) =>{
-    let cost=0; 
+    let cost=0;
+    let filterisa = parts.filter((items) =>  items['i']==formuladata.i );
+    
     if(partkey=='part1')
     {
+        parts = filterisa.length>0 ? filterisa : [parts[parts.length-1]];
         parts.map((item,index)=>{
             let t = (s=='' ? 'm' : s);
-             if(item[`${(s=='' ? 'm' : s)}c`]!='')// standard cost
-             {     
+             if(s!='pro' && s!='trans' && item[`${(s=='' ? 'm' : s)}c`]!='')// standard cost
+             {        
           cost = cost + parseInt(item[`${(s=='' ? 'm' : s)}c`]);
              } 
-             if(parseInt(formuladata['c'])>parseInt(item['c']) && item['c']!='' && item[`cc${s}`]!='') //page cost
+             if(s!='pro' && s!='trans' && parseInt(formuladata['p'])>parseInt(item['p']) && item['p']!='' && item[`pc${s}`]!='') //page cost
              {
-             cost = cost + ((parseInt(formuladata['c'])-parseInt(item['c']))*parseInt(item[`cc${s}`]));
+             cost = cost + ((parseInt(formuladata['p'])-parseInt(item['p']))*parseInt(item[`pc${s}`]));
              }
-             
+             if(s!='pro' && s!='trans' && parseInt(formuladata['c'])>parseInt(item['c']) && item['c']!='' && item[`cc${s}`]!='') // claim cost
+             {
+                cost = cost + ((parseInt(formuladata['c'])-parseInt(item['c']))*parseInt(item[`cc${s}`]));
+             }
+             if(s!='pro' && s!='trans' && parseInt(formuladata['pr'])>parseInt(item['pr']) && item['pr']!='' && item[`prc${s}`]!='') // priority cost
+             {
+                 
+                 cost = cost + ((parseInt(formuladata['pr'])-parseInt(item['pr']))*parseInt(item[`prc${s}`]));
+             }
+             if(s=='pro' && item[`${s}`]!='') // pro cost
+             {
+                 cost = cost + parseInt(item[`${s}`]);
+             }
+             if(s=='trans' && formuladata['word']!='' && item[`${s}`]!='') // trans cost
+             {
+                 cost = cost + (parseInt(formuladata['word']) * parseFloat(item[`${s}`]));
+             }
      })
     }
     else
 {
     parts.map((item,index)=>{
        let t = (s=='' ? 'm' : s);
-        if(item[`${(s=='' ? 'm' : s)}c`]!='')// standard cost
+        if(s!='pro' && s!='trans' && item[`${(s=='' ? 'm' : s)}c`]!='')// standard cost
         {        
      cost = cost + parseInt(item[`${(s=='' ? 'm' : s)}c`]);
         } 
-        if(parseInt(formuladata['c'])>parseInt(item['c']) && item['c']!='' && item[`cc${s}`]!='') //page cost
+        if(s!='pro' && s!='trans' && parseInt(formuladata['p'])>parseInt(item['p']) && item['p']!='' && item[`pc${s}`]!='') //page cost
         {
-        cost = cost + ((parseInt(formuladata['c'])-parseInt(item['c']))*parseInt(item[`cc${s}`]));
+        cost = cost + ((parseInt(formuladata['p'])-parseInt(item['p']))*parseInt(item[`pc${s}`]));
+        }
+        if(s!='pro' && s!='trans' && parseInt(formuladata['c'])>parseInt(item['c']) && item['c']!='' && item[`cc${s}`]!='') // claim cost
+        {
+           cost = cost + ((parseInt(formuladata['c'])-parseInt(item['c']))*parseInt(item[`cc${s}`]));
+        }
+        if(s!='pro' && s!='trans' && parseInt(formuladata['pr'])>parseInt(item['pr']) && item['pr']!='' && item[`prc${s}`]!='') // priority cost
+        {
+            
+            cost = cost + ((parseInt(formuladata['pr'])-parseInt(item['pr']))*parseInt(item[`prc${s}`]));
+        }
+        if(s=='pro' && item[`${s}`]!='') // pro cost
+        {
+            cost = cost + parseInt(item[`${s}`]);
+        }
+        if(s=='trans' && formuladata['word']!='' && item[`${s}`]!='') // trans cost
+        {
+            cost = cost + (parseInt(formuladata['word']) * parseFloat(item[`${s}`]));
         }
 })
 }
@@ -112,7 +135,7 @@ return cost;
 }
 
 const getcountrydata = async() => {
-    let fetchcountry=await Fetchdata.fetchcountry({'matter':calcstate,'posttype':'fetchcountry',country:formuladata.country.map((item)=>"'"+item.value+"'").toString()}).then((response)=>{return response});
+    let fetchcountry=await Fetchdata.fetchcountry({'matter':'1','posttype':'fetchcountry',country:formuladata.country.map((item)=>"'"+item.value+"'").toString()}).then((response)=>{return response});
     if(fetchcountry.data.success)
     {
 
@@ -124,7 +147,7 @@ const getcountrydata = async() => {
     }
 }
 useEffect(()=>{
-    setformuladata((prev)=>({...prev,['matter']:calcstate}))
+    currenttrans.current=[];
 })
 useEffect(()=>{
 
@@ -196,6 +219,26 @@ const changecountyrtab = (tab) =>{
     setcountrytab('tab'+tab);
     }
     }
+    
+    const returntranscost = (from,to,word,chars,pages)=>{
+        let gettranscost=defaultvalue.transcost.filter((item)=>item.from==from && item.to==to);
+        let totalcost=0;
+   if(gettranscost.length>0)
+   {
+       totalcost =((gettranscost[0].type=='word' ? parseFloat(word) : (gettranscost[0].type=='char' ? parseFloat(chars) : (gettranscost[0].type=='page' ? parseFloat(pages) : parseFloat(word))) ) * parseFloat(gettranscost[0].cost)) + 150;
+       let ob ={'lng':to,'cost':totalcost}
+       let f =currenttrans.current.filter((item)=>item.lng==to);
+       if(f.length>0)
+       { 
+        totalcost ='Already Mentioned';
+       }
+       else
+       {
+       currenttrans.current.push(ob);
+       }
+   }
+return totalcost;
+            }
             
 return(
         <>
@@ -226,8 +269,8 @@ return(
                                         {
                                             service.map((value,index)=>{
 return <>
-<input key={index} checked={calcstate === (index+1)} onChange={()=>{updatevalue(index+1)}} type="radio" id={`tab${index}`} name={`tab${index}`} />
-                                        <label htmlFor={`tab${index}`} className="me-3">{value}</label></>
+<input onChange={()=>updatevalue(index+1)} key={index} checked={calcstate === (index+1)} type="radio" id={`tab${index}`} name={`tab${index}`} />
+                                        <label htmlFor="tab1" className="me-3">{value}</label></>
                                             })
                                         }
                                     </div>
@@ -255,46 +298,95 @@ return <>
                                         <div className="card">
 
                                             <div className="card-body row">
-                                                <div className="mb-4 row align-items-center col-5">
+                                                <div className="mb-4 row align-items-center col-6">
                                                     <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Client Name</label>
                                                     <div className="col-sm-6">
                                                         <input type="text" value={formuladata.applicant} onChange={(e)=>{updatedata('applicant',e.target.value)}} className="form-control" placeholder="Client Name"/>
                                                     </div>
                                                     <div className="col-sm-3"></div>
                                                 </div>
-                                                <div className="mb-4 row align-items-center col-7">
-                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">{calcstate=='2' ? 'Trademark Application Number / Mark' : 'Design Application Number / Title'}</label>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Patent Application</label>
                                                     <div className="col-sm-6">
-                                                        <input type="text" value={formuladata.appno} onChange={(e)=>{updatedata('appno',e.target.value)}} className="form-control" placeholder="Application Number"/>
+                                                        <input type="text" value={formuladata.appno} onChange={(e)=>{updatedata('appno',e.target.value)}} className="form-control" placeholder="Patent Application"/>
                                                     </div>
                                                     <div className="col-sm-3"></div>
                                                 </div>
-                                                <div className="mb-4 row align-items-center col-5">
-                                                <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">{calcstate==2 ? 'Class(es)' : 'Class'}</label>
-                                                 <div className="col-sm-6">
-                                                 {(calcstate==2 ?
-                                                         <FormControl className="classes"  sx={{width: "100%" }}>
-                                                    <Select
-                      labelId="up-multiple-name-label"
-                      id="up-multiple-name"
-                      value={formuladata.classes}
-                      multiple
-                      onChange={handleclass}
-                      label="Class"
-                    >
-                      <MenuItem disabled key="all" value="all">
-                        Choose Class
-                      </MenuItem>
-                      {['1','2','3'].map((name) => (
-                        <MenuItem key={name} value={name}>
-                          {name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    </FormControl> : <> <input type="text" onChange={(e)=>{updatedata('c',e.target.value)}} className="form-control" value={formuladata.c}/></> )}
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Publication Language</label>
+                                                    <div className="col-sm-6">
+                                                        <select  onChange={(e)=>updatedata('fl',e.target.value)} className="form-select w-auto">
+                      <option value=''>Choose Option</option>
+                      {
+                          defaultvalue.filinglang.map((item,index)=>{
+                           return <option key={index} Selected={formuladata['fl']==item.code ? 'Selected' : false} value={item.code}>{item.value}</option>
+
+                        })
+                      }
+                    </select>
+                                                    </div>
+                                                    <div className="col-sm-3"></div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Total Number of
+                                                        Pages</label>
+                                                    <div className="col-sm-6">
+                                                        <input type="text" value={formuladata.p} onChange={(e)=>{updatedata('p',e.target.value)}} className="form-control" placeholder="Total Number of Pages"/>
+                                                    </div>
+                                                    <div className="col-sm-3"></div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText2" className="form-label col-sm-6 col-form-label">Total Number of
+                                                        Claims</label>
+                                                    <div className="col-sm-6">
+                                                        <input type="text" value={formuladata.c} onChange={(e)=>{updatedata('c',e.target.value)}} className="form-control" placeholder="Total Number of Claims"/>
+                                                    </div>
+                                                    <div className="col-sm-3"></div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">Priority</label>
+                                                    <div className="col-sm-6">
+                                                        <div className="input-group border rounded-1">
+                                                            <input type="text" value={formuladata.pr} onChange={(e)=>{updatedata('pr',e.target.value)}} className="form-control border-0" placeholder="Priority"/>
+
+                                                        </div>
+                                                        <div className="col-sm-3"></div>
                                                     </div>
                                                 </div>
-                                                <div className="mb-4 row align-items-center col-7">
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">ISA
+                                                    </label>
+                                                    <div className="col-sm-6">
+                                                        <div className="input-group border rounded-1">
+                                                            <input type="text" value={formuladata.i} onChange={(e)=>{updatedata('i',e.target.value)}} className="form-control border-0" placeholder="ISA"/>
+
+                                                        </div>
+                                                        <div className="col-sm-3"></div>
+                                                    </div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">Total words
+                                                    </label>
+                                                    <div className="col-sm-6">
+                                                        <div className="input-group border rounded-1">
+                                                            <input type="text" value={formuladata.word} onChange={(e)=>{updatedata('word',e.target.value)}} className="form-control border-0" placeholder="Total Words"/>
+
+                                                        </div>
+                                                        <div className="col-sm-3"></div>
+                                                    </div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">Total Character
+                                                    </label>
+                                                    <div className="col-sm-6">
+                                                        <div className="input-group border rounded-1">
+                                                            <input type="text" value={formuladata.char} onChange={(e)=>{updatedata('char',e.target.value)}} className="form-control border-0" placeholder="Total Character"/>
+
+                                                        </div>
+                                                        <div className="col-sm-3"></div>
+                                                    </div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
                                                     <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Break-up Cost</label>
                                                     <div className="col-sm-6">
                                                         <select  onChange={(e)=>updatedata('breakup',e.target.value)} className="form-select w-auto">
@@ -510,46 +602,94 @@ return <>
                                                 <div id="regularCollapseTen" className="accordion-collapse collapse show" aria-labelledby="regularHeadingTen" data-bs-parent="#regularAccordionRobots" >
                                                     <div className="accordion-body p-2">
                                                         <div className="accordion-body pt-0 pb-0 ps-3 row">
-                                                <div className="mb-4 row align-items-center col-5">
+                                                <div className="mb-4 row align-items-center col-6">
                                                     <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Applicant</label>
                                                     <div className="col-sm-6">
                                                         <input type="text" onChange={(e)=>{updatedata('applicant',e.target.value)}} className="form-control" value={formuladata.applicant}/>
                                                     </div>
                                                     <div className="col-sm-3"></div>
                                                 </div>
-                                                <div className="mb-4 row align-items-center col-7">
-                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">{calcstate=='2' ? 'Trademark Application Number / Mark' : 'Design Application Number / Title'}</label>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Patent Application</label>
                                                     <div className="col-sm-6">
                                                         <input type="text" onChange={(e)=>{updatedata('appno',e.target.value)}} className="form-control" value={formuladata.appno}/>
                                                     </div>
                                                     <div className="col-sm-3"></div>
                                                 </div>
-                                                <div className="mb-4 row align-items-center col-5">
-                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">{calcstate==2 ? 'Class(es)' : 'Class'}</label>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Publication Language</label>
                                                     <div className="col-sm-6">
-                                                    {(calcstate==2 ?
-                                                         <FormControl className="classes"  sx={{width: "100%" }}>
-                                                    <Select
-                      labelId="up-multiple-name-label"
-                      id="up-multiple-name"
-                      value={formuladata.classes}
-                      multiple
-                      onChange={handleclass}
-                      label="Class"
-                    >
-                      <MenuItem disabled key="all" value="all">
-                        Choose Class
-                      </MenuItem>
-                      {['1','2','3'].map((name) => (
-                        <MenuItem key={name} value={name}>
-                          {name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    </FormControl> :<> <input type="text" onChange={(e)=>{updatedata('c',e.target.value)}} className="form-control" value={formuladata.c}/></> )}
+                                                    <select  onChange={(e)=>updatedata('fl',e.target.value)} className="form-select w-auto">
+                      <option value=''>Choose Option</option>
+                      {
+                          defaultvalue.filinglang.map((item,index)=>{
+                           return <option key={index} Selected={formuladata['fl']==item.code ? 'Selected' : false} value={item.code}>{item.value}</option>
+
+                        })
+                      }
+                    </select></div>
+                                                    <div className="col-sm-3"></div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Total Number of
+                                                        Pages</label>
+                                                    <div className="col-sm-6">
+                                                        <input type="text" onChange={(e)=>{updatedata('p',e.target.value)}} className="form-control" value={formuladata.p}/>
+                                                    </div>
+                                                    <div className="col-sm-3"></div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText2" className="form-label col-sm-6 col-form-label">Total Number of
+                                                        Claims</label>
+                                                    <div className="col-sm-6">
+                                                        <input type="text" onChange={(e)=>{updatedata('c',e.target.value)}} className="form-control" value={formuladata.c}/>
+                                                    </div>
+                                                    <div className="col-sm-3"></div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">Priority</label>
+                                                    <div className="col-sm-6">
+                                                        <div className="input-group border rounded-1">
+                                                            <input type="text" onChange={(e)=>{updatedata('pr',e.target.value)}} className="form-control border-0" value={formuladata.pr}/>
+
+                                                        </div>
+                                                        <div className="col-sm-3"></div>
                                                     </div>
                                                 </div>
-                                                <div className="mb-4 row align-items-center col-7">
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">ISA
+                                                    </label>
+                                                    <div className="col-sm-6">
+                                                        <div className="input-group border rounded-1">
+                                                            <input type="text" onChange={(e)=>{updatedata('i',e.target.value)}} className="form-control border-0" value={formuladata.i}/>
+
+                                                        </div>
+                                                        <div className="col-sm-3"></div>
+                                                    </div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">Total words
+                                                    </label>
+                                                    <div className="col-sm-6">
+                                                        <div className="input-group border rounded-1">
+                                                            <input type="text" onChange={(e)=>{updatedata('word',e.target.value)}} className="form-control border-0" value={formuladata.word}/>
+
+                                                        </div>
+                                                        <div className="col-sm-3"></div>
+                                                    </div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
+                                                    <label htmlFor="exampleInputText30" className="form-label col-sm-6 col-form-label">Total Character
+                                                    </label>
+                                                    <div className="col-sm-6">
+                                                        <div className="input-group border rounded-1">
+                                                            <input type="text" onChange={(e)=>{updatedata('char',e.target.value)}} className="form-control border-0" value={formuladata.char}/>
+
+                                                        </div>
+                                                        <div className="col-sm-3"></div>
+                                                    </div>
+                                                </div>
+                                                <div className="mb-4 row align-items-center col-6">
                                                     <label htmlFor="exampleInputText1" className="form-label col-sm-6 col-form-label">Break-up Cost</label>
                                                     <div className="col-sm-6">
                                                         <select  onChange={(e)=>updatedata('breakup',e.target.value)} className="form-select w-auto">
@@ -581,6 +721,7 @@ return <>
                                                                     <tr>
                                                                         <th scope="col" className="odd-color">Country</th>
                                                                         <th scope="col" className="even-color">Entity</th>
+                                                                        <th scope="col" className="odd-color">Filling Language</th>
                                                                         <th scope="col" className="even-color">Stages</th>
                                                                         {
                                                                             (formuladata['breakup']=='yes' ?
@@ -605,10 +746,11 @@ return <>
                                                                         {
                                                                             let parseddata=JSON.parse(filterc[0].data);
                                                                         
-                                                                        let returncost =getcost(item.value,[applicantstatusnumber[item.entity],''],stages);                                                    
+                                                                        let returncost =getcost(item.value,[applicantstatusnumber[(item.entity=='' ? '1' : item.entity) ],'pro'],stages);
                                                                        return <tr key={index}>
                                                                         <th scope="row">{defaultvalue.countriescode[item.value].name}</th>
                                                                         <th scope="row">{applicantstatusvalue[item.entity]}</th>
+                                                                        <th scope="row">{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</th>
                                                                         <td>{stages.map((item)=>detailservice[item-1]).toString()}</td>
                                                                         {
                                                                             (formuladata['breakup']=='yes' ?
@@ -636,6 +778,55 @@ return <>
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div className="accordion-item mt-3">
+                                                <h2 id="regularHeading11" className="accordion-header">
+                                                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#regularCollapse11" aria-expanded="false" aria-controls="regularCollapse11">
+                                                    Combined  Translation Fee to file the patent application
+                                                    </button>
+                                                </h2>
+                                                <div id="regularCollapse11" className="accordion-collapse collapse show" aria-labelledby="regularHeading11" data-bs-parent="#regularAccordionRobots" >
+
+                                                    <div className="accordion-body pt-0 pb-0 ps-3">
+
+                                                        <div className="table-responsive">
+                                                            <table className="table mb-0">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th scope="col" className="odd-color">Filling Language</th>
+                                                                        <th scope="col" className="even-color">Stages</th>
+                                                                        <th scope="col" className="odd-color">Translation fee</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {
+                                                                        (tab=='tab4' && getdata.length>0 ? 
+                                                                    formuladata.country.map((item,index)=>{
+                                                                        let stages=item.service.filter((item)=>{return item==1});
+                                                                        let filterc=getdata.filter((fi)=>{return fi.country==item.value});
+                                                                                if(filterc.length>0)
+                                                                        {
+                                                                            let parseddata=JSON.parse(filterc[0].data);
+                                                                        
+                                                                        let returncost =getcost(item.value,[applicantstatusnumber[(item.entity=='' ? '1' : item.entity) ],'pro','trans'],stages);
+                                                                        let transcost =returntranscost((formuladata.fl!=parseddata.part5[0].fl ? (formuladata.fl!='eng' && parseddata.part5[0].fl!='eng' ? 'eng' : formuladata.fl): ''),parseddata.part5[0].fl,formuladata.word,formuladata.char,formuladata.p);
+                                                                      if(typeof(transcost)!='string')
+                                                                      {
+                                                                      return <tr key={index}>
+                                                                        <th scope="row">{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</th>
+                                                                        <td>{stages.map((item)=>detailservice[item-1]).toString()}</td>
+                                                                        <td>{typeof(transcost)=='string' ? '' : defaultvalue.filinglangcurr[parseddata.part5[0].curr]} {transcost}</td>
+                                                                    </tr>
+                                                                      }
+                                                                                }})
+                                                                     : <></>)
+                                                                    }
+
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             {
     formuladata.country.map((item,index)=>{
         let filterc=getdata.filter((fi)=>{return fi.country==item.value});
@@ -653,7 +844,8 @@ return <>
 
                                                     <div className="accordion-body pt-0 pb-0 ps-3">
                                                     <p className="card-subtitle">Type of Entity: <b>{applicantstatusvalue[item.entity]}</b></p>
-                                                    <p className="card-subtitle">{calcstate==2 ? 'Class(es)' : 'Class'} : <b>{ calcstate==2 ? formuladata.classes.toString() : formuladata.c}</b></p>
+                                                    <p className="card-subtitle">Filing Language: <b>{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</b></p>
+                                                    {(formuladata.fl!=parseddata.part5[0].fl ? <p>Translation cost: <div className="d-flex align-items-center gap-2"><span className="fs-3">{formuladata.fl!='eng' && parseddata.part5[0].fl!='eng' ? defaultvalue.filinglangcode['eng'] : defaultvalue.filinglangcode[formuladata.fl]}</span>  <span><i className="ti ti-arrow-right text-success fs-4 position-relative"></i></span> <span className="fs-3">{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</span></div><b>{(f.length>0 ? f[0].cost : '')}</b></p> : <></>)}
                                                         <div className="table-responsive">
                                                             <table className="table mb-0">
                                                                 <thead>
@@ -682,15 +874,18 @@ return <>
                                                                         (tab=='tab4' && getdata.length>0 ? 
                                                                         
                                                                         item.service.map((i,ind) => {
+                                                                            if(i==1)
+                                                                            {
+                                                                                let filterisa = parseddata['part1'].filter((items) =>  items['i']==formuladata.i );
+                                                                                let parts = filterisa.length>0 ? filterisa : [parseddata['part1'][parseddata['part1'].length-1]];
                                                                                 return (
                                                                                     <>
                                                                                       {
                                                                                         
-                                                                                        parseddata['part'+i].map((parti,index1)=>{
-                                                                                            let returncost =returncostoverall([parti],applicantstatusnumber[item.entity],('part'+i));
-                                                                                            let returncostpro =returncostoverall([parti],'',('part'+i));
+                                                                                        parts.map((parti,index1)=>{
+                                                                                            let returncost =returncostoverall([parti],applicantstatusnumber[(item.entity=='' ? '1' : item.entity) ],('part'+i));
                                                                                             const regex = /[^0-9.]/;
-                                                                                            let total=parseInt(returncost??0) + parseInt(returncostpro??0);
+                                                                                            let total=(regex.test(parti.pro) && parti.pro!='' ? parti.pro??0 : parseInt(returncost??0) + parseInt((parti.pro!='' ? parti.pro : 0)) );
                                                                                         return <tr key={index1}>
                                                                                         <td className="text-wrap width-240">{parti.desc}</td>
                                                                                         <td className="text-wrap width-240">{parti.time??''}</td>
@@ -698,7 +893,7 @@ return <>
                                                                             (formuladata['breakup']=='yes' ?
                                                                             <>
                                                                                         <td> { returncost}</td>
-                                                                                        <td> {returncostpro}</td>
+                                                                                        <td> {parti.pro??''}</td>
                                                                                         <td>{total??0}</td>
                                                                             </>
                                                                             :
@@ -713,9 +908,43 @@ return <>
                                                                                       }
                                                                                     </>
                                                                                 )
+                                                                            }
+                                                                            else{
+                                                                                return (
+                                                                                    <>
+                                                                                      {
+                                                                                        
+                                                                                        parseddata['part'+i].map((parti,index1)=>{
+                                                                                            let returncost =returncostoverall([parti],applicantstatusnumber[(item.entity=='' ? '1' : item.entity) ],('part'+i));
+                                                                                            const regex = /[^0-9.]/;
+                                                                                            let total=(regex.test(parti.pro) && parti.pro!='' ? parti.pro??0 : parseInt(returncost??0) + parseInt((parti.pro!='' ? parti.pro : 0)) );
+                                                                                        return <tr key={index1}>
+                                                                                        <td className="text-wrap width-240">{parti.desc}</td>
+                                                                                        <td className="text-wrap width-240">{parti.time??''}</td>
+                                                                                        {
+                                                                            (formuladata['breakup']=='yes' ?
+                                                                            <>
+                                                                                        <td> { returncost}</td>
+                                                                                        <td> {parti.pro??''}</td>
+                                                                                        <td>{total??0}</td>
+                                                                            </>
+                                                                            :
+                                                     <>
+                                                                                         <td>{total??0}</td>                                                                                 
+                                                     </>
+                                                                            )
+                                                                        }
+                                                                                    </tr>
+                                                                                      })
+                                                                                      }
+                                                                                    </>
+                                                                                )
+                                                                            }
 
                                                                           }): <></>)
                                                                     }
+{(formuladata.fl!=parseddata.part5[0].fl ? <tr><td>Translation cost </td><td className="text-end" colSpan={(formuladata['breakup']=='yes' ? 3 : 1)}><div className="d-flex align-items-center gap-2"><span className="fs-3">{formuladata.fl!='eng' && parseddata.part5[0].fl!='eng' ? defaultvalue.filinglangcode['eng'] : defaultvalue.filinglangcode[formuladata.fl]}</span>  <span><i className="ti ti-arrow-right text-success fs-4 position-relative"></i></span> <span className="fs-3">{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</span></div></td><td><b>{(f.length>0 ? f[0].cost : '')}</b></td></tr> : <></>)}
+{/* {(formuladata.fl!=parseddata.part5[0].fl ? <tr><td>Translation cost </td><td className="text-end" colSpan={3}><div className="d-flex align-items-center gap-2"><span className="fs-3">{defaultvalue.filinglangcode[formuladata.fl]}</span>  <span><i className="ti ti-arrow-right text-success fs-4 position-relative"></i></span> {(formuladata.fl!='eng' && parseddata.part5[0].fl!='eng' ? <><span className="fs-3">English</span> <span><i className="ti ti-arrow-right text-success fs-4 position-relative"></i></span></> : <></>)}<span className="fs-3">{defaultvalue.filinglangcode[parseddata.part5[0].fl]}</span></div></td><td><b>{returntranscost((formuladata.fl!='eng' && parseddata.part5[0].fl!='eng' ? 'eng' : formuladata.fl),parseddata.part5[0].fl,formuladata.word)}</b></td></tr> : <></>)} */}
                                                                 </tbody>
                                                             </table><p><br></br></p>
                                                             <div
@@ -748,4 +977,4 @@ return <>
         </>
     )
 }
-export default Trademarkcalculator;
+export default Patentcalculator;
