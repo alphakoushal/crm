@@ -69,6 +69,17 @@ const fetchcomment = (data)=>
     }).then(response=>{return response});
 }
 
+const submitanalyticemails = (data) =>{
+   let cronurl='https://www.anuation.com/oldcrm/employee/auth/react-index';
+    let urls= cronurl;
+    return axios({
+        method :'POST',
+        headers : axiosConfig,
+        url: urls,
+        data : data
+    }).then(response => { return response});
+}
+
 const emailformat = (data) =>{
     let transferurl='https://www.anuation.com/oldcrm/employee/auth/reactauth/transfer-record.php';
     let assignedurl='https://www.anuation.com/oldcrm/employee/auth/reactauth/allocate-record-from-fresh-data-to-bd-team.php';
@@ -109,6 +120,14 @@ const mailtemplate =(data) =>{
         data : data
     }).then(response =>{ return response})
 }
+const analyticmailtemplate = (data) =>{
+    return axios({
+      method :"POST",
+      headers: axiosConfig,
+      url: API_URL+'employee/auth/react-index',
+      data:data
+    }).then((response)=>{return response});
+  }
 const ITmailtemplate =(data) =>{
     return axios({
         method :'POST',
@@ -125,6 +144,14 @@ const sendtome =(data) =>{
         data : data
     }).then(response =>{ return response})
 }
+const sendtemplatetome =(data) =>{
+    return axios({
+        method :'POST',
+        headers : axiosConfig,
+        url: "https://www.anuation.com/oldcrm/employee/auth/react-index",
+        data : data
+    }).then(response =>{ return response})
+}
 const sendtomeitemail =(data) =>{
     return axios({
         method :'POST',
@@ -136,6 +163,14 @@ const sendtomeitemail =(data) =>{
 const updateinfo = function(formdata)
 {
     return axios({method :"POST",data:formdata,url:API_URL+'/employee/auth/',headers:axiosConfig}).then((response)=>{return response});
+}
+const updateanalyticinfo = (formdata) =>{
+    return axios({
+        method:'POST',
+        headers : axiosConfig,
+        data:formdata,
+        url: "https://www.anuation.com/oldcrm/employee/auth/react-index",
+    }).then(response =>{ return response})
 }
 const uploadformula = (formdata) =>{
     return axios({
@@ -172,7 +207,7 @@ const createpdf = (formdata) =>{
 }
 
 const Uploaddata = {
-  uploaddata,uploadformula,iiprecordtransfer,transferdatatopct,transferdatatoiippct,createpdf,fetchcomment,assignsheet,updateinfo,addpct,createssheet,updatepct,uploadanalyticdata,emailformat,ITemailformat,mailtemplate,ITmailtemplate,sendtome,sendtomeitemail
+  uploaddata,sendtemplatetome,uploadformula,updateanalyticinfo,iiprecordtransfer,submitanalyticemails,transferdatatopct,transferdatatoiippct,createpdf,fetchcomment,assignsheet,updateinfo,addpct,createssheet,updatepct,uploadanalyticdata,emailformat,ITemailformat,mailtemplate,analyticmailtemplate,ITmailtemplate,sendtome,sendtomeitemail
 }
 
 export default Uploaddata;

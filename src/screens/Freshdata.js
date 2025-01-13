@@ -129,6 +129,7 @@ const changedata =  useCallback ( (data,modal='') =>{
 
 function filterdata(index,value)
 {
+  let updateassignedcolumn = [];
 
 let i=0;
 let filters=document.querySelectorAll('.filter');
@@ -755,6 +756,8 @@ function getColumnLetter(columnNumber) {
       </FormControl>
 
 </th>
+<th style={{  background: 'white' }}><div className="headers">Assigned Value<i className="ti ti-sort-ascending" onClick={(e)=>{sortdata(e,64)}}></i> </div><input className="filter" onKeyUp={(e)=>filterdata(64,e.target.value)} type='text'></input></th>
+
         </tr>
         </>
       )}
@@ -821,6 +824,7 @@ function getColumnLetter(columnNumber) {
 <td  onClick={(e)=>{pickvalue(e,56,58)}} className="column-value" style={{  }}>{user[63]}</td>
 <td  onClick={(e)=>{pickvalue(e,57,59)}} className="column-value" style={{  }}>{user[61]}</td>
 <td  onClick={(e)=>{pickvalue(e,58,60)}} className="column-value" style={{  }}>{user[62]}</td>
+<td  onClick={(e)=>{pickvalue(e,59,61)}} className="column-value" style={{  }}>{user[64]}</td>
 
         </>
       )} 

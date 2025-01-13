@@ -67,9 +67,9 @@ window.location.reload();
                             <div className="position-relative">
                             {auth.type=='1' || auth.type=='2' ? 
                                 <>
-                                <Link to="/dashboard" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                <Link to={`/${(auth.org=='2' ? 'analytic-' : '')}dashboard`} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Patent</h6>
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">{(auth.org=='2' ? 'Analytic' : 'Patent')}</h6>
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
@@ -79,13 +79,13 @@ window.location.reload();
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
-                                <Link to="/templates" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                <Link to={`/${(auth.org=='2' ? 'analytic-' : '')}templates`} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Templates</h6>
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
-                                <Link to="/templates-list" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                <Link to={`/${(auth.org=='2' ? 'analytic-' : '')}templates-list`} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Templates List</h6>
                                     <span className="fs-2 d-block text-dark">Dashboard</span>

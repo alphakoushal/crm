@@ -1,7 +1,8 @@
 import moment from "moment";
-import React,{useCallback} from "react";
-const callstatus={'1':'NI','2':'lb','3':'Voice mail','4':'Invalid no','5':'Email sent','6':'Cb','7':'Ringing','8':'Dnc','9':'Other'};
-const emailstatus = {'1':'Pipeline','2':'Failed','3':'Rejection','4':'Reciprocity','5':'Ooo','6':'Converted','7':'Response','8':'Dnc','9':'Dupe','10':'Exhausted','11':'Other','12':'Email Sent','13':'Not Responsive'};
+const callstatus={'1':'NI','2':'lb','3':'Voice mail','4':'Invalid no','5':'Email sent','6':'Cb','7':'Ringing','8':'Dnc','9':'Other','10':'Meeting scheduled'};
+const analyticcallstatus={'1':'NI','2':'lb','3':'Voice mail','4':'Invalid no','5':'Email sent','6':'Cb','7':'Ringing','8':'Dnc','9':'Other','10':'Meeting scheduled','11':'Gatekeeper','12':'Approached','13':'Pipeline'};
+const emailstatus = {'1':'Pipeline','2':'Failed','3':'Rejection','4':'Reciprocity','5':'Ooo','6':'Converted','7':'Response','8':'Dnc','9':'Dupe','10':'Exhausted','11':'Other','12':'Email Sent','13':'Not Responsive','14':'NI','15':'Meeting scheduled'};
+const analyticemailstatus = {'1':'Pipeline','2':'Failed','3':'Rejection','4':'Reciprocity','5':'Ooo','6':'Converted','7':'Response','8':'Dnc','9':'Dupe','10':'Exhausted','11':'Other','12':'Email Sent','13':'Not Responsive','14':'NI','15':'Meeting scheduled','16':'Approached'};
 const standard={'IN':{'small':22,'other':110},'CA':{'small':1160,'other':1320},'CN':{'other':1210},'JP':{'other':1340},'AU':{'other':1300},'BR':{'other':1200},'US':{'small':1240,'other':1380},'KR':{'other':1080},'EP':{'other':715+700+400+1825},'RU':{'other':1130},'MX':{'other':1630},'MY':{'other':900},'PH':{'other':800},'TH':{'other':900},'ID':{'other':850},'NZ':{'other':1200},'ZA':{'other':900},'VN':{'other':655},'SG':{'other':1100},'CO':{'other':1650}};
 const defaultvalue = {
   mailtypeaccount:{'1':'Individual','2':'Agent'},
@@ -19,11 +20,31 @@ const defaultvalue = {
     {'key':'10','value':'Exhausted'},
     {'key':'12','value':'Email Sent'},
     {'key':'13','value':'Not Responsive'},
+    {'key':'14','value':'Not Interested'}
+      ],
+  analyticnames : [
+    {'key':'_blank','value':'Blank'},
+    {'key':'not_blank','value':'Not Blank'},
+    {'key':'1','value':'Pipeline'},
+    {'key':'2','value':'Failed'},
+    {'key':'3','value':'Rejection'},
+    {'key':'4','value':'Reciprocity'},
+    {'key':'5','value':'Ooo'},
+    {'key':'6','value':'Converted'},
+    {'key':'7','value':'Response'},
+    {'key':'8','value':'Dnc'},
+    {'key':'9','value':'Dupe'},
+    {'key':'10','value':'Exhausted'},
+    {'key':'12','value':'Email Sent'},
+    {'key':'13','value':'Not Responsive'},
+    {'key':'14','value':'Not Interested'},
+    {'key':'15','value':'Meeting scheduled'},
+    {'key':'16','value':'Approached'}
       ],
       dupestatus : [{'key':'Unique','value':'Unique'},{'key':'Dupe','value':'Dupe'}],
       genstatus : [{'key':'email','value':'Email'},{'key':'domain','value':'Domain'}],
       applicantstatus : [{'key':'small','value':'Small'},{'key':'large','value':'Large'}],
-      contactinfostatus : [{'key':'agent','value':'Agent'},{'key':'individual','value':'Individual'},{'key':'Both - Individual & Agent','value':'Both - Individual & Agent'}],
+      contactinfostatus : [{'key':'_blank','value':'Blank'},{'key':'agent','value':'Agent'},{'key':'individual','value':'Individual'},{'key':'Both - Individual & Agent','value':'Both - Individual & Agent'}],
       callnames : [{'key':'_blank','value':'Blank'},{'key':'1','value':'Ni'},
       {'key':'2','value':'Lb'},
       {'key':'3','value':'Voice mail'},
@@ -31,7 +52,21 @@ const defaultvalue = {
       {'key':'5','value':'Email sent'},
       {'key':'6','value':'Cb'},
       {'key':'7','value':'Ringing'},
-      {'key':'8','value':'Dnc'}
+      {'key':'8','value':'Dnc'},
+      {'key':'10','value':'Meeting scheduled'}
+        ],
+      analyticcallnames : [{'key':'_blank','value':'Blank'},{'key':'not_blank','value':'Not Blank'},{'key':'1','value':'Ni'},
+      {'key':'2','value':'Lb'},
+      {'key':'3','value':'Voice mail'},
+      {'key':'4','value':'Invalid no'},
+      {'key':'5','value':'Email sent'},
+      {'key':'6','value':'Cb'},
+      {'key':'7','value':'Ringing'},
+      {'key':'8','value':'Dnc'},
+      {'key':'10','value':'Meeting scheduled'},
+      {'key':'11','value':'Gatekeeper'},
+      {'key':'12','value':'Approached'},
+      {'key':'13','value':'Pipeline'}
         ],
         timezone: {
           "93": { timezone: "Asia/Kabul"
@@ -48,7 +83,7 @@ const defaultvalue = {
           },
           "1-264": { timezone: "America/Anguilla"
           },
-          "672": { timezone: "Antarctica/Casey",timezone: "Antarctica/Davis",timezone: "Antarctica/DumontDUrville",timezone: "Antarctica/Mawson",timezone: "Antarctica/McMurdo",timezone: "Antarctica/Palmer",timezone: "Antarctica/Rothera",timezone: "Antarctica/Syowa",timezone: "Antarctica/Troll",timezone: "Antarctica/Vostok",timezone: "America/Guayaquil"
+          "672": { timezone: "Antarctica/Casey",timezone1: "Antarctica/Davis",timezone2: "Antarctica/DumontDUrville",timezone3: "Antarctica/Mawson",timezone4: "Antarctica/McMurdo",timezone5: "Antarctica/Palmer",timezone6: "Antarctica/Rothera",timezone7: "Antarctica/Syowa",timezone8: "Antarctica/Troll",timezone9: "Antarctica/Vostok",timezone10: "America/Guayaquil"
           },
           "1-268": { timezone: "America/Antigua"
           },
@@ -90,7 +125,7 @@ const defaultvalue = {
           },
           "267": { timezone: "Africa/Gaborone"
           },
-          "55": { timezone: "America/Araguaina",timezone: "America/Bahia",timezone: "America/Belem",timezone: "America/Boa_Vista",timezone: "America/Campo_Grande",timezone: "America/Cuiaba",timezone: "America/Eirunepe",timezone: "America/Fortaleza",timezone: "America/Maceio",timezone: "America/Manaus",timezone: "America/Noronha",timezone: "America/Porto_Velho",timezone: "America/Recife",timezone: "America/Rio_Branco",timezone: "America/Sao_Paulo",timezone:"America/Santarem"
+          "55": { timezone: "America/Araguaina",timezone1: "America/Bahia",timezone2: "America/Belem",timezone3: "America/Boa_Vista",timezone4: "America/Campo_Grande",timezone5: "America/Cuiaba",timezone6: "America/Eirunepe",timezone7: "America/Fortaleza",timezone8: "America/Maceio",timezone9: "America/Manaus",timezone10: "America/Noronha",timezone11: "America/Porto_Velho",timezone12: "America/Recife",timezone13: "America/Rio_Branco",timezone14: "America/Sao_Paulo",timezone15:"America/Santarem"
           },
           "246": { timezone: "America/Barbados"
           },
@@ -118,9 +153,9 @@ const defaultvalue = {
           },
           "235": { timezone: "Africa/Ndjamena"
           },
-          "56": { timezone: "	America/Punta_Arenas",timezone: "America/Santiago",timezone: "Pacific/Easter"
+          "56": { timezone: "	America/Punta_Arenas",timezone1: "America/Santiago",timezone2: "Pacific/Easter"
           },
-          "86": { timezone: "Asia/Shanghai",timezone: "Asia/Urumqi",timezone: "Asia/Taipei"
+          "86": { timezone: "Asia/Shanghai",timezone1: "Asia/Urumqi",timezone2: "Asia/Taipei"
           },
           "57": { timezone: "America/Bogota"
           },
@@ -136,23 +171,23 @@ const defaultvalue = {
           },
           "599": { timezone: "Europe/Amsterdam"
           },
-          "357": { timezone: "Asia/Famagusta",timezone: "Asia/Nicosia"
+          "357": { timezone: "Asia/Famagusta",timezone1: "Asia/Nicosia"
           },
           "420": { timezone: "Europe/Prague"
           },
-          "243": { timezone: "Africa/Brazzaville",timezone: "Africa/Kinshasa",timezone: "Africa/Lubumbashi"
+          "243": { timezone: "Africa/Brazzaville",timezone1: "Africa/Kinshasa",timezone2: "Africa/Lubumbashi"
           },
           "45": { timezone: "Europe/Copenhagen"
           },
           "253": { timezone: "Africa/Djibouti"
           },
-          "1-767": { timezone: "America/Dominica",timezone: "America/Santo_Domingo"
+          "1-767": { timezone: "America/Dominica",timezone1: "America/Santo_Domingo"
           },
           "1-809, 1-829, 1-849": { timezone: "America/Santo_Domingo"
           },
           "670": { timezone: "Asia/Dili"
           },
-          "593": { timezone: "America/Guayaquil",timezone: "Pacific/Galapagos"
+          "593": { timezone: "America/Guayaquil",timezone2: "Pacific/Galapagos"
           },
           "20": { timezone: "Africa/Cairo"
           },
@@ -515,7 +550,10 @@ const defaultvalue = {
         filinglangcode:{'eng':'English','ger':'German','spa':'Spanish','por':'Portuguese','kor':'Korean','jap':'Japanese','chn':'Chinese','rus':'Russian','arb':'Arabic','far':'Farsi','tha':'Thai','fre':'French'},
         transcost :[{ "from": "eng", "to": "jap", "currency": "USD", "cost": "0.17", "type": "word" },{ "from": "jap", "to": "eng", "currency": "USD", "cost": "0.15", "type": "char" },{ "from": "eng", "to": "kor", "currency": "USD", "cost": "0.12", "type": "word" },{ "from": "kor", "to": "eng", "currency": "USD", "cost": "0.12", "type": "char" },{ "from": "eng", "to": "por", "currency": "USD", "cost": "0.13", "type": "word" },{ "from": "por", "to": "eng", "currency": "USD", "cost": "0.13", "type": "word" },{ "from": "eng", "to": "spa", "currency": "USD", "cost": "0.12", "type": "word" },{ "from": "spa", "to": "eng", "currency": "USD", "cost": "0.12", "type": "word" },{ "from": "eng", "to": "ger", "currency": "USD", "cost": "0.17", "type": "word" },{ "from": "ger", "to": "eng", "currency": "USD", "cost": "0.17", "type": "word" },{ "from": "eng", "to": "chn", "currency": "USD", "cost": "0.10", "type": "word" },{ "from": "chn", "to": "eng", "currency": "USD", "cost": "0.10", "type": "word" },{ "from": "eng", "to": "rus", "currency": "USD", "cost": "0.06", "type": "word" },{ "from": "rus", "to": "eng", "currency": "USD", "cost": "0.06", "type": "word" },{ "from": "eng", "to": "arb", "currency": "USD", "cost": "25", "type": "page" },{ "from": "arb", "to": "eng", "currency": "USD", "cost": "25", "type": "page" },{ "from": "eng", "to": "far", "currency": "USD", "cost": "25", "type": "page" },{ "from": "far", "to": "eng", "currency": "USD", "cost": "25", "type": "page" },{ "from": "eng", "to": "tha", "currency": "USD", "cost": "0.08", "type": "word" },{ "from": "tha", "to": "eng", "currency": "USD", "cost": "0.08", "type": "word" },{ "from": "eng", "to": "fre", "currency": "USD", "cost": "0.12", "type": "word" },{ "from": "fre", "to": "eng", "currency": "USD", "cost": "0.14", "type": "word" }],
         accounts:{'191214150648429653':[{name:'Divi',account:15},{name:'Meenu',account:4},{name:'Kim',account:5},{name:'Ojas',account:6},{name:'Naina',account:7}],'231220121357187063':[{name:'Amy',account:11},{name:'Mohini',account:8},{name:'Eva',account:9},{name:'Nancy',account:10}],'191220121357187063':[{name:'Ria',account:14},{name:'Anu',account:12},{name:'Neha',account:13},{name:'Priya',account:16}],'240120121357187064':[{name:'Sia',account:17},{name:'Komal',account:18}],'240513115857792863':[{name:'Gary',account:19}]},
+        analyticaccounts:{'240621150648429643':[{name:'Abhishek Singh',account:1},{name:'Ben Williams',account:2},{name:'Alex Turner',account:12},{name:'Zen Harper',account:13}],'230703121732279603':[{name:'Sheetal Gupta',account:3},{name:'June Wood',account:4},{name:'Bella Carter',account:5}],'240621150648429843':[{name:'Chris Brown',account:6},{name:'San Joy',account:7}],'230703121732279703':[{name:'Tanisha Yadav',account:8},{name:'Pam Jones',account:10},{name:'Alina Shaw',account:11}]},
+        analyticusers:[{'account':'240621150648429643','name':'Abhishek'},{'account':'230703121732279603','name':'Sheetal'},{'account':'230703121732279703','name':'Tanisha'},{'account':'240621150648429843','name':'Sanchit'}],
         username:{'191214150648429653':'Kim','231220121357187063':'Mohini','191220121357187063':'Ria','240120121357187064':'Komal','240513115857792863':'Gary'},
+        iipusername:{'240513115857792863':'Garry','191214201403624914':'Maya'},
         usernames:[{'key':'191214150648429653','name':'Kim'},{'key':'231220121357187063','name':'Mohini'},{'key':'191220121357187063','name':'Ria'},{'key':'240120121357187064','name':'Komal'},{'key':'240513115857792863','name':'Garry'}],
         usernames2:[{'account':'191214150648429653','name':'Kim'},{'account':'231220121357187063','name':'Mohini'},{'account':'191220121357187063','name':'Ria'},{'account':'240120121357187064','name':'Komal'},{'account':'240513115857792863','name':'Garry'}],
         iipusernames2:[{'account':'240513115857792863','name':'Garry'},{'account':'191214201403624914','name':'Maya'}],       
@@ -870,7 +908,7 @@ const defaultvalue = {
 const tablesetting = {
   countred:function(email,numbermatch,d)
 {
-    return (d.filter((e1)=>{return e1[numbermatch].trim().toLowerCase()===email.toLowerCase()}).length>=2 ? true : false);
+    return (d.filter((e1)=>{return e1[numbermatch]?.trim().toLowerCase()===email.toLowerCase()}).length>=2 ? true : false);
 },
 itreturndata:function(collection,value,key)
 {
@@ -915,6 +953,67 @@ let t=-1;
     return t;
 }
 ,
+returndataanalytic: function(collection,value,key)
+{
+  value=(value!='' && value !=null ? value: '');
+  value = typeof(value)=='number' ? value.toString() : value.toLowerCase();
+
+let t=-1;
+    for(let i=0;i<collection.length;i++)
+    {
+     
+      // collection[i] = (collection[i]=='_blank' ? '' : collection[i]);
+        if(key==18 || key==20)
+        {
+            if(value==collection[i])
+    {
+       t= 0;
+    } 
+    else if(collection[i]=='not_blank' && value!='' && value!='_blank')
+      {
+        t=0;
+      }
+      else if(collection[i]=='_blank' && (value=='' || value=='_blank') )
+        {
+          t=0;
+        }
+        }
+        else if(key==5 && collection[i]=='<' && moment().format('YYYY-MM-DD')<=moment(value).format('YYYY-MM-DD'))
+        {
+
+          t= 0;
+        }
+        else if(collection[i]=='_blank' && (value=='' || value=='_blank') )
+        {
+          t=0;
+        }
+        else
+        {
+    if(value.indexOf(collection[i])>-1)
+    {
+       t= 0;
+       
+    }
+    else if(collection[i]=='_blank' && value=='')
+    {
+       t= 0;
+    }
+    else if(collection[i]=='!n/a' && value!='n/a')
+    {
+       t= 0;
+       
+    }
+    else if(collection[i].indexOf('!')>-1 && value!=collection[i].split('!')[1])
+    {
+       t= 0;
+       
+    }
+    }
+}
+
+    return t;
+}
+,
 returndata: function(collection,value,key)
 {
   value=(value!='' && value !=null ? value: '');
@@ -931,6 +1030,10 @@ let t=-1;
     {
        t= 0;
     } 
+    else if(collection[i]=='_blank' && (value=='' || value=='_blank') )
+      {
+        t=0;
+      }
         }
         else if(key==5 && collection[i]=='<' && moment().format('YYYY-MM-DD')<=moment(value).format('YYYY-MM-DD'))
         {
@@ -1219,4 +1322,4 @@ const costs ={
 }
 const API_URL = "https://www.anuation.com/oldcrm/";
 let axiosConfig = { 'content-type': 'application/x-www-form-urlencoded' };
-export { callstatus, emailstatus,costs,standard,tablesetting,defaultvalue,API_URL,axiosConfig};
+export { callstatus,analyticcallstatus,analyticemailstatus, emailstatus,costs,standard,tablesetting,defaultvalue,API_URL,axiosConfig};

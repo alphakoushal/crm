@@ -12,7 +12,7 @@ import Header from "../component/Header";
 import Fetchdata from "../services/fetchdata";
 import { TableVirtuoso } from "react-virtuoso";
 import { useDispatch, useSelector } from "react-redux";
-import { userprofileupdate } from "../reducers/Userdata";
+import { userprofileupdate,profilesidebar } from "../reducers/Userdata";
 import Uploadsidebar from "../component/Uploadsidebar";
 import Commentmodal from "../component/modals/comments";
 import Uploaddata from "../services/uploaddata";
@@ -576,10 +576,7 @@ return timezone;
     i.target.querySelector("i").classList.replace("hide", "show");
 
     //setprofilebar((prev)=>( {...prev,status:true,email:v} ));
-    setdefaultdata((prev) => ({
-      ...prev,
-      profilebar: { status: true, email: v, type: v1 },
-    }));
+    dispatch(profilesidebar({ status: true, email: v, type: v1}));
   };
   const closebar = () => {
     setdefaultdata((prev) => ({
@@ -2978,17 +2975,6 @@ return timezone;
           </div>
         </div>
         <Uploadsidebar />
-        {defaultdata.profilebar.status ? (
-          <Sidebarprofile
-            closebar={closebar}
-            type={defaultdata.profilebar.type}
-            email={defaultdata.profilebar.email}
-            userid={auth.userid}
-            accountytpe={auth.type}
-          />
-        ) : (
-          <></>
-        )}
       </div>
     </>
   );

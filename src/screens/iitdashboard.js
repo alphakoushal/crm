@@ -39,7 +39,7 @@ function Loading() {
   return <h2>🌀 Loading...</h2>;
 }
 let filtered = [];
-const ITDashboard = () => {
+const ITDashboard = ({service}) => {
   const [d, sd] = useState([]);
   const [d2, gd] = useState([]);
   const [defaultdata, setdefaultdata] = useState({
@@ -68,7 +68,7 @@ const ITDashboard = () => {
   const offset = useRef({ limit: 0, page: 0 });
   const processing = useRef(false);
   const months = useRef([]);
-  const platform = useRef("it");
+  const platform = useRef(service);
   const auth = JSON.parse(localStorage.getItem("user"));
   const valued = useSelector((state) => state.userdata.value);
   const dispatch = useDispatch();
@@ -96,6 +96,7 @@ const ITDashboard = () => {
     type: "value",
     file_refresh: "comment",
     offset: "1",
+    service:service,
     w_id: "",
     anuationuser_uniqueid: auth.userid,
     accounttype: auth.type,
@@ -189,7 +190,7 @@ const ITDashboard = () => {
   });
   useEffect(() => {
     loaddata(formdata);
-  }, []);
+  }, [service]);
   const showmailbox = () => {
     setdefaultdata((prev) => ({ ...prev, opensendmailbox: true }));
   };
@@ -436,6 +437,7 @@ const ITDashboard = () => {
           <ITEmailbox
             page="itdata"
             platform={platform}
+            service={service}
             alldata={d}
             changedata={changedata}
             closeemailsendbox={closeemailsendbox}

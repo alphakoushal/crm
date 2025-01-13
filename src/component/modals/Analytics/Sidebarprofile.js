@@ -1,9 +1,9 @@
 import React,{useEffect, useMemo,useState,useRef,memo,Suspense,lazy,useCallback} from "react";
-import Fetchdata from "../../services/fetchdata";
-import Details from "./Details";
-import Toast from "../New-toast";
-import Popup from "../Popup";
-const Sidebarprofile = ({email,type,closebar,userid,accountytpe}) =>{
+import Fetchdata from "../../../services/fetchdata";
+import Analyticdetails from "./Details";
+import Toast from "../../New-toast";
+import Popup from "../../Popup";
+const Analyticsidebarprofile = ({email,type,closebar,userid,accountytpe}) =>{
 const [clienthistory,sethistory]=useState({type:type,data:[],assigned:[],agent:[],converted:[],response:[],pipeline:[]});
 const [currenttab,settab]=useState('');
 const [currentsheet,setsheet]=useState(0);
@@ -41,7 +41,7 @@ const startsearching = (e) =>{
           {
             document.querySelector('.loader').classList.remove('hide');
            timeout= setTimeout( async ()=>{
-              const data =await Fetchdata.fetchdomain({type:t,'posttype':'searchrecord','data':v,accountytpe:accountytpe,userid:userid}).then((response)=>{return response;});
+              const data =await Fetchdata.fetchdomain({type:t,'posttype':'searchanalyticrecord','data':v,accountytpe:accountytpe,userid:userid}).then((response)=>{return response;});
              if(data.data.success)
              {
               setsearchdata(data.data.data);
@@ -76,7 +76,7 @@ gethistory(v,t)
 }
 async function gethistory(email,type){
   document.querySelector('.loader').classList.remove('hide');
-  let d=await Fetchdata.fetchhistory({posttype:'fetch-history',email:email,type:type,userid:userid,accountytpe:accountytpe}).then((Response)=>{return Response;});
+  let d=await Fetchdata.fetchhistory({posttype:'fetch-analytic-history',email:email,type:type,userid:userid,accountytpe:accountytpe}).then((Response)=>{return Response;});
  if(d.data.data.length>0)
  {
   let commentdata= d.data.data.map((item)=> ({'app':item['apps'],'comment':(item['comment']!=='' && item['comment']!=null ? JSON.parse(item['comment'])['freshcomment'] : []).map((item)=>item.comment_type)}));
@@ -133,7 +133,6 @@ document.querySelector('.loader').classList.add('hide');
                         <option value='' selected="">Choose...</option>
                         <option value="domain">Domain</option>
                         <option value="email">Email</option>
-                        <option value="patent">Application</option>
                         <option value="applicant">Applicant</option>
                       </select>
                       <input autoComplete="off" onClick={()=>{document.querySelector('.hideresult').classList.remove('hide')}} onKeyUp={(e)=>{startsearching(e)}} type="text" class="z-1 form-control search-chat py-2 ps-3 pe-5" id="text-srh" placeholder="Search"/>
@@ -141,7 +140,7 @@ document.querySelector('.loader').classList.add('hide');
                       <ul class="hideresult" role="none" style={{'z-index':'9',"border-left": "2px solid #e2e2e2","position": "absolute","top": "35px","width": "68%","left": "32%","background": "white"}}>
                         {
                           searcheddata.map((item,index)=>{
-                            return <li onClick={()=>{putvalue(item.appno)}} key={index} style={{"padding": "8px 10px","cursor": "pointer"}}>{item.appno}</li>;
+                            return <li onClick={()=>{putvalue(item.email_id)}} key={index} style={{"padding": "8px 10px","cursor": "pointer"}}>{item.email_id}</li>;
                           })
                         }
                         </ul>
@@ -244,15 +243,15 @@ document.querySelector('.loader').classList.add('hide');
              {clienthistory.data.map( (item,index) => {
                 return (
                 (item['sheet']==currentsheet ? <li className="nav-item" role="presentation">
-                <button data-index={index} onClick={()=>loadcomment(index+1)} className={`w-185 me-1 btn btn-outline-${(item['suggestion']=='yes' ? 'warning' : 'success')} position-relative ${index==(currenttab-1) ? 'active' : ''} d-flex align-items-center justify-content-center fs-3 py-2 mb-1`} id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="true">
+                <button data-index={index} onClick={()=>loadcomment(index+1)} className={` me-1 btn btn-outline-${(item['suggestion']=='yes' ? 'warning' : 'success')} position-relative ${index==(currenttab-1) ? 'active' : ''} d-flex align-items-center justify-content-center fs-3 py-2 mb-1`} id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="true">
 
-                  <span className="d-none d-md-block"><img style={{width:'30px'}} src={`../crm/assets/images/${(item['user'] !='' && item['user']!=null ? item['user'] : 'patent')}.png`} data-src={`${(item['deadline']=='yes' ? '../crm/assets/icons/redpatent.png' : '../crm/assets/icons/patent.png')}`}/> {item['apps']} {clienthistory.response.includes(item['apps']) ? 'R' : ''} {clienthistory.converted.includes(item['apps']) ? 'C' : ''} {clienthistory.pipeline.includes(item['apps']) ? 'P' : ''}</span>
+                  <span className="d-none d-md-block"><img style={{width:'30px'}} src={`../crm/assets/images/${(item['user'] !='' && item['user']!=null ? item['user'] : 'patent')}.png`} data-src={`${(item['deadline']=='yes' ? '../crm/assets/icons/redpatent.png' : '../crm/assets/icons/patent.png')}`}/>  {item['apps']} {clienthistory.response.includes(item['apps']) ? 'R' : ''} {clienthistory.converted.includes(item['apps']) ? 'C' : ''} {clienthistory.pipeline.includes(item['apps']) ? 'P' : ''}</span>
                 </button>
               </li> : <></>))
               })}
             </ul>
 
-         {clienthistory.data.length>0 && currenttab!='' ? <Details data={clienthistory.data[currenttab-1]}></Details> : <></>}
+         {clienthistory.data.length>0 && currenttab!='' ? <Analyticdetails data={clienthistory.data[currenttab-1]}></Analyticdetails> : <></>}
           </>
            : <> <div className="card ">
            <div className="card-body p-0">
@@ -264,7 +263,6 @@ document.querySelector('.loader').classList.add('hide');
                        <option value='' selected="">Choose...</option>
                        <option value="domain">Domain</option>
                        <option value="email">Email</option>
-                       <option value="patent">Application</option>
                        <option value="applicant">Applicant</option>
                      </select>
                      <input autoComplete="off" onClick={()=>{document.querySelector('.hideresult').classList.remove('hide')}} onKeyUp={(e)=>{startsearching(e)}} type="text" class="z-1 form-control search-chat py-2 ps-3 pe-5" id="text-srh" placeholder="Search"/>
@@ -272,7 +270,7 @@ document.querySelector('.loader').classList.add('hide');
                       <ul class="hideresult" role="none" style={{'z-index':'9',"border-left": "2px solid #e2e2e2","position": "absolute","top": "35px","width": "68%","left": "32%","background": "white"}}>
                         {
                           searcheddata.map((item,index)=>{
-                            return <li onClick={()=>{putvalue(item.appno)}} key={index} style={{"padding": "8px 10px","cursor": "pointer"}}>{item.appno}</li>;
+                            return <li onClick={()=>{putvalue(item.email_id)}} key={index} style={{"padding": "8px 10px","cursor": "pointer"}}>{item.email_id}</li>;
                           })
                         }
                         </ul> </div>
@@ -359,4 +357,4 @@ document.querySelector('.loader').classList.add('hide');
     )
 }
 
-export default Sidebarprofile;
+export default Analyticsidebarprofile;

@@ -1,7 +1,8 @@
 import React,{useState} from "react";
 import moment from "moment";
-import { emailstatus,defaultvalue } from "../../constant/Constant";
-const Details = ({data}) =>{
+import { defaultvalue,emailstatus } from "../../../constant/Constant";
+const Analyticdetails = ({data}) =>{
+    console.log(data);
 const userdetails= JSON.parse(data['other']);
 let comments= (data['comment']!=null ? JSON.parse(data['comment'])['freshcomment']: []);
 let comments2= (data['comment2']!=null ? JSON.parse(data['comment2'])['freshcomment']: []);
@@ -16,27 +17,21 @@ comments2.sort((a,b)=> {return b.comment_added_date -a.comment_added_date});
             <div className="col-lg-3">
                   <div className="sticky-top" >
               <div className="card bx">
-
                 <div className="card-body">
                   <p className="fs-2"><b>Assigned to</b>- {data['user']}</p>
-                  <p className="fs-2"><b>Applicant name</b>- {userdetails['APPLICANT_NAME']}</p>
-                  <p className="fs-2"><b>Contact Person</b>- {userdetails['c_p_f']} {userdetails['c_p_l']}</p>
-                  <p className="fs-2"><b>Contact info of </b>- {userdetails['c_i_o']}</p>
-                  <p className="fs-2"><b>Agent Name</b>- {userdetails['agent_name']??'N/A'}</p>
-                  <p className="fs-2"><b>Email-id</b>- {userdetails['email_id']??'N/A'}</p>
-                  <p className="fs-2"><b>Agent Email</b>- {userdetails['agent_email_id']??'N/A'}</p>
-                  <p className="fs-2"><b>Agent Phone Number</b>- {userdetails['a_p_h_n']??'N/A'}</p>
-                  <p className="fs-2"><b>Ref Number</b>- {userdetails['ref_no']??'N/A'}</p>
-                  <p className="fs-2"><b>Applicant Status</b>-  {userdetails['applicant_status']}</p>
-                  <p className="fs-2"><b>Phone Number</b>-  {userdetails['p_h_n']}</p>
-                  <p className="fs-2"><b>Priority Date</b>-  {userdetails['p_date']}</p>
-                  <p className="fs-2"><b>Deadline 30</b>-  {userdetails['deadline_30_month']}</p>
-                  <p className="fs-2"><b>Deadline 31</b>-  {userdetails['deadline_31_month']}</p>
-                  <p className="fs-2"><b>Pages</b>-  {userdetails['pages']}</p>
-                  <p className="fs-2"><b>Claim</b>-  {userdetails['claim']}</p>
-                  <p className="fs-2"><b>Drawing</b>-  {userdetails['drawing']}</p>
-                  <p className="fs-2"><b>Priority</b>-  {userdetails['priority']}</p>
-                  <p className="fs-2"><b>ISR</b>-  {userdetails['isr']}</p>
+                  <p className="fs-2"><b>Contact Person</b>- {userdetails?.['fullname']}</p>
+                  <p className="fs-2"><b>Contact info of </b>- {userdetails?.['cio']}</p>
+                  <p className="fs-2"><b>Email-id</b>- {userdetails['emailid']??'N/A'}</p>
+                  <p className="fs-2"><b>designation</b>-  {userdetails['designation']}</p>
+                  <p className="fs-2"><b>Phone Number</b>-  {userdetails['phone']}</p>
+                  <p className="fs-2"><b>linkedin</b>-  {userdetails['linkedin']}</p>
+                  <p className="fs-2"><b>firmname</b>-  {userdetails['firmname']}</p>
+                  <p className="fs-2"><b>website</b>-  {userdetails['website']}</p>
+                  <p className="fs-2"><b>country</b>-  {userdetails['country']}</p>
+                  <p className="fs-2"><b>altphn</b>-  {userdetails['altphn']}</p>
+                  <p className="fs-2"><b>technology</b>-  {userdetails['technology']}</p>
+                  <p className="fs-2"><b>field</b>-  {userdetails['field']}</p>
+                  <p className="fs-2"><b>City</b>-  {userdetails['city']}</p>
 
 
                 </div>
@@ -49,10 +44,10 @@ comments2.sort((a,b)=> {return b.comment_added_date -a.comment_added_date});
                 <div className="card-body border-bottom">
                   <div className="d-flex align-items-center gap-3">
                     <img src='../crm/assets/icons/patent.png' alt="" className="rounded-circle" width="40" height="40"/>
-                    <h6 className="fw-semibold mb-0 fs-4">{data['weblink']} {comments.length>0 ? '( '+(emailstatus?.[comments[0].comment_type]!=undefined ? emailstatus?.[comments[0].comment_type] : '')  +' )' : ''}</h6>
+                    <h6 className="fw-semibold mb-0 fs-4">{data['email']} {comments.length>0 ? '( '+(emailstatus?.[comments[0].comment_type]!=undefined ? emailstatus?.[comments[0].comment_type] : '')  +' )' : ''}</h6>
                   </div>
-                  <p className="text-dark my-3"><b>Application Number : </b> {userdetails['app_no']}</p>
-                  <p className="text-dark my-3"><b>Title : </b> {userdetails['title']}</p>
+                  <p className="text-dark my-3"><b>Contact Person : </b> {userdetails['fullname']}</p>
+                  <p className="text-dark my-3"><b>Firmname : </b> {userdetails['firmname']}</p>
                   <img src="dist/images/products/s1.jpg" alt="" className="img-fluid rounded-4 w-100 object-fit-cover"/>
 <>
                   {comments.map((item) => {
@@ -94,4 +89,4 @@ comments2.sort((a,b)=> {return b.comment_added_date -a.comment_added_date});
 
       </div> )
 }
-export default Details;
+export default Analyticdetails;

@@ -14,16 +14,20 @@ import Freshdata from "./screens/Freshdata.js";
 import IIPFreshdata from "./screens/Iipreshdata.js";
 import Analytic from "./screens/Analytics";
 import Emailemplate from "./screens/Emailemplate.js";
+import Analyticemailemplate from "./screens/Analytic-template.js";
 import ITEmailemplate from "./screens/it-template-component.js";
 import TemplateList from "./screens/Templatelist.js";
 import ITTemplateList from "./screens/It-templatelist.js";
+import AnalytictemplateList from "./screens/Analytic-template-list.js";
 import Editemailemplate from "./screens/edittemplate.js";
+import Editanalytictemplate from "./screens/Edit-analytic-template.js";
 import EditITemailemplate from "./screens/editittemplate.js";
 import Editcountryformula from "./screens/Edit-country-formula.js";
 import Comparedata from "./screens/compare-existing-data.js";
 import Countrylist from "./screens/formula-country.js";
 import Calculatecost from "./screens/calculate-cost.js";
 import Sockets from "./screens/socket.js";
+import Analyticdashboard from "./screens/Analytics-screen.js";
 import Calculatetradecost from "./screens/calculate-trademark-cost.js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
@@ -66,15 +70,23 @@ function App() {
 <Route path="*" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/iip-dashboard" element={<IIPDashboard />}></Route>
-            <Route path="/it-dashboard" element={<ITDashboard />}></Route>
+            <Route path="/it-dashboard" element={<ITDashboard service={'it'} />}></Route>
+            <Route path="/audit-dashboard" element={<ITDashboard service={'audit'}/>}></Route>
             <Route path="/analytic" element={<Analytic />}></Route>
+            <Route path="/analytic-dashboard" element={<Analyticdashboard />}></Route>
+            <Route path="/analytic-templates" element={<Analyticemailemplate />}></Route>
             <Route path="/templates" element={<Emailemplate />}></Route>
             <Route path="/it-templates" element={<ITEmailemplate />}></Route>
             <Route path="/templates-list" element={<TemplateList />}></Route>
+            <Route path="/analytic-templates-list" element={<AnalytictemplateList />}></Route>
             <Route path="/it-templates-list" element={<ITTemplateList />}></Route>
             <Route
                   path="/edit-template"
                   element={<Editemailemplate />}
+                ></Route>
+            <Route
+                  path="/edit-analytic-template"
+                  element={<Editanalytictemplate />}
                 ></Route>
             <Route
                   path="/edit-it-template"

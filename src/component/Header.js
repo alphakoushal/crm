@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import { pivotmodal } from "../reducers/Style";
+import { profilesidebar } from "../reducers/Userdata";
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
@@ -17,22 +18,25 @@ import {TextareaAutosize} from '@mui/base/TextareaAutosize';
 import { styled } from '@mui/system';
 import commentprocess from "../services/commentservice";
 import Addmodal from "./modals/addmodal";
+import Addapplication from "./modals/Analytics/Add-application";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import { defaultvalue } from "../constant/Constant";
 import { useOnlinestatus } from "../services/Online";
+import Sidebarprofile from "./modals/Sidebarprofile";
+import Analyticsidebarprofile from "./modals/Analytics/Sidebarprofile";
 const Header = React.memo(({platform,alldata,changedata,completedata,showmailbox,showdupemailbox,showcronbox,clearfilters,refreshdata,formdatas,showcurrencies}) =>{
   const navigate=useNavigate(); 
   const isOnline = useOnlinestatus();
   const dispatch =useDispatch();
   let auth= localStorage.getItem("user"); 
   auth =(auth!='' ? JSON.parse(auth) : '');
-  let platformaccount = (platform.current==='it' ? defaultvalue.itaccounts : defaultvalue.accounts);
+  let platformaccount = ((platform.current==='it' || platform.current==='audit') ? defaultvalue.itaccounts : ( platform.current==='analytics' ? defaultvalue.analyticaccounts : defaultvalue.accounts));
   let accounts =(platformaccount[auth.userid]!==undefined ? platformaccount[auth.userid] :Object.values(platformaccount).flat());
   const [openemailbox, setOpen] = useState({status:false,type:'',title:''});
   const [openfollowbox, setOpenfollow] = useState(false);
   const [openaddbox, setaddbox] = useState(false);
-  const [validate,setvalidate]=useState({'loader':'hide','loadermessage':'Submit',status:false,color:'error',icon:'error',message:'',inprocess:false});
+  const [validate,setvalidate]=useState({'loader':'hide','loadermessage':'Submit',profilebar: { status: false, email: "" },status:false,color:'error',icon:'error',message:'',inprocess:false});
 const [status,setstatus] =useState();
 const StyledTextarea = styled(TextareaAutosize)(
   ({ theme }) => `
@@ -47,6 +51,7 @@ const StyledTextarea = styled(TextareaAutosize)(
 );
 const addentry = ()=>{
   setaddbox(true);
+  console.log(auth);
 }
 useEffect(()=>{
   return()=>{ 
@@ -73,7 +78,7 @@ dispatch(pivotmodal(true));
     setOpen({status:false,type:'',title:''});
   };
 
-    const valued=useSelector((state)=>state.userdata.value);
+    const valued=useSelector((state)=>state.userdata.profilebar);
     const [d,sd]=useState('hi');
     function showsidebar()
     {
@@ -90,6 +95,7 @@ window.location.reload();
       let clientObject={};
      // let appno=document.querySelectorAll('.appno');
       let commentdate=document.querySelector('#name').value;
+      let nextdate=document.querySelector('#nextdate').value;
       let commenttext=document.querySelector('#textarea').value;
       let a=document.querySelector('#chooseaccount');
       let appno=document.querySelector('#allapp').value.split(',');
@@ -97,11 +103,11 @@ window.location.reload();
       {
           setvalidate((validate)=>({...validate,status:true,message:'Request In process'}));
       }
-      else if(status=='' || typeof(status)=='undefined')
+      else if((status=='' || typeof(status)=='undefined') && type!='followup_comment_react')
       {
           setvalidate((validate)=>({...validate,status:true,message:'Choose Status'}));
       }
-      else if((commentdate=='' || typeof(commentdate)=='undefined') && type=='email_comment_react')
+      else if((commentdate=='' || typeof(commentdate)=='undefined') && type=='email_comment_react' && type!='followup_comment_react')
       {
           setvalidate((validate)=>({...validate,status:true,message:'Choose Date'}));
       }
@@ -120,7 +126,7 @@ window.location.reload();
       else
       {
       appno.forEach((e,index)=>{
-        let getdata=(platform.current=='it' ? alldata.filter((fv)=>{return fv['email'].toLowerCase()==e.toLowerCase()}) : alldata.filter((fv)=>{return fv[2]==e})); 
+        let getdata=((platform.current=='it' || platform.current==='audit') ? alldata.filter((fv)=>{return fv['email'].toLowerCase()==e.toLowerCase()}) : (  platform.current==='analytics' ? alldata.filter((fv)=>{return fv[8].toLowerCase()==e.toLowerCase()}) : alldata.filter((fv)=>{return fv[2]==e}))); 
         if(getdata.length>0)
         {
 clientObject[e] = {
@@ -128,6 +134,7 @@ clientObject[e] = {
   "firstemail": getdata[0][20],//document.querySelector(`.appno[value='${e}']`).closest('tr').querySelectorAll('td')[21].innerText,
   "followup": getdata[0][21],//document.querySelector(`.appno[value='${e}']`).closest('tr').querySelectorAll('td')[22].innerText,
   "date": commentdate,
+  "nextdate": nextdate,
   "status": status,
   "addedby":a.options[a.selectedIndex].text,
   "comment": (status=='2' && type=='email_comment_react' ? 'failed' : commenttext),
@@ -141,7 +148,7 @@ clientObject[e] = {
       var salesdata = {
         "email_comment_data": JSON.stringify(clientObject),
         "platform":platform.current,
-        "type": type
+        "type": (platform.current=='analytics' ? type+'_analytic' : type)
     };
     if(Object.keys(clientObject).length>=1)
     {
@@ -149,12 +156,12 @@ clientObject[e] = {
    let cstatus= await commentprocess.updatecomments(salesdata).then((response)=>{return response});
    if (cstatus.data.success) { setvalidate((prev)=>({ ...prev,loader:'hide',loadermessage:'Submit', status: true,inprocess:false, message: cstatus.data.message,color:'success',icon:'success' }));
    setOpen({status:false,type:'',title:''}); 
-   if(type=='email_comment_react' && platform.current!='it')
+   if(type=='email_comment_react' && platform.current!='it' && platform.current!='audit')
    {
     let newarray=completedata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[25]:item[25]+"="+commenttext,[58]:a.options[a.selectedIndex].text,[21]:commentdate,[23]:status,[22]:""} : item) });
     changedata(newarray);
    }
-   else if(platform.current!='it')
+   else if(platform.current!='it' && platform.current!='audit')
    {
     let newarray=completedata.map((item,index)=>{ return (appno.includes(item[2]) ?  {...item,[25]:item[25]+"="+commenttext,[58]:a.options[a.selectedIndex].text,[21]:commentdate,[24]:status} : item) });
     changedata(newarray);
@@ -183,19 +190,33 @@ clientObject[e] = {
       let ps=document.querySelector('.user-profile');
       (ps.classList.contains('show') ? ps.classList.remove('show') : ps.classList.add('show'));
     }
+    const closebar = () => {
+      dispatch(profilesidebar({ status: false, email: "" }));
+  
+      //setprofilebar((prev)=>( {...prev,status:false,email:''} ));
+      if (document.querySelector("i.profilefetch.show")) {
+        document
+          .querySelector("i.profilefetch.show")
+          .classList.replace("show", "hide");
+      }
+    };
+    useEffect(()=>{
+console.log('changed',validate.profilebar);
+    },[validate])
     return(
         <>
                     <Snackbar open={validate.status} autoHideDuration={1000}>
 
 <MuiAlert elevation={6} variant="filled" color={validate.color} severity={validate.icon}>{validate.message}</MuiAlert>
 </Snackbar>
-        {openaddbox ? <Addmodal fn={closeaddbox}></Addmodal> : <></>}
+
+        {openaddbox ? (auth.org=='2' ? <Addapplication fn={closeaddbox}></Addapplication> : <Addmodal fn={closeaddbox}></Addmodal>) : <></>}
        
          <Dialog open={openemailbox.status} onClose={handleClose}>
         <DialogTitle>{openemailbox.title}</DialogTitle>
         <DialogContent>
           <div className="row pt-3">
-            <div className="col-md-4">
+            <div className={`col-md-3 ${openemailbox.type=='followup_comment_react' ? 'hide' : ''}`}>
         <FormControl fullWidth>
   {openemailbox.type=='email_comment_react' ? <>
   <InputLabel id="demo-simple-select-label">Email status</InputLabel>
@@ -206,18 +227,11 @@ clientObject[e] = {
     label="Email status"
     onChange={(event)=>setstatus(event.target.value)}
   >
-    <MenuItem value={1}>Pipeline</MenuItem>
-    <MenuItem value={2}>Failed</MenuItem>
-    <MenuItem value={3}>Rejection</MenuItem>
-    <MenuItem value={4}>Reciprocity</MenuItem>
-    <MenuItem value={5}>Ooo</MenuItem>
-    <MenuItem value={6}>Converted</MenuItem>
-    <MenuItem value={7}>Response</MenuItem>
-    <MenuItem value={8}>Dnc</MenuItem>
-    <MenuItem value={9}>Dupe</MenuItem>
-    <MenuItem value={10}>Exhausted</MenuItem>
-    <MenuItem value={12}>Email Sent</MenuItem>
-    <MenuItem value={13}>Not Responsive</MenuItem>
+     {defaultvalue[`${(auth.org=='2' ? 'analytic' : '')}names`].map((name) => (
+                              <MenuItem key={name.key} value={name.key}>
+                                {name.value}
+                              </MenuItem>
+                            ))}
   </Select>
   </> :  
   <>
@@ -229,30 +243,45 @@ clientObject[e] = {
     label="Call status"
     onChange={(event)=>setstatus(event.target.value)}
   >
-    <MenuItem value={1}>Ni</MenuItem>
-    <MenuItem value={2}>Lb</MenuItem>
-    <MenuItem value={3}>Voice mail</MenuItem>
-    <MenuItem value={4}>Invalid no</MenuItem>
-    <MenuItem value={5}>Email sent</MenuItem>
-    <MenuItem value={6}>Cb</MenuItem>
-    <MenuItem value={7}>Ringing</MenuItem>
-    <MenuItem value={8}>Dnc</MenuItem>
-    <MenuItem value={9}>Dupe</MenuItem>
-    <MenuItem value={10}>Exhausted</MenuItem>
+         {defaultvalue[`${(auth.org=='2' ? 'analytic' : '')}callnames`].map((name) => (
+                              <MenuItem key={name.key} value={name.key}>
+                                {name.value}
+                              </MenuItem>
+                            ))}
   </Select></>}
 </FormControl>
 </div>
-<div className="col-md-4">
+<div className={`col-md-3 ${openemailbox.type=='followup_comment_react' ? 'hide' : ''}`}>
           <TextField
             autoFocus
             margin="dense"
+            label="Follow Up date"
+            InputLabelProps={{
+              shrink: true, 
+            }}
+        placeholder="Enter your text here"
             id="name"
             type="date"
             fullWidth
             variant="standard"
           />
           </div>
-          <div className="col-md-4">
+<div className="col-md-3">
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Next Follow Up date"
+            InputLabelProps={{
+              shrink: true, 
+            }}
+        placeholder="Enter your text here"
+            id="nextdate"
+            type="date"
+            fullWidth
+            variant="standard"
+          />
+          </div>
+          <div className="col-md-3">
           <select id="chooseaccount" className="form-select">
                               <option value="">Choose Account</option>
                               {
@@ -299,9 +328,9 @@ clientObject[e] = {
                             <div className="position-relative">
                             {auth.type=='1' || auth.type=='2' ? 
                                 <>
-                                <Link to="/dashboard" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                <Link to={`/${(auth.org=='2' ? 'analytic-' : '')}dashboard`} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Patent</h6>
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">{(auth.org=='2' ? 'Analytic' : 'Patent')}</h6>
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
@@ -311,13 +340,13 @@ clientObject[e] = {
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
-                                <Link to="/templates" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                <Link to={`/${(auth.org=='2' ? 'analytic-' : '')}templates`} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Templates</h6>
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
-                                <Link to="/templates-list" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                <Link to={`/${(auth.org=='2' ? 'analytic-' : '')}templates-list`} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">Templates List</h6>
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
@@ -355,6 +384,12 @@ clientObject[e] = {
                                 <Link to="/it-dashboard" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div className="d-inline-block">
                                     <h6 className="mb-1 fw-semibold bg-hover-primary">IT Data</h6>
+                                    <span className="fs-2 d-block text-dark">Dashboard</span>
+                                  </div>
+                                </Link>
+                                <Link to="/audit-dashboard" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                  <div className="d-inline-block">
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Audit Data</h6>
                                     <span className="fs-2 d-block text-dark">Dashboard</span>
                                   </div>
                                 </Link>
@@ -434,12 +469,12 @@ clientObject[e] = {
                                     <span className="fs-2 d-block text-dark">Add New Call Comment</span>
                                   </div>
                                 </Link>
-                                <Link onClick={(e)=>followboxevent(e)} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
+                                <Link  onClick={(e)=>handleClickOpen(e,'followup_comment_react','Next Followup')} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
                                   <div  className="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
                                     <img src="https://www.anuation.com/crm/assets/icons/svg/icon-dd-chat.svg" alt="" className="img-fluid" width="24" height="24"/>
                                   </div>
                                   <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Followup</h6>
+                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Next Followup</h6>
                                     <span className="fs-2 d-block text-dark">Update Followup</span>
                                   </div>
                                 </Link>
@@ -528,6 +563,11 @@ clientObject[e] = {
                         <i  className="ti ti-calculator"></i>               
                     </Link>
                   </li>
+                  <li title="Open profile" onClick={()=>dispatch(profilesidebar({status:true,email:'',type:'domain'}))} className="nav-item">
+                    <Link className="nav-link notify-badge nav-icon-hover" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                        <i  className="ti ti-user"></i>               
+                    </Link>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -571,6 +611,26 @@ clientObject[e] = {
             </div>
           </nav>
         </header>
+        {valued.status ? (
+          auth.org=='2' ?
+          <Analyticsidebarprofile
+            closebar={closebar}
+            type={valued.type}
+            email={valued.email}
+            userid={auth.userid}
+            accountytpe={auth.type}
+          />
+          :
+          <Sidebarprofile
+            closebar={closebar}
+            type={valued.type}
+            email={valued.email}
+            userid={auth.userid}
+            accountytpe={auth.type}
+          />
+        ) : (
+          <></>
+        )}
         </>
     )
 })

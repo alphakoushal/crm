@@ -27,9 +27,18 @@ let d = await Fetchdata.deletecron(auth).then((response)=>{return response});
         let d = await Fetchdata.reschedulecron(auth).then((response)=>{return response});
       }
  async function getcrondata(){
+  if(auth.org=='2' || auth.org==''){
+    let crond = await Fetchdata.fetchanalyticcrondata({...auth,'posttype':'fetchanalyticcrondata'}).then((response)=>{return response});
+   
+    setcrondata(crond.data.data);
+  }
+  else
+  {
     let crond = await Fetchdata.fetchcrondata(auth).then((response)=>{return response});
    
     setcrondata(crond.data.data);
+  }
+
  }
       useEffect(()=>{
         document.querySelector('table').classList.add("table","table-bordered","table-hover");
@@ -103,7 +112,7 @@ return (
                               <p className="fs-1 text-dark mb-0">{moment(user[6]).format('lll')}</p>
                             </td>
                             <td>
-                              <span onClick={()=>{reschedule(user)}} className={`badge fw-semibold py-1 w-85 bg-${(user[3]==user[7] ? 'success' : 'danger')}-subtle text-${(user[3]==user[7] ? 'success' : 'danger')}`}>{(user[3]==user[7] ? 'Completed' : 'Pending')}</span>
+                             <a target="_blank" href={`https://www.anuation.com/oldcrm/auth/cron-jobs/analytic/crons/${user[8]}.php`}> <span onClick={()=>{reschedule(user)}} className={`badge fw-semibold py-1 w-85 bg-${(user[3]==user[7] ? 'success' : 'danger')}-subtle text-${(user[3]==user[7] ? 'success' : 'danger')}`}>{(user[3]==user[7] ? 'Completed' : 'Pending')}</span></a>
                             </td>
                             
  </>

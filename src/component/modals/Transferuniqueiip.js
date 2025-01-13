@@ -92,6 +92,8 @@ const TransferiipEmailbox = ({
             fromemail: val[63],
             fromname: val[58],
             agentemail_id: val[27],
+            country:val[3],
+            userid:val[64],
             deadline_30_month: val[5],
             applicant_name: val[7],
             application_no: val[2],
@@ -198,6 +200,39 @@ const TransferiipEmailbox = ({
       }
     }
   }
+  let country=[];
+  useEffect(() => {
+    emailsdata.map((item)=>{
+
+      let find = country.filter((e1) => {
+        return e1.trim() === item[3].trim();
+      });
+      if (find.length >= 1) {
+        country.push(item[3]);
+        let len=find.length;
+        if(userlist.length==len)
+        {
+          console.log(country.length,find.length,country,'matched');
+          country = country.filter((e1) => {
+            return e1.trim() != item[3].trim();
+          });
+          item[64]=userlist[0];
+          country.push(item[3]);
+        }
+        else
+        {
+          console.log(country.length,find.length,country,'less');
+          item[64]=userlist[len];
+        }
+      }
+      else{
+        country.push(item[3]);
+        item[64]=userlist[0];
+        return item;
+      }
+    })
+    console.log(emailsdata);
+  },[userlist])
   useEffect(() => {
     document
       .querySelector("table")
@@ -237,7 +272,7 @@ const TransferiipEmailbox = ({
             <form className="form-horizontal filing-form_data">
               <div className="modal-header d-flex align-items-center">
                 <h4 className="modal-title" id="myLargeModalLabel">
-                  Total {defaultvalue.mailtypeaccount[mailtypeaccount]} Record{" "}
+                  Total {defaultvalue.mailtypeaccount[mailtypeaccount]} Record of IIP{" "}
                   {emailsdata.length}
                 </h4>
                 <button
@@ -291,6 +326,12 @@ const TransferiipEmailbox = ({
                         <th>
                           <div className="headers">Sent From Email</div>
                         </th>
+                        <th>
+                          <div className="headers">Assigned</div>
+                        </th>
+                        <th>
+                          <div className="headers">Country</div>
+                        </th>
                       </tr>
                     )}
                     itemContent={(index, user) => (
@@ -306,6 +347,8 @@ const TransferiipEmailbox = ({
                         <td className="column-value">{user[10]}</td>
                         <td className="column-value">{user[58]}</td>
                         <td className="column-value">{user[63]}</td>
+                        <td className="column-value">{defaultvalue.iipusername[user[64]]??''}</td>
+                        <td className="column-value">{user[3]}</td>
                       </>
                     )}
                   />
