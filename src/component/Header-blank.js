@@ -5,12 +5,14 @@ import {TextareaAutosize} from '@mui/base/TextareaAutosize';
 import { styled } from '@mui/system';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import config from "../constant/Import-detail-of-crm";
+import getRoutesByCRM from "../Routes";
 const Headerblank = React.memo(() =>{
   const navigate=useNavigate(); 
   let auth= localStorage.getItem("user"); 
   auth =(auth!='' ? JSON.parse(auth) : '')
   const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:'',inprocess:false});
-
+  const crmRoutes = getRoutesByCRM(config.crmtype);
 
 const StyledTextarea = styled(TextareaAutosize)(
   ({ theme }) => `
@@ -59,117 +61,104 @@ window.location.reload();
                 <div className="dropdown-menu dropdown-menu-nav dropdown-menu-animate-up py-0">
                   <div className="row">
                     <div className="col-12">
-                      <div className=" ps-7 pt-7">
-                        <div className="border-bottom">
-                          <div className="row">
-                            
-                            <div className="col-3">
-                            <div className="position-relative">
-                            {auth.type=='1' || auth.type=='2' ? 
-                                <>
-                                <Link to={`/${(auth.org=='2' ? 'analytic-' : '')}dashboard`} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">{(auth.org=='2' ? 'Analytic' : 'Patent')}</h6>
-                                    <span className="fs-2 d-block text-dark">Dashboard</span>
-                                  </div>
-                                </Link>
-                                <Link to="/calculate" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Calculate</h6>
-                                    <span className="fs-2 d-block text-dark">Dashboard</span>
-                                  </div>
-                                </Link>
-                                <Link to={`/${(auth.org=='2' ? 'analytic-' : '')}templates`} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Templates</h6>
-                                    <span className="fs-2 d-block text-dark">Dashboard</span>
-                                  </div>
-                                </Link>
-                                <Link to={`/${(auth.org=='2' ? 'analytic-' : '')}templates-list`} className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Templates List</h6>
-                                    <span className="fs-2 d-block text-dark">Dashboard</span>
-                                  </div>
-                                </Link>
-                                </>
-                                :<></>
-                                }
-                                           {auth.type=='5' ? 
-                                <>
-                                <Link to="/calculate" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Calculate</h6>
-                                    <span className="fs-2 d-block text-dark">Dashboard</span>
-                                  </div>
-                                </Link>
-                                 <Link to="/countrylist" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Country List</h6>
-                                    <span className="fs-2 d-block text-dark">Dashboard</span>
-                                  </div>
-                                </Link>
-                                </> : <></>}
-                                {auth.type=='4' || auth.type=='2' ? 
-                                <>
-                                <Link to="/analytic" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Analytic</h6>
-                                    <span className="fs-2 d-block text-dark">Dashboard</span>
-                                  </div>
-                                </Link>
-                                </> : <></>}
-                                {auth.type=='3' || auth.type=='2' ? 
-                                <>
-                                <Link to="/it-dashboard" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">IT Data</h6>
-                                    <span className="fs-2 d-block text-dark">Dashboard</span>
-                                  </div>
-                                </Link>
-                                <Link to="/it-templates" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">IT Templates</h6>
-                                    <span className="fs-2 d-block text-dark">Dashboard</span>
-                                  </div>
-                                </Link>
-                                <Link to="/it-templates-list" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Templates List</h6>
-                                    <span className="fs-2 d-block text-dark">Dashboard</span>
-                                  </div>
-                                </Link>
-                                </> : <></>}
-
-                               
-                               
-                                {auth.type=='2' ? 
-                                <>
-                                <Link to="/freshdata" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">PCT New Data</h6>
-                                    <span className="fs-2 d-block text-dark">Dashboard</span>
-                                  </div>
-                                </Link>
-                                <Link to="/iip-freshdata" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">IIP New Data</h6>
-                                    <span className="fs-2 d-block text-dark">Dashboard</span>
-                                  </div>
-                                </Link>
-                                <Link to="/countrylist" className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none">
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">Country List</h6>
-                                    <span className="fs-2 d-block text-dark">Dashboard</span>
-                                  </div>
-                                </Link>
-                                </>
-                                 : <></>
-                                }
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                     <div className=" ps-7 pt-7">
+                                             <div className="border-bottom">
+                                               <div className="row">
+                                                 <div className="col-3">
+                                                   <div className="position-relative">
+                                                     {crmRoutes.map((route, index) =>
+                                                       route.header ? (
+                                                         <Link
+                                                           to={route.path}
+                                                           className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none"
+                                                         >
+                                                           <div className="d-inline-block">
+                                                             <h6 className="mb-1 fw-semibold bg-hover-primary">
+                                                               {route.name}
+                                                             </h6>
+                                                             <span className="fs-2 d-block text-dark">
+                                                               Dashboard
+                                                             </span>
+                                                           </div>
+                                                         </Link>
+                                                       ) : (
+                                                         <></>
+                                                       )
+                                                     )}
+                                                   </div>
+                                                 </div>
+                                                 <div className="col-3">
+                                                   <div className="position-relative">
+                                                     {auth.type == "1" || auth.type == "2" ? (
+                                                       <>
+                                                         <Link
+                                                           to="/calculate"
+                                                           className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none"
+                                                         >
+                                                           <div className="d-inline-block">
+                                                             <h6 className="mb-1 fw-semibold bg-hover-primary">
+                                                               Calculate
+                                                             </h6>
+                                                             <span className="fs-2 d-block text-dark">
+                                                               Dashboard
+                                                             </span>
+                                                           </div>
+                                                         </Link>
+                                                       </>
+                                                     ) : (
+                                                       <></>
+                                                     )}
+                     
+                                                     {auth.type == "2" ? (
+                                                       <>
+                                                         <Link
+                                                           to="/freshdata"
+                                                           className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none"
+                                                         >
+                                                           <div className="d-inline-block">
+                                                             <h6 className="mb-1 fw-semibold bg-hover-primary">
+                                                               PCT New Data
+                                                             </h6>
+                                                             <span className="fs-2 d-block text-dark">
+                                                               Dashboard
+                                                             </span>
+                                                           </div>
+                                                         </Link>
+                                                         <Link
+                                                           to="/iip-freshdata"
+                                                           className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none"
+                                                         >
+                                                           <div className="d-inline-block">
+                                                             <h6 className="mb-1 fw-semibold bg-hover-primary">
+                                                               IIP New Data
+                                                             </h6>
+                                                             <span className="fs-2 d-block text-dark">
+                                                               Dashboard
+                                                             </span>
+                                                           </div>
+                                                         </Link>
+                                                         <Link
+                                                           to="/countrylist"
+                                                           className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none"
+                                                         >
+                                                           <div className="d-inline-block">
+                                                             <h6 className="mb-1 fw-semibold bg-hover-primary">
+                                                               Country List
+                                                             </h6>
+                                                             <span className="fs-2 d-block text-dark">
+                                                               Dashboard
+                                                             </span>
+                                                           </div>
+                                                         </Link>
+                                                       </>
+                                                     ) : (
+                                                       <></>
+                                                     )}
+                                                   </div>
+                                                 </div>
+                                               </div>
+                                             </div>
+                                           </div>
                     </div>
                   </div>
                 </div>

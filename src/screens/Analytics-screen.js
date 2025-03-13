@@ -472,10 +472,11 @@ return timezone;
     filterdata(61, e.target.value.toString());
   };
   const handlecountry = (e) => {
+    console.log(defaultdata.countrydata,filtered);
     if (e.target.value.includes("all")) {
       //setcountry(countries.current)
-      setdefaultdata((prev) => ({ ...prev, countrydata: e.target.value }));
-      filterdata(13, countries.current.toString());
+      setdefaultdata((prev) => ({ ...prev, countrydata: countries.current }));
+      filterdata(13,countries.current.toString());
     } else if (e.target.value.includes("unall")) {
       //setcountry([])
       setdefaultdata((prev) => ({ ...prev, countrydata: [] }));
@@ -620,7 +621,7 @@ return timezone;
         )}
 
         {defaultdata.opencronbox ? (
-          <Cronlist closecronbox={closecronbox}></Cronlist>
+          <Cronlist platform={platform} closecronbox={closecronbox}></Cronlist>
         ) : (
           <></>
         )}
@@ -723,7 +724,7 @@ return timezone;
                             }}
                           ></i>{" "}
                         </div>
-                        <FormControl sx={{ m: 0, width: "100%" }}>
+                        <FormControl sx={{ m: 0, width: "100px" }}>
                           <Select
                             labelId="up-multiple-name-label"
                             id="up-multiple-name"
@@ -765,7 +766,7 @@ return timezone;
                           ></i>{" "}
                         </div>
 
-                        <FormControl sx={{ m: 0, width: "100%" }}>
+                        <FormControl sx={{ m: 0, width: "150px" }}>
                           <Select
                             labelId="demo-multiple-name-label"
                             id="demo-multiple-name"
@@ -809,7 +810,7 @@ return timezone;
                             }}
                           ></i>{" "}
                         </div>
-                        <FormControl sx={{ m: 0, width: "100%" }}>
+                        <FormControl sx={{ m: 0, width: "150px" }}>
                           <Select
                             labelId="call-name-label"
                             id="call-name"
@@ -867,7 +868,7 @@ return timezone;
                       </a>
                       <i
                         onClick={() => {
-                          editinfo(true, user[8]);
+                          editinfo(true, user[29]);
                         }}
                         style={{
                           position: "absolute",

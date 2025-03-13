@@ -5,13 +5,14 @@ import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import moment from 'moment'
 import { useFetcher } from "react-router-dom";
 const AnalyticEditmodal = function ({ show, fn ,changedata,alldata}) {
+    console.log(show);
     let other=JSON.parse(show.data.details);
     other={...other,color:other?.color ?? "#ffffff"};
     console.log(other);
-    const [data, updatedata] = useState({ 'lastname':other?.lastname,'phone':other?.phone,'field':other?.field,'cio':other?.cio,'website':other?.website,'firmname':other?.firmname,'technology':other?.technology,'companytype':other?.companytype,'designation':other?.designation,'linkedin':other?.linkedin,'altphn':other?.altphn,'additionalemail':other?.additionalemail,'country':other?.country,'city':other?.city,'email': other?.emailid,'firstname': other?.firstname, 'status': false, 'message': ''});
+    const [data, updatedata] = useState({ 'lastname':other?.lastname,'phone':other?.phone,'field':other?.field,'cio':other?.cio,'website':other?.website,'firmname':other?.firmname,'technology':other?.technology,'companytype':other?.companytype,'designation':other?.designation,'linkedin':other?.linkedin,'altphn':other?.altphn,'email':other?.email,'additionalemail':other?.additionalemail,'country':other?.country,'city':other?.city,'email': other?.emailid,'firstname': other?.firstname, 'status': false, 'message': ''});
   const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:''});
     useEffect(() => {
-        updatedata({  'lastname':other?.lastname,'phone':other?.phone,'field':other?.field,'cio':other?.cio,'website':other?.website,'firmname':other?.firmname,'technology':other?.technology,'companytype':other?.companytype,'designation':other?.designation,'linkedin':other?.linkedin,'altphn':other?.altphn,'additionalemail':other?.additionalemail,'country':other?.country,'city':other?.city,'email': other?.emailid,'firstname': other?.firstname, 'status': false, 'message': ''});
+        updatedata({  'lastname':other?.lastname,'phone':other?.phone,'field':other?.field,'cio':other?.cio,'website':other?.website,'firmname':other?.firmname,'technology':other?.technology,'companytype':other?.companytype,'designation':other?.designation,'linkedin':other?.linkedin,'altphn':other?.altphn,'email':other?.email,'additionalemail':other?.additionalemail,'country':other?.country,'city':other?.city,'email': other?.emailid,'firstname': other?.firstname, 'status': false, 'message': ''});
     }, [show.data]);
     useEffect(()=>{
         return()=>{ 
@@ -22,8 +23,6 @@ const AnalyticEditmodal = function ({ show, fn ,changedata,alldata}) {
         }
     },[])
     function updatestate(value, key) {
-      //  updatedata({ ...data, [key]: value });
-      console.log(value, key);
         updatedata((data)=>({...data,[key]: value}));
     }
     function validatedata(e,app)
@@ -46,7 +45,7 @@ const AnalyticEditmodal = function ({ show, fn ,changedata,alldata}) {
     }
     async function updateinfo(app) {
         let email = document.querySelector('#emailid').value;
-        let status = await Uploaddata.updateanalyticinfo({ ...data, 'posttype':'updateanalyticinfo','type': 'updateanalyticinfo', 'email': email }).then((response) => { return response; })
+        let status = await Uploaddata.updateanalyticinfo({ ...data, 'posttype':'updateanalyticinfo','type': 'updateanalyticinfo', 'email': email,'id':show.data.id }).then((response) => { return response; })
         if (status.data.success) { setvalidate((prev)=>({ ...prev, status: true, message: status.data.message,color:'success',icon:'success' }));
 
      }
@@ -178,7 +177,7 @@ const AnalyticEditmodal = function ({ show, fn ,changedata,alldata}) {
                                                             <label className="col-sm-12" htmlFor="weblink">Email-id:</label>
 
                                                             <div className="col-sm-12 error_field_group" id="emailid-group">
-                                                                <input type="text" disabled className="form-control validate-field" id="emailid" value={data.email} name="Email id" placeholder="Email id" />
+                                                                <input type="text" className="form-control validate-field" id="emailid" value={data.email} name="Email id" onChange={(e) => (updatestate(e.target.value, 'email'))} placeholder="Email id" />
                                                             </div>
                                                         </div>
                                                         <div className="form-group col-md-4">

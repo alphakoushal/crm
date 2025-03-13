@@ -11,7 +11,7 @@ import { useSearchParams } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 const EditITemailemplate =() =>{
     const [editorData, setEditorData] = useState('');
-    const [restdata, setrestdata] = useState({'loader':'hide','loadermessage':'Update','title':'','subject':'','clienttype':'','templatetype':''});
+    const [restdata, setrestdata] = useState({'loader':'hide','loadermessage':'Update','title':'','subject':'','clienttype':'','templatetype':'1'});
     const [searchParams, setSearchParams] = useSearchParams();
     const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:''});
     let auth= localStorage.getItem("user"); 
@@ -60,10 +60,10 @@ useEffect(()=>{
         let formdata={
             'mail_body':editorData,
             'mail_subject':mail_subject,
-            'template_type':'1',
+            'template_type':restdata.templatetype,
             'userid':auth.userid,
             'client_type':'1',
-            'matter':'2',
+            'matter':restdata.templatetype,
             'title':title,
             'uniqueid':searchParams.get("id")
             
@@ -97,19 +97,30 @@ setrestdata((data)=>({...data,'loader': 'hide','loadermessage':'Update'}));
 
         </div>
                     <div className="row">
-                    <div className="col-md-6">
+                    <div className="col-md-4">
                         <div className="form-floating mb-3">
                           <input type="text" className="form-control" id="emailtitle" onChange={(e) => (updatestate(e.target.value, 'title'))} value={restdata.title} placeholder="Enter Name here"/>
                           <label htmlFor="tb-fname">Title</label>
                         </div>
                       </div>
-                      <div className="col-md-6">
+                      <div className="col-md-4">
                         <div className="form-floating mb-3">
                           <input type="text" className="form-control" id="emailsubject" onChange={(e) => (updatestate(e.target.value, 'subject'))} value={restdata.subject} placeholder="Enter Name here"/>
                           <label htmlFor="tb-fname">Email Subject</label>
                         </div>
                       </div>
-
+                      <div className="col-md-4">
+                        <div className="form-floating mb-3">
+                        <select onChange={(e) => (updatestate(e.target.value, 'templatetype'))} className="form-select mr-sm-2" id="templatetype">
+                        <option defaultValue="">Choose...</option>
+                        <option selected={restdata.templatetype=='2' ? 'selected' : ''} value="2">IT</option>
+                        <option selected={restdata.templatetype=='3' ? 'selected' : ''} value="3">Audit</option>
+                        <option selected={restdata.templatetype=='4' ? 'selected' : ''} value="4">Patent shelter</option>
+                      </select>
+                          <label htmlFor="tb-email">Template Type</label>
+                          
+                        </div>
+                      </div>
                       <div className="col-12">
                         <div className="d-md-flex align-items-center mt-3">
                           <div className="form-check">

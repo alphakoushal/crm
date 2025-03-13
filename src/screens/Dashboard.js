@@ -525,8 +525,7 @@ return timezone;
   };
   const handlecountry = (e) => {
     if (e.target.value.includes("all")) {
-      //setcountry(countries.current)
-      setdefaultdata((prev) => ({ ...prev, countrydata: e.target.value }));
+      setdefaultdata((prev) => ({ ...prev, countrydata: countries.current }));
       filterdata(3, countries.current.toString());
     } else if (e.target.value.includes("unall")) {
       //setcountry([])
@@ -684,7 +683,7 @@ return timezone;
         )}
 
         {defaultdata.opencronbox ? (
-          <Cronlist closecronbox={closecronbox}></Cronlist>
+          <Cronlist platform={platform} service='ip' closecronbox={closecronbox}></Cronlist>
         ) : (
           <></>
         )}
@@ -784,7 +783,7 @@ return timezone;
                             }}
                           ></i>{" "}
                         </div>
-                        <FormControl sx={{ m: 0, width: "100%" }}>
+                        <FormControl sx={{ m: 0, width: "100px" }}>
                           <Select
                             labelId="up-multiple-name-label"
                             id="up-multiple-name"

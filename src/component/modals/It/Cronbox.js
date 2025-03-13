@@ -5,155 +5,36 @@ import React, {
   useContext,
   useRef,
 } from "react";
+import dayjs from "dayjs";
 import { TableVirtuoso } from "react-virtuoso";
 import Snackbar from "@mui/material/Snackbar";
-import dayjs from "dayjs";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
-import Uploaddata from "../../services/uploaddata";
+import Uploaddata from "../../../services/uploaddata";
+import Fetchdata from "../../../services/fetchdata";
 import InputLabel from "@mui/material/InputLabel";
-import Fetchdata from "../../services/fetchdata";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import moment from "moment";
+import MenuItem from "@mui/material/MenuItem";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import MenuItem from "@mui/material/MenuItem";
-import { costs, standard, defaultvalue } from "../../constant/Constant";
-const Dupeemailprocess = ({
-  page,
+import { costs, standard, defaultvalue } from "../../../constant/Constant";
+const PScronbox = ({
   platform,
+  page,
   fn,
   emailsdata,
-  closedupeemailsendbox,
+  closeemailsendbox,
   changedata,
   alldata,
 }) => {
-  let auth = localStorage.getItem("user");
-  const [newdupedata, setdupedata] = useState([]);
   const [templatelist, settemplate] = useState([]);
-  const [crontime, setCrontime] = useState(dayjs(moment()));
   const [userlist, setchooseuser] = useState([]);
+  const [crontime, setCrontime] = useState(dayjs(moment()));
+  let mailtypeaccount = document.querySelector("#mailtypeaccount").value;
   const inprocess = useRef(false);
-  useEffect(() => {
-    getdupedata(emailsdata);
-  }, []);
-  const fetchlist = async (type) => {
-    let data = await Fetchdata.fetchtemplate({ type: type }).then(
-      (response) => {
-        return response;
-      }
-    );
-    settemplate(data.data.data);
-  };
-
-  function getdupedata(emailsdata) {
-    let dupedata = [];
-    let res = emailsdata.map((e) => {
-      let incost = costs.IN.apply({
-        c: "IN",
-        as: e[8],
-        ci: e[9],
-        pages: e[14],
-        claim: e[15],
-        priority: e[16],
-        co: e[3],
-        isa: e[18],
-        standard: standard,
-      });
-
-      if (e[12] !== "" && e[12] != "n/a") {
-        if (e[54] == "Email") {
-          //FOR GENERIC DATA
-          let find = dupedata.findIndex((e1) => {
-            return e1[7].trim() === e[11].trim();
-          });
-          if (find > -1) {
-            if (
-              page == "freshdata"
-                ? dupedata[find][2].split(",,").length >= 1
-                : dupedata[find][2].split(",,").length >= 1
-            ) {
-              dupedata[find][1] = `${e[11]},,${dupedata[find][1]}`; //email
-              dupedata[find][2] = `${e[2]},,${dupedata[find][2]}`; //app
-              dupedata[find][3] = `${e[1]},,${dupedata[find][3]}`; //title
-              dupedata[find][4] = `${e[7]},,${dupedata[find][4]}`; //applicant name
-              dupedata[find][6] = `${e[10]},,${dupedata[find][6]}`; //contact person name
-              dupedata[find][5] = `${e[5]},,${dupedata[find][5]}`; //Deadline
-              dupedata[find][8] = `${e[6]},,${dupedata[find][8]}`; //Deadline 31
-              dupedata[find][9] = `${incost},,${dupedata[find][9]}`; //in cost
-              dupedata[find][10] = `${e[27]},,${dupedata[find][10]}`; //in cost
-            } else {
-            }
-          } else if (
-            emailsdata.filter((e1) => {
-              return e1[11].trim() === e[11].trim();
-            }).length > 1
-          ) {
-            dupedata.push([
-              e[12].trim(),
-              e[11].trim(),
-              e[2].trim(),
-              e[1].trim(),
-              e[7].trim(),
-              e[5].trim(),
-              e[10].trim(),
-              e[11].trim(),
-              e[6].trim(),
-              incost,
-              e[27].trim(),
-              e[65],
-              e[63],
-              e[64],
-            ]);
-          }
-        } else {
-          let find = dupedata.findIndex((e1) => {
-            return e1[0] === e[12];
-          });
-          if (find > -1) {
-            dupedata[find][1] = `${e[11]},,${dupedata[find][1]}`; //email
-            dupedata[find][2] = `${e[2]},,${dupedata[find][2]}`; //app
-            dupedata[find][3] = `${e[1]},,${dupedata[find][3]}`; //title
-            dupedata[find][4] = `${e[7]},,${dupedata[find][4]}`; //applicant name
-            dupedata[find][6] = `${e[10]},,${dupedata[find][6]}`; //contact person name
-            dupedata[find][5] = `${e[5]},,${dupedata[find][5]}`; //Deadline
-            dupedata[find][8] = `${e[6]},,${dupedata[find][8]}`; //Deadline
-            dupedata[find][9] = `${incost},,${dupedata[find][9]}`; //in cost
-            dupedata[find][10] = `${e[27]},,${dupedata[find][10]}`; //agent email
-          } else if (
-            emailsdata.filter((e1) => {
-              return e1[12] === e[12];
-            }).length > 1
-          ) {
-            dupedata.push([
-              e[12],
-              e[11],
-              e[2],
-              e[1],
-              e[7],
-              e[5],
-              e[10],
-              e[11],
-              e[6],
-              incost,
-              e[27],
-              e[65],
-              e[63],
-              e[64],
-            ]);
-          }
-        }
-      }
-    });
-
-    let pushh = dupedata.reduce((apps, item) => {
-      apps.push(item[0]);
-      return apps;
-    }, []);
-    let newd = dupedata.slice(0, document.querySelector("#totalsending").value);
-    setdupedata(newd);
-  }
+  let auth = localStorage.getItem("user");
   auth = auth != "" ? JSON.parse(auth) : { userid: "", type: "", org: "" };
   let accounts =
     page == "freshdata"
@@ -168,6 +49,18 @@ const Dupeemailprocess = ({
     message: "",
     modalstatus: true,
   });
+  const fetchlist = async (type) => {
+    let data = await Fetchdata.itaxiosrequest({
+      type: type,
+      posttype: "ps-fetchtemplate",
+      platform: platform.current,
+      user: auth.userid,
+    }).then((response) => {
+      return response;
+    });
+    settemplate(data.data.data);
+  };
+
   async function emailformat(
     t,
     a,
@@ -182,47 +75,43 @@ const Dupeemailprocess = ({
     let appno = document.querySelectorAll(".appno");
     let apppush = [];
     let formdata = {
-      type: "emailformat",
+      posttype: "psemailformat",
       data: "",
       t: t,
-      preview: type,
-      nextfollowup: nextfollowup,
       templatename: template,
+      preview: type,
       account: account,
-      title: title,
       crontime: crontime,
       H: crontime.$H,
       M: crontime.$m,
       platform: platform.current,
+      title: title,
+      nextfollowup: nextfollowup,
       crondate: crondate,
+      mailtypeaccount: mailtypeaccount,
       userid: auth.userid,
-      dupeprocess: "yes",
       a: a,
       totalapp: emailsdata.length,
       apps: JSON.stringify(
         emailsdata.map((val) => {
           return {
-            domain: val[0],
-            email_id: val[1],
-            application_no: val[2],
-            title: val[3],
-            contact_person: val[6],
-            deadline_30_month: val[5],
-            deadline_31_month: val[8],
-            applicant_name: val[4],
-            incost: val[9],
-            agentemail_id: val[10],
-            fromemail: val[12],
-            fromname: val[11],
-            lastsenton: val[13],
+            title: val["title"],
+            email_id: mailtypeaccount == "2" ? val["emailid"] : val["emailid"],
+            fromemail: val["fromemail"],
+            fromname: val["fromname"],
+            lastsenton: val["senton"],
+            applicant_name: val["applicantname"],
+            application_no: val["appno"],
+            contact_person: mailtypeaccount == "2" ? val["cpf"] : val["cpf"],
           };
         })
       ),
     };
-    return Uploaddata.emailformat(formdata).then((resposne) => {
+    return Uploaddata.itaxiosrequest(formdata).then((resposne) => {
       return resposne;
     });
   }
+
   function Loading() {
     return <h2>🌀 Loading...</h2>;
   }
@@ -234,9 +123,9 @@ const Dupeemailprocess = ({
     setchooseuser(e.target.value);
   }
   async function choosetype(e, type) {
-    let appno = newdupedata.reduce((all, item) => {
-      return all.concat(item[2].split(",,"));
-    }, []);
+    let appno = emailsdata.map((item) => {
+      return item[2];
+    });
     e.preventDefault();
     let t = document.querySelector("#templateid");
     let title = document.querySelector("#crontitle").value;
@@ -250,17 +139,36 @@ const Dupeemailprocess = ({
         status: true,
         message: "In process",
       }));
-    } else if (diff <= 2) {
+    } else if (title == "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
-        message: "Next follow up Date should be greater",
+        message: "Please Enter Comment",
+      }));
+    } else if (crondate == "" || typeof crondate == "undefined") {
+      setvalidate((validate) => ({
+        ...validate,
+        status: true,
+        message: "Please Choose Date",
       }));
     } else if (crontime == "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Please Choose Time",
+      }));
+    } else if (userlist.length == 0) {
+    } else if (nextfollowup == "") {
+      setvalidate((validate) => ({
+        ...validate,
+        status: true,
+        message: "Please Choose Date",
+      }));
+    } else if (diff <= 2) {
+      setvalidate((validate) => ({
+        ...validate,
+        status: true,
+        message: "Next follow up Date should be greater",
       }));
     } else if (t.value == "") {
       setvalidate((validate) => ({
@@ -274,35 +182,18 @@ const Dupeemailprocess = ({
         status: true,
         message: "Please Choose Account",
       }));
-    } else if (title == "") {
-      setvalidate((validate) => ({
-        ...validate,
-        status: true,
-        message: "Please Enter Comment",
-      }));
-    } else if (nextfollowup == "") {
-      setvalidate((validate) => ({
-        ...validate,
-        status: true,
-        message: "Please Choose Date",
-      }));
-    } else if (crondate == "" || typeof crondate == "undefined") {
-      setvalidate((validate) => ({
-        ...validate,
-        status: true,
-        message: "Please Choose Date",
-      }));
     } else {
       inprocess.current = true;
       const res = await emailformat(
         t.value,
         userlist,
-        newdupedata,
+        emailsdata,
         title,
         t.options[t.selectedIndex].text,
         "",
         type,
-        nextfollowup,crondate
+        nextfollowup,
+        crondate
       );
       if (res.data.success) {
         setvalidate((prev) => ({
@@ -316,10 +207,6 @@ const Dupeemailprocess = ({
         if (page == "freshdata") {
           window.location.reload();
         }
-        let newarray = alldata.map((item, index) => {
-          return appno.includes(item[2]) ? { ...item, [57]: "sent" } : item;
-        });
-        //   changedata(newarray);
       } else {
         inprocess.current = false;
         setvalidate((validate) => ({
@@ -331,10 +218,10 @@ const Dupeemailprocess = ({
       }
       if (type == "send") {
         setTimeout(() => {
-          closedupeemailsendbox(false);
+          closeemailsendbox(false);
         }, 1000);
       } else {
-        inprocess.current = true;
+        inprocess.current = false;
       }
     }
   }
@@ -342,7 +229,7 @@ const Dupeemailprocess = ({
     document
       .querySelector("table")
       .classList.add("table", "table-bordered", "table-hover");
-    page == "freshdata" ? <></> : fetchlist("2");
+    page == "freshdata" ? <></> : fetchlist("1");
   }, []);
 
   return (
@@ -377,10 +264,8 @@ const Dupeemailprocess = ({
             <form className="form-horizontal filing-form_data">
               <div className="modal-header d-flex align-items-center">
                 <h4 className="modal-title" id="myLargeModalLabel">
-                  Total Filtered Record{" "}
-                  {newdupedata.reduce((v, v1) => {
-                    return v + v1[1].split(",,").length;
-                  }, 0)}
+                  Total {defaultvalue.mailtypeaccount[mailtypeaccount]} Record{" "}
+                  {emailsdata.length}
                 </h4>
                 <button
                   onClick={() => {
@@ -397,79 +282,43 @@ const Dupeemailprocess = ({
                   <TableVirtuoso
                     components={{ className: "koushal" }}
                     style={{ height: 300 }}
-                    data={newdupedata}
+                    data={emailsdata}
                     fixedHeaderContent={() => (
                       <tr>
-                        <th className="small">
-                          <div className="headers">Email id</div>
+                        <th>
+                          <div className="headers">APPLN.NO.</div>
                         </th>
-                        <th className="small">
-                          <div className="headers">Agent Email id</div>
-                        </th>
-                        <th className="small">
-                          <div className="headers">Contact Person</div>
-                        </th>
-                        <th className="small">
-                          <div className="headers">Applicant</div>
-                        </th>
-                        <th className="small">
-                          <div className="headers">App</div>
-                        </th>
-                        <th className="small">
+                        <th>
                           <div className="headers">Title</div>
                         </th>
-                        <th className="small">
-                          <div className="headers">Deadline 30</div>
+                        <th>
+                          <div className="headers">Email-id</div>
                         </th>
-                        <th className="small">
-                          <div className="headers">Deadline 31</div>
+                        <th>
+                          <div className="headers">APPLICANT NAME</div>
                         </th>
-                        <th className="small">
-                          <div className="headers">In cost</div>
+                        <th>
+                          <div className="headers">Contact Person Name</div>
                         </th>
-                        <th className="small">
+                        <th>
                           <div className="headers">Last Sent From</div>
                         </th>
-                        <th className="small">
+                        <th>
                           <div className="headers">Last Sent From Email</div>
                         </th>
                       </tr>
                     )}
                     itemContent={(index, user) => (
                       <>
-                        <td className="column-value small text-break">
-                          {user[1]}
+                        <td className="column-value">{user["appno"]}</td>
+                        <td className="column-value">{user["title"]}</td>
+                        <td className="column-value">{user["emailid"]}</td>
+                        <td className="column-value">
+                          {user["applicantname"]}
                         </td>
-                        <td className="column-value small text-break">
-                          {user[10]}
-                        </td>
-                        <td className="column-value small text-break">
-                          {user[6]}
-                        </td>
-                        <td className="column-value small text-break">
-                          {user[4]}
-                        </td>
-                        <td className="column-value small text-break">
-                          {user[2]}
-                        </td>
-                        <td className="column-value small text-break">
-                          {user[3]}
-                        </td>
-                        <td className="column-value small text-break">
-                          {user[5]}
-                        </td>
-                        <td className="column-value small text-break">
-                          {user[8]}
-                        </td>
-                        <td className="column-value small text-break">
-                          {user[9]}
-                        </td>
-                        <td className="column-value small text-break">
-                          {user[11]}
-                        </td>
-                        <td className="column-value small text-break">
-                          {user[12]}
-                        </td>
+                        <td className="column-value">{user["cpf"]}</td>
+                        <td className="column-value">{user["fromname"]}</td>
+                        <td className="column-value">{user["fromemail"]}</td>
                       </>
                     )}
                   />
@@ -499,8 +348,8 @@ const Dupeemailprocess = ({
                     />
                   </div>
                   <div className="col-md-2 time-selector">
-                  <label class="text-start w-100" data-shrink="true">
-                  Set cron Time
+                    <label class="text-start w-100" data-shrink="true">
+                      Set cron Time
                     </label>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <TimePicker
@@ -547,10 +396,7 @@ const Dupeemailprocess = ({
                     <label class="text-start w-100" data-shrink="true">
                       Choose User
                     </label>
-                    <FormControl
-                      className="accounts"
-                      sx={{ m: 0, width: "100%" }}
-                    >
+                    <FormControl className="accounts" sx={{ width: "100%" }}>
                       <InputLabel id="demo-simple-select-label">
                         Users
                       </InputLabel>
@@ -578,14 +424,14 @@ const Dupeemailprocess = ({
                     className="btn btn-light-info text-info font-medium"
                     type="submit"
                   >
-                    Submit
+                    <i id="send" className="ti ti-refresh hide"></i>Submit
                   </button>
                   <button
                     onClick={(e) => choosetype(e, "preview")}
                     className="btn btn-light-info text-info font-medium"
                     type="submit"
                   >
-                    Preview
+                    <i id="preview" className="ti ti-refresh hide"></i> Preview
                   </button>
                 </div>
               </div>
@@ -596,4 +442,4 @@ const Dupeemailprocess = ({
     </>
   );
 };
-export default Dupeemailprocess;
+export default PScronbox;

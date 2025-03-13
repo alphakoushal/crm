@@ -20,6 +20,7 @@ const ITEmailemplate =() =>{
     async function submittemplate()
     {
         let mail_subject=document.querySelector('#emailsubject').value;
+        let templatetype=document.querySelector('#templatetype').value;
        let title=document.querySelector('#emailtitle').value;
        if(validate.loader=='block')
        {
@@ -34,6 +35,10 @@ const ITEmailemplate =() =>{
        {
         setvalidate((validate)=>({...validate,status:true,message:'Please Enter Email Subject'}));
        }
+       else if(templatetype=='')
+       {
+        setvalidate((validate)=>({...validate,status:true,message:'Please Choose Type'}));
+       }
        else if(editorData=='')
        {
         setvalidate((validate)=>({...validate,status:true,message:'Please Enter Mail body.'}));
@@ -44,8 +49,9 @@ const ITEmailemplate =() =>{
         let formdata={
             'mail_body':editorData,
             'mail_subject':mail_subject,
+            'templatetype':templatetype,
             'userid':auth.userid,
-            'matter':'2',
+            'matter':templatetype,
             'title':title
             
           }
@@ -80,16 +86,28 @@ setvalidate((data)=>({...data,'loader': 'hide','loadermessage':'Submit'}));
 
         </div>
                     <div className="row">
-                    <div className="col-md-6">
+                    <div className="col-md-4">
                         <div className="form-floating mb-3">
                           <input type="text" className="form-control" id="emailtitle" placeholder="Enter Name here"/>
                           <label htmlFor="tb-fname">Title</label>
                         </div>
                       </div>
-                      <div className="col-md-6">
+                      <div className="col-md-4">
                         <div className="form-floating mb-3">
                           <input type="text" className="form-control" id="emailsubject" placeholder="Enter Name here"/>
                           <label htmlFor="tb-fname">Email Subject</label>
+                        </div>
+                      </div>
+                      <div className="col-md-4">
+                        <div className="form-floating mb-3">
+                        <select className="form-select mr-sm-2" id="templatetype">
+                        <option defaultValue="">Choose...</option>
+                        <option value="2">IT</option>
+                        <option value="3">Audit</option>
+                        <option value="4">Patent shelter</option>
+                      </select>
+                          <label htmlFor="tb-email">Template Type</label>
+                          
                         </div>
                       </div>
                       <div className="col-12">

@@ -136,6 +136,12 @@ const reschedulecron = (data) =>{
     return response;
   })
 }
+const pausecron = (data) =>{
+  axios.defaults.headers.post['Content-Type']='application/x-www-form-urlencoded';
+  return axios.post(API_URL+'employee/auth/react-index',data).then((response)=>{
+    return response;
+  })
+}
 const fetchformula = (data) =>{
   return axios({
 headers:axiosConfig,
@@ -152,8 +158,24 @@ url:API_URL+'employee/auth/react-index',
 method:'POST'
   }).then((response)=>{return response;})
 }
+const fetchusernanlytic = (data) =>{
+  return axios({
+headers:axiosConfig,
+data: data,
+url:API_URL+'employee/auth/react-index',
+method:'POST'
+  }).then((response)=>{return response;})
+}
+const itaxiosrequest = (data) =>{
+  return axios({
+headers:axiosConfig,
+data: data,
+url:API_URL+'employee/auth/react-index',
+method:'POST'
+  }).then((response)=>{return response;})
+}
 const Fetchdata = {
-  fetchapp,deletecron,reschedulecron,fetchanalytictemplatedata,fetchanalytictemplate,fetchformula,fetchcountry,fetchdomain,freshdata,fetchdata,fetchcomment,fetchstatusheetdata,fetchitdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchanalyticcrondata,fetchtemp,fetchITtemplate,fetchtemplate
+  fetchapp,itaxiosrequest,fetchusernanlytic,pausecron,deletecron,reschedulecron,fetchanalytictemplatedata,fetchanalytictemplate,fetchformula,fetchcountry,fetchdomain,freshdata,fetchdata,fetchcomment,fetchstatusheetdata,fetchitdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchanalyticcrondata,fetchtemp,fetchITtemplate,fetchtemplate
 }
 
 export default Fetchdata;

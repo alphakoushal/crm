@@ -11,7 +11,7 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import Uploaddata from "../../services/uploaddata";
 import Fetchdata from "../../services/fetchdata";
-import InputLabel from '@mui/material/InputLabel'; 
+import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import moment from "moment";
@@ -31,7 +31,7 @@ const Emailbox = ({
 }) => {
   const [templatelist, settemplate] = useState([]);
   const [userlist, setchooseuser] = useState([]);
-  const [crontime,setCrontime] =useState(dayjs(moment()));
+  const [crontime, setCrontime] = useState(dayjs(moment()));
   let mailtypeaccount = document.querySelector("#mailtypeaccount").value;
   const inprocess = useRef(false);
   let auth = localStorage.getItem("user");
@@ -66,7 +66,8 @@ const Emailbox = ({
     template,
     account,
     type,
-    nextfollowup
+    nextfollowup,
+    crondate
   ) {
     let appno = document.querySelectorAll(".appno");
     let apppush = [];
@@ -77,10 +78,13 @@ const Emailbox = ({
       templatename: template,
       preview: type,
       account: account,
-      crontime:crontime,
+      crontime: crontime,
+      H: crontime.$H,
+      M: crontime.$m,
       platform: platform.current,
       title: title,
       nextfollowup: nextfollowup,
+      crondate: crondate,
       mailtypeaccount: mailtypeaccount,
       userid: auth.userid,
       a: a,
@@ -140,20 +144,26 @@ const Emailbox = ({
     let t = document.querySelector("#templateid");
     let title = document.querySelector("#crontitle").value;
     let nextfollowup = document.querySelector("#nextfollowup").value;
+    let crondate = document.querySelector("#crondate").value;
     let today = moment().format("YYYY-MM-DD");
     let diff = moment(nextfollowup).diff(moment(today), "days");
-
     if (inprocess.current == true) {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "In process",
       }));
-    } else if (diff <= 2) {
+    } else if (title == "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
-        message: "Next follow up Date should be greater",
+        message: "Please Enter Comment",
+      }));
+    } else if (crondate == "" || typeof crondate == "undefined") {
+      setvalidate((validate) => ({
+        ...validate,
+        status: true,
+        message: "Please Choose Date",
       }));
     } else if (crontime == "") {
       setvalidate((validate) => ({
@@ -162,6 +172,18 @@ const Emailbox = ({
         message: "Please Choose Time",
       }));
     } else if (userlist.length == 0) {
+    } else if (nextfollowup == "") {
+      setvalidate((validate) => ({
+        ...validate,
+        status: true,
+        message: "Please Choose Date",
+      }));
+    } else if (diff <= 2) {
+      setvalidate((validate) => ({
+        ...validate,
+        status: true,
+        message: "Next follow up Date should be greater",
+      }));
     } else if (t.value == "") {
       setvalidate((validate) => ({
         ...validate,
@@ -174,18 +196,6 @@ const Emailbox = ({
         status: true,
         message: "Please Choose Account",
       }));
-    } else if (title == "") {
-      setvalidate((validate) => ({
-        ...validate,
-        status: true,
-        message: "Please Enter Comment",
-      }));
-    } else if (nextfollowup == "") {
-      setvalidate((validate) => ({
-        ...validate,
-        status: true,
-        message: "Please Choose Date",
-      }));
     } else {
       inprocess.current = true;
       const res = await emailformat(
@@ -196,7 +206,8 @@ const Emailbox = ({
         t.options[t.selectedIndex].text,
         "",
         type,
-        nextfollowup
+        nextfollowup,
+        crondate
       );
       if (res.data.success) {
         setvalidate((prev) => ({
@@ -342,9 +353,11 @@ const Emailbox = ({
                     )}
                   />
                 </Suspense>
-                <div className="mb-3 text-center d-md-flex align-items-center mt-3  align-content-md-between gap-3">
-                  <div className="col-md-2">
-                    {" "}
+                <div className="flex-md-wrap mb-3 text-center d-md-flex align-items-center mt-3  align-content-md-between gap-3">
+                  <div className="col-md-3">
+                    <label class="text-start w-100" data-shrink="true">
+                      Add comment
+                    </label>
                     <input
                       type="text"
                       className="form-control"
@@ -352,60 +365,90 @@ const Emailbox = ({
                       placeholder="Enter Comment"
                     />
                   </div>
-                  <input
-                    type="date"
-                    className="form-control"
-                    id="nextfollowup"
-                    placeholder="Choose date"
-                  />{" "}
+                  <div className="col-md-3">
+                    <label class="text-start w-100" data-shrink="true">
+                      Cron date
+                    </label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      min={new Date().toISOString().split("T")[0]} // Set min to today's date
+                      id="crondate"
+                      placeholder="Choose date"
+                    />
+                  </div>
                   <div className="col-md-2 time-selector">
-                    <LocalizationProvider
-                      dateAdapter={AdapterDayjs}
-                    >
+                    <label class="text-start w-100" data-shrink="true">
+                      Set cron Time
+                    </label>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <TimePicker
-          label="Set cron Time"
-          value={crontime}
-          onChange={(newValue) => setCrontime(newValue)}
-        />
+                        value={crontime}
+                        onChange={(newValue) => setCrontime(newValue)}
+                      />
                     </LocalizationProvider>
                   </div>
-                  <select id="templateid" className="form-select">
-                    <option value="">Choose Format</option>
-                    {templatelist.map((item, index) => {
-                      return (
-                        <option value={item["id"]}>{item["title"]}</option>
-                      );
-                    })}
-                    {auth.userid == "191214201403624913" &&
-                    page == "freshdata" ? (
-                      <>
-                        <option value="assigned">Assigned</option>
-                        <option value="transfer">Transfer</option>
-                      </>
-                    ) : (
-                      <></>
-                    )}
-                  </select>
-                  <FormControl className="accounts"  sx={{width: "100%" }}>
-                  <InputLabel id="demo-simple-select-label">Users</InputLabel>
-                    <Select
-                      labelId="up-multiple-name-label"
-                      id="up-multiple-name"
-                      value={userlist}
-                      multiple
-                      onChange={handleuser}
-                      label="Users"
-                    >
-                      <MenuItem disabled key="all" value="all">
-                        Choose Account
-                      </MenuItem>
-                      {accounts.map((name) => (
-                        <MenuItem key={name.account} value={name.account}>
-                          {name.name}
+                  <div className="col-md-3">
+                    <label class="text-start w-100" data-shrink="true">
+                      Next Follow Up
+                    </label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      min={new Date().toISOString().split("T")[0]} // Set min to today's date
+                      id="nextfollowup"
+                      placeholder="Choose date"
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    <label class="text-start w-100" data-shrink="true">
+                      Choose Format
+                    </label>
+                    <select id="templateid" className="form-select">
+                      <option value="">Choose Format</option>
+                      {templatelist.map((item, index) => {
+                        return (
+                          <option value={item["id"]}>{item["title"]}</option>
+                        );
+                      })}
+                      {auth.userid == "191214201403624913" &&
+                      page == "freshdata" ? (
+                        <>
+                          <option value="assigned">Assigned</option>
+                          <option value="transfer">Transfer</option>
+                        </>
+                      ) : (
+                        <></>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col-md-3">
+                    <label class="text-start w-100" data-shrink="true">
+                      Choose User
+                    </label>
+                    <FormControl className="accounts" sx={{ width: "100%" }}>
+                      <InputLabel id="demo-simple-select-label">
+                        Users
+                      </InputLabel>
+                      <Select
+                        labelId="up-multiple-name-label"
+                        id="up-multiple-name"
+                        value={userlist}
+                        multiple
+                        onChange={handleuser}
+                        label="Users"
+                      >
+                        <MenuItem disabled key="all" value="all">
+                          Choose Account
                         </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                        {accounts.map((name) => (
+                          <MenuItem key={name.account} value={name.account}>
+                            {name.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </div>
                   <button
                     onClick={(e) => choosetype(e, "send")}
                     className="btn btn-light-info text-info font-medium"
@@ -421,7 +464,6 @@ const Emailbox = ({
                     <i id="preview" className="ti ti-refresh hide"></i> Preview
                   </button>
                 </div>
-
               </div>
             </form>
           </div>

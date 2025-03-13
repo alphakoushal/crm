@@ -1,6 +1,6 @@
 import React,{useState,useEffect, useRef} from "react";
 import Toast from "../component/New-toast";
-import { defaultvalue } from "../constant/Constant";
+import { defaultvalue,API_URL } from "../constant/Constant";
 import Headerblank from "../component/Header-blank";
 import Fetchdata from "../services/fetchdata";
 import Uploaddata from "../services/uploaddata";
@@ -732,7 +732,7 @@ return <>
                                     </article>
                                     <div className="mt-3">
                                         <button className="btn btn-primary float-end next-btn mx-1" onClick={()=>{createpdf()}}>Final</button>
-                                        {validate.file && validate.file!='' ? <a target="_blank" href={`https://www.anuation.com/oldcrm/employee/auth/${validate.file}`} className="btn btn-primary float-end next-btn">View</a> : <></>}
+                                        {validate.file && validate.file!='' ? <a target="_blank" href={`${API_URL}employee/auth/${validate.file}`} className="btn btn-primary float-end next-btn">View</a> : <></>}
                                         <button className="btn bg-danger-subtle text-danger float-start back-btn" onClick={()=>{changetab('3')}}>Previous</button>
                                     </div>
                                 </div>

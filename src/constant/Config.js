@@ -697,6 +697,6 @@ const costs ={
         return costs.standardcall(this.standard,this.c,this.as) + costs.pagescall({'as':this.as,'pages':this.pages,'smallcost':0,'largecost':0,'pageslimit':0}) + costs.claimcall({'as':'','claim':this.claim,'smallcost':20,'largecost':0,'claimlimit':10}) + costs.prioritycall({'as':'','priority':this.priority,'smallcost':100,'largecost':0,'prioritylimit':1});
     }
 }
-const API_URL = "https://www.anuation.com/oldcrm/";
+const API_URL = "https://www.anuation.com/iip-crm/admin2/";
 let axiosConfig = { 'content-type': 'application/x-www-form-urlencoded' };
-export { callstatus, emailstatus,costs,standard,tablesetting,defaultvalue,API_URL,axiosConfig};
+export { callstatus, emailstatus,costs,standard,tablesetting,defaultvalue,API_URL,crmdetail,axiosConfig};

@@ -41,7 +41,7 @@ const Dashboard =() =>{
     const offset=useRef({limit:0,page:0}); 
     const processing =useRef(false);
     const months=useRef([]); 
-    const platform =useRef('anuation');
+    const platform =useRef('analytics');
     const auth= JSON.parse(localStorage.getItem("user")); 
     const valued=useSelector((state)=>state.userdata.value);
     const dispatch=useDispatch();
@@ -360,7 +360,7 @@ function getColumnLetter(columnNumber) {
     <Header platform={platform} changedata={changedata}  except={true} completedata={d2} alldata={d} showmailbox={showmailbox} showdupemailbox={showdupemailbox} showcronbox={showcronbox}  clearfilters={clearfilter} refreshdata={loaddata} formdatas={formdata} showcurrencies={showcurrency}></Header>
     {defaultdata.opensendmailbox ? <Emailbox page='ip' platform={platform} alldata={d} changedata={changedata} closeemailsendbox={closeemailsendbox} emailsdata={d.slice(0, document.querySelector('#totalsending').value)} fn={closeemailsendbox}></Emailbox> : <></>}
     {defaultdata.opendupesendmailbox ? <Dupeemailprocess page='ip' platform={platform} alldata={d} changedata={changedata} closedupeemailsendbox={closedupeemailsendbox} emailsdata={d} fn={closedupeemailsendbox}></Dupeemailprocess> : <></>}
-    {defaultdata.opencronbox ? <Cronlist closecronbox={closecronbox}></Cronlist> : <></>}
+    {defaultdata.opencronbox ? <Cronlist platform={platform} closecronbox={closecronbox}></Cronlist> : <></>}
     <div className="container-fluid bootstrap-table body-wrapper1">
         <div className="fixed-table-container fixed-height d-flex">
         <ul style={{'width': '100%','left': '0','zIndex':'9','background':'white'}} className="breadcrumb">

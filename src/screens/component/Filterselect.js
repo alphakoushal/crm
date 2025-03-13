@@ -25,7 +25,7 @@ const Filterselect = ({sortdata,fieldname,event,values,defaultv}) =>{
           ></i>{" "}
         </div>
 
-        <FormControl sx={{ m: 0, width: "100%" }}>
+        <FormControl sx={{ m: 0, width: "150px" }}>
           <Select
             labelId="demo-multiple-name-label"
             id="demo-multiple-name"

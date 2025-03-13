@@ -1,8 +1,8 @@
 import { responsiveFontSizes } from "@mui/material";
 import axios, { AxiosHeaders } from "axios";
 import { method } from "lodash";
+import { API_URL } from "../constant/Constant";
 
-const API_URL = "https://www.anuation.com/oldcrm/";
 let axiosConfig = { 'content-type': 'application/x-www-form-urlencoded' };
 
 
@@ -64,13 +64,13 @@ const fetchcomment = (data)=>
     return axios({
         method : "POST",
         headers : axiosConfig,
-        url : "https://www.anuation.com/oldcrm/employee/auth/reactauth/commentbodydata.php",
+        url : `${API_URL}employee/auth/reactauth/commentbodydata.php`,
         data : data
     }).then(response=>{return response});
 }
 
 const submitanalyticemails = (data) =>{
-   let cronurl='https://www.anuation.com/oldcrm/employee/auth/react-index';
+   let cronurl=`${API_URL}employee/auth/react-index`;
     let urls= cronurl;
     return axios({
         method :'POST',
@@ -81,9 +81,9 @@ const submitanalyticemails = (data) =>{
 }
 
 const emailformat = (data) =>{
-    let transferurl='https://www.anuation.com/oldcrm/employee/auth/reactauth/transfer-record.php';
-    let assignedurl='https://www.anuation.com/oldcrm/employee/auth/reactauth/allocate-record-from-fresh-data-to-bd-team.php';
-    let cronurl='https://www.anuation.com/oldcrm/employee/auth/reactauth/emailformat_testing.php';
+    let transferurl=`${API_URL}employee/auth/reactauth/transfer-record.php`;
+    let assignedurl=`${API_URL}employee/auth/reactauth/allocate-record-from-fresh-data-to-bd-team.php`;
+    let cronurl=`${API_URL}employee/auth/reactauth/emailformat_testing.php`;
     let urls= data.t=='assigned' ? assignedurl : (data.t=='transfer' ? transferurl : cronurl);
     return axios({
         method :'POST',
@@ -93,7 +93,7 @@ const emailformat = (data) =>{
     }).then(response => { return response});
 }
 const iiprecordtransfer = (data) =>{
-    let assignedurl='https://www.anuation.com/oldcrm/employee/auth/reactauth/iip-allocate-record-from-fresh-data-to-bd-team.php';
+    let assignedurl=`${API_URL}employee/auth/reactauth/iip-allocate-record-from-fresh-data-to-bd-team.php`;
     let urls= assignedurl;
     return axios({
         method :'POST',
@@ -103,7 +103,7 @@ const iiprecordtransfer = (data) =>{
     }).then(response => { return response});
 }
 const ITemailformat = (data) =>{
-    let itemailurl='https://www.anuation.com/oldcrm/employee/auth/reactauth/IT/itemail.php';
+    let itemailurl=`${API_URL}employee/auth/reactauth/IT/itemail.php`;
     return axios({
         method :'POST',
         headers : axiosConfig,
@@ -116,7 +116,7 @@ const mailtemplate =(data) =>{
     return axios({
         method :'POST',
         headers : axiosConfig,
-        url: "https://www.anuation.com/oldcrm/employee/auth/reactauth/mailtemplate.php",
+        url: `${API_URL}employee/auth/reactauth/mailtemplate.php`,
         data : data
     }).then(response =>{ return response})
 }
@@ -132,7 +132,7 @@ const ITmailtemplate =(data) =>{
     return axios({
         method :'POST',
         headers : axiosConfig,
-        url: "https://www.anuation.com/oldcrm/employee/auth/reactauth/email-template/itmailtemplate.php",
+        url: `${API_URL}employee/auth/reactauth/email-template/itmailtemplate.php`,
         data : data
     }).then(response =>{ return response})
 }
@@ -140,7 +140,7 @@ const sendtome =(data) =>{
     return axios({
         method :'POST',
         headers : axiosConfig,
-        url: "https://www.anuation.com/oldcrm/employee/auth/reactauth/sendtome.php",
+        url: `${API_URL}employee/auth/reactauth/sendtome.php`,
         data : data
     }).then(response =>{ return response})
 }
@@ -148,7 +148,7 @@ const sendtemplatetome =(data) =>{
     return axios({
         method :'POST',
         headers : axiosConfig,
-        url: "https://www.anuation.com/oldcrm/employee/auth/react-index",
+        url: `${API_URL}employee/auth/react-index`,
         data : data
     }).then(response =>{ return response})
 }
@@ -156,7 +156,7 @@ const sendtomeitemail =(data) =>{
     return axios({
         method :'POST',
         headers : axiosConfig,
-        url: "https://www.anuation.com/oldcrm/employee/auth/reactauth/IT/sendtomeitemail.php",
+        url: `${API_URL}employee/auth/reactauth/IT/sendtomeitemail.php`,
         data : data
     }).then(response =>{ return response})
 }
@@ -169,7 +169,7 @@ const updateanalyticinfo = (formdata) =>{
         method:'POST',
         headers : axiosConfig,
         data:formdata,
-        url: "https://www.anuation.com/oldcrm/employee/auth/react-index",
+        url: `${API_URL}employee/auth/react-index`,
     }).then(response =>{ return response})
 }
 const uploadformula = (formdata) =>{
@@ -177,7 +177,7 @@ const uploadformula = (formdata) =>{
         method:'POST',
         headers : axiosConfig,
         data:formdata,
-        url: "https://www.anuation.com/oldcrm/employee/auth/react-index",
+        url: `${API_URL}employee/auth/react-index`,
     }).then(response =>{ return response})
 }
  
@@ -186,7 +186,7 @@ return axios({
     method:'POST',
     headers:axiosConfig,
     data:formdata,
-    url: "https://www.anuation.com/oldcrm/employee/auth/react-index",
+    url: `${API_URL}employee/auth/react-index`,
 }).then(response=>{return response})
 }
 const transferdatatoiippct = (formdata) =>{
@@ -194,7 +194,7 @@ return axios({
     method:'POST',
     headers:axiosConfig,
     data:formdata,
-    url: "https://www.anuation.com/oldcrm/employee/auth/react-index",
+    url: `${API_URL}employee/auth/react-index`,
 }).then(response=>{return response})
 }
 const createpdf = (formdata) =>{
@@ -202,12 +202,20 @@ const createpdf = (formdata) =>{
         method:'POST',
         headers : axiosConfig,
         data : formdata,
-        url : "https://www.anuation.com/oldcrm/employee/auth/react-index",
+        url : `${API_URL}employee/auth/react-index`,
+    }).then((response)=>{return response;})
+}
+const itaxiosrequest = (formdata) =>{
+    return axios({
+        method:'POST',
+        headers : axiosConfig,
+        data : formdata,
+        url : `${API_URL}employee/auth/react-index`,
     }).then((response)=>{return response;})
 }
 
 const Uploaddata = {
-  uploaddata,sendtemplatetome,uploadformula,updateanalyticinfo,iiprecordtransfer,submitanalyticemails,transferdatatopct,transferdatatoiippct,createpdf,fetchcomment,assignsheet,updateinfo,addpct,createssheet,updatepct,uploadanalyticdata,emailformat,ITemailformat,mailtemplate,analyticmailtemplate,ITmailtemplate,sendtome,sendtomeitemail
+  uploaddata,itaxiosrequest,sendtemplatetome,uploadformula,updateanalyticinfo,iiprecordtransfer,submitanalyticemails,transferdatatopct,transferdatatoiippct,createpdf,fetchcomment,assignsheet,updateinfo,addpct,createssheet,updatepct,uploadanalyticdata,emailformat,ITemailformat,mailtemplate,analyticmailtemplate,ITmailtemplate,sendtome,sendtomeitemail
 }
 
 export default Uploaddata;

@@ -12,11 +12,12 @@ import Header from "../component/Header";
 import Fetchdata from "../services/fetchdata";
 import { TableVirtuoso } from "react-virtuoso";
 import { useDispatch, useSelector } from "react-redux";
-import { userprofileupdate } from "../reducers/Userdata";
+import { userprofileupdate,profilesidebar } from "../reducers/Userdata";
 import Uploadsidebar from "../component/Uploadsidebar";
 import Commentmodal from "../component/modals/comments";
 import Uploaddata from "../services/uploaddata";
 import Style from "../component/style/style";
+import Clock from "../component/Clock.js";
 import Editmodal from "../component/modals/Editmodal";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import {
@@ -31,15 +32,15 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Sidebarprofile from "../component/modals/Sidebarprofile";
-import ITEmailbox from "../component/modals/Itemailbox";
-import Dupeemailprocess from "../component/modals/Dupeemailprocess";
+import PScronbox from "../component/modals/It/Cronbox.js";
 import Cronlist from "../component/modals/cron-list";
 import ResizableColumn2 from "../component/Resize-two";
+import Pivotprocess from "../component/modals/Pivot.js";
 function Loading() {
   return <h2>🌀 Loading...</h2>;
 }
 let filtered = [];
-const ITDashboard = ({service}) => {
+const PSdashboard = ({service}) => {
   const [d, sd] = useState([]);
   const [d2, gd] = useState([]);
   const [defaultdata, setdefaultdata] = useState({
@@ -49,35 +50,24 @@ const ITDashboard = ({service}) => {
     opendupesendmailbox: false,
     opensendmailbox: false,
     sortDown: true,
+    showcurrencytab: false,
     countrydata: [],
+    agentdupedata: [],
     dupedata: [],
     applicantstatusdata: [],
     cio: [],
     callstatus: [],
     emailstatus: [],
+    agentgendata: [],
     gendata: [],
     monthdata: [],
   });
-  const [profilebar, setprofilebar] = useState({ status: false, email: "" });
-  const [sortDown, setSortDown] = useState(true);
-  const [emailstatusdata, setemail] = useState([]);
-  const [callstatusdata, setcall] = useState([]);
-  const [showcurrencytab, setcurrency] = useState(false);
-  const [showeditmodal, updateeditmodal] = useState({ state: false, data: {} });
-  const countries = useRef([]);
-  const offset = useRef({ limit: 0, page: 0 });
-  const processing = useRef(false);
-  const months = useRef([]);
-  const platform = useRef(service);
-  const auth = JSON.parse(localStorage.getItem("user"));
-  const valued = useSelector((state) => state.userdata.value);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    clearfilter();
-  }, []);
-
-  let data = {};
   const [columns, setColumns] = useState([
+    { width: 140, css: "", type: "", key: "APPLN.NO." },
+    { width: 110, css: "", type: "", key: "Title" },
+    { width: 110, css: "", type: "", key: "APPLICANT NAME" },
+    { width: 110, css: "", type: "", key: "Applicant Status" },
+    { width: 110, css: "", type: "", key: "CONTACT INFO OF" },
     { width: 110, css: "", type: "", key: "CONTACT PERSON" },
     { width: 110, css: "", type: "", key: "EMAIL ID" },
     { width: 110, css: "", type: "", key: "Domain" },
@@ -91,18 +81,44 @@ const ITDashboard = ({service}) => {
     { width: 110, css: "", type: "", key: "Sent on" },
     { width: 110, css: "", type: "", key: "Cron Status" },
     { width: 110, css: "", type: "", key: "Assigned" },
+    { width: 110, css: "", type: "", key: "Email sent from" },
   ]);
+  const handleResize = (index, width) => {
+    setColumns((prevColumns) => {
+      const newColumns = [...prevColumns];
+      newColumns[index].width = width;
+      return newColumns;
+    });
+  };
+  const [showeditmodal, updateeditmodal] = useState({ state: false, data: {} });
+  const countries = useRef([]);
+  const offset = useRef({ limit: 0, page: 0 });
+  const processing = useRef(false);
+  const months = useRef([]);
+    const platform = useRef(service);
+  const auth = JSON.parse(localStorage.getItem("user"));
+  const valued = useSelector((state) => state.userdata.value);
+  const pivotmodalstate = useSelector((state)=>state.crmstyle.pivot);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    clearfilter();
+  }, []);
+
+  let data = {};
   let formdata1 = {
     type: "value",
     file_refresh: "comment",
     offset: "1",
-    service:service,
     w_id: "",
+    service:service,
     anuationuser_uniqueid: auth.userid,
     accounttype: auth.type,
     org: auth.org,
+    recordlimit: auth.type == "1" ? 10000 : 0,
+    posttype: "ps-current-data",
     email: "",
     domain: "",
+    platform: platform.current,
     company: "",
     phone: "",
     c_p_f: "",
@@ -115,15 +131,19 @@ const ITDashboard = ({service}) => {
     return formdata1;
   }, [formdata1]);
 
-  const changedata = useCallback((data) => {
+  const changedata = useCallback((data, modal = "") => {
     sd(data);
     gd(data);
+    if (modal == "editmodal") {
+      updateeditmodal((prev) => ({ ...prev, state: false }));
+    }
   });
   const callpages = (e, type) => {
     let sheet = document.querySelector(".sheet.active").getAttribute("id");
-    let pages = document.querySelector("#pages").value,
+    let user = document.querySelector("#username"),
+      pages = document.querySelector("#pages").value,
       recordlimit = document.querySelector("#recordlimit").value;
-    let user = auth.userid;
+    user = user ?? { value: auth.userid };
     if (type == "limit") {
       loaddata({
         ...formdata1,
@@ -144,17 +164,33 @@ const ITDashboard = ({service}) => {
       });
     }
   };
-  const loaddata = useCallback(async (formdata) => {
+  const calluser = (e, type) => {
+    let sheet = document.querySelector(".sheet.active").getAttribute("id");
+    let user = document.querySelector("#username").value,
+      recordlimit = document.querySelector("#recordlimit").value;
+
+    loaddata({
+      ...formdata1,
+      sheet: sheet,
+      recordlimit: recordlimit,
+      accounttype: user == "All" ? 2 : 1,
+      offset: 1,
+      anuationuser_uniqueid: user == "" ? auth.userid : user,
+    });
+  };
+  const loaddata = useCallback(async (formdata, refreshmode = "") => {
+    document.querySelector(".sheet.active").classList.remove("active");
+    document
+      .querySelector("#" + (formdata.sheet ?? "current"))
+      .classList.add("active");
     let abortc = new AbortController();
     let { signal } = abortc;
-    if (processing.current) {
-      abortc.abort();
-    }
+
     processing.current = true;
     let datas = {};
     document.querySelector(".ti-refresh").classList.add("rotate");
     document.querySelector(".body-wrapper1").classList.add("loader");
-    data = await Fetchdata.fetchitdata(formdata, signal)
+    data = await Fetchdata.itaxiosrequest(formdata, signal)
       .then((response) => {
         return response;
       })
@@ -179,29 +215,26 @@ const ITDashboard = ({service}) => {
       }));
     } else {
       processing.current = false;
+      datas = [];
     }
 
     sd(datas);
     gd(datas);
-    dispatch(userprofileupdate(data.length));
+    dispatch(userprofileupdate(datas.length));
     document
       .querySelector("table")
       .classList.add("table", "table-bordered", "table-hover");
   });
   useEffect(() => {
     loaddata(formdata);
-  }, [service]);
+  }, []);
   const showmailbox = () => {
-    setdefaultdata((prev) => ({ ...prev, opensendmailbox: true }));
-  };
-  const closeemailsendbox = () => {
-    setdefaultdata((prev) => ({ ...prev, opensendmailbox: false }));
+    if (document.querySelector("#mailtypeaccount").value != "") {
+      setdefaultdata((prev) => ({ ...prev, opensendmailbox: true }));
+    }
   };
   const showdupemailbox = () => {
     setdefaultdata((prev) => ({ ...prev, opendupesendmailbox: true }));
-  };
-  const closedupeemailsendbox = () => {
-    setdefaultdata((prev) => ({ ...prev, opendupesendmailbox: false }));
   };
   const showcronbox = () => {
     setdefaultdata((prev) => ({ ...prev, opencronbox: true }));
@@ -209,10 +242,17 @@ const ITDashboard = ({service}) => {
   const closecronbox = () => {
     setdefaultdata((prev) => ({ ...prev, opencronbox: false }));
   };
+  const closeemailsendbox = () => {
+    setdefaultdata((prev) => ({ ...prev, opensendmailbox: false }));
+  };
+  const closedupeemailsendbox = () => {
+    setdefaultdata((prev) => ({ ...prev, opendupesendmailbox: false }));
+  };
 
   function filterdata(index, value,keys={}) {
     let i = 0;
     let filters = document.querySelectorAll(".filter");
+    index =(Object.keys(keys).length>0 && keys.key=='timezone' ? 'timezone' : index);
     let obj = { key: index, value: value };
 
     if (filtered.length == 0) {
@@ -257,27 +297,30 @@ const ITDashboard = ({service}) => {
       dispatch(userprofileupdate(copy.length));
     }
   }
-  async function pickvalue(e, i, ni) {
-    e.stopPropagation();
-    if (e.detail == 1) {
-      document.querySelector(".cell-name").value = document
-        .querySelectorAll(".custom-table table thead tr+tr th")
-        [ni].querySelector(".headers").innerText;
 
+  async function pickvalue(e,key) {
+    e.stopPropagation();
+    console.log( e.target.getElementsByTagName("span"));
+    if (e.detail == 1) {
+      document.querySelector(".cell-name").value = key.key;
       document.querySelector(".cell-value").innerHTML =
-        i == "2" && e.target.tagName == "TD"
+      e.target.getElementsByTagName("span").length > 0
           ? e.target.getElementsByTagName("span")[0].innerHTML
-          : i == "22" && e.target.tagName == "TD"
-          ? e.target.getElementsByTagName("a")[0].innerHTML
-          : e.target.innerHTML;
-    } else if (e.detail == 2 && i == "11") {
+          :  e.target.innerHTML;
+    } else if (e.detail == 2 && key?.id == "emailid") {
+      showprofilesidebar(
+        e,
+        e.target.getElementsByTagName("span")[0].innerHTML,
+        e.target.parentNode.children[9].innerHTML
+      );
+    } else if (e.detail == 2 && key?.id == "comment") {
       let formdata = {
-        publication_value: e.target.closest("tr").querySelectorAll("td")[2]
+        publication_value: e.target.closest("tr").querySelectorAll("td")[1]
           .innerText,
-        email: e.target.closest("tr").querySelectorAll("td")[2].innerText,
-        domain: e.target.closest("tr").querySelectorAll("td")[3].innerText,
+        email: e.target.closest("tr").querySelectorAll("td")[12].innerText,
+        domain: e.target.closest("tr").querySelectorAll("td")[13].innerText,
         type: "3",
-        table: "it",
+        table:'ip'
       };
       const fetchcomment = await Uploaddata.fetchcomment(formdata).then(
         (response) => {
@@ -307,42 +350,78 @@ const ITDashboard = ({service}) => {
     event.nativeEvent.stopImmediatePropagation();
     event.stopPropagation();
   }
-  function sortdata(index = 0) {
+  function sortdata(event, index = 0,key={}) {
     const copy = [...d];
-    if (sortDown) {
-      copy.sort(
-        (a, b) =>
-          -(
-            (typeof a[index] == "number" ? a[index] : a[index].trim()) >
-            (typeof b[index] == "number" ? b[index] : b[index].trim())
-          )
-      );
+    if (event.detail == 1) {
+      if (defaultdata.sortDown) {
+        copy.sort(
+          (a, b) =>
+            -(
+              (typeof a[index] == "number" ? a[index] : a[index].trim()) >
+              (typeof b[index] == "number" ? b[index] : b[index].trim())
+            )
+        );
+      } else {
+        copy.sort(
+          (a, b) =>
+            -(
+              (typeof a[index] == "number" ? a[index] : a[index].trim()) <
+              (typeof b[index] == "number" ? b[index] : b[index].trim())
+            )
+        );
+      }
+      setdefaultdata((prev) => ({ ...prev, sortDown: !prev.sortDown }));
+      sd(copy);
     } else {
-      copy.sort(
-        (a, b) =>
-          -(
-            (typeof a[index] == "number" ? a[index] : a[index].trim()) <
-            (typeof b[index] == "number" ? b[index] : b[index].trim())
-          )
+      navigator.clipboard.writeText(
+        [
+          ...new Set(
+            copy.map((item) => {
+              if (item[index] != "" && item[index] != null) {
+                return item[index];
+              } else {
+                return false;
+              }
+            })
+          ),
+        ].toString()
       );
     }
-    setSortDown((prev) => !prev);
-    sd(copy);
   }
   const clearfilter = useCallback(() => {
     filtered = [];
     let d = document.querySelectorAll(".filter");
-    setemail([]);
-    setcall([]);
     d.forEach((e) => {
       e.value = "";
     });
     sd(d2);
+    setdefaultdata({
+      totalpages: [],
+      profilebar: { status: false, email: "" },
+      opencronbox: false,
+      opendupesendmailbox: false,
+      opensendmailbox: false,
+      sortDown: true,
+      showcurrencytab: false,
+      countrydata: [],
+      agentdupedata: [],
+      dupedata: [],
+      applicantstatusdata: [],
+      cio: [],
+      callstatus: [],
+      emailstatus: [],
+      agentgendata: [],
+      gendata: [],
+      monthdata: [],
+    });
     dispatch(userprofileupdate(d2.length));
   }, [d]);
   const showcurrency = useCallback(() => {
-    setcurrency((prev) => (prev ? false : true));
-  }, [showcurrencytab]);
+    setdefaultdata((prev) => ({
+      ...prev,
+      showcurrencytab: prev.showcurrencytab ? false : true,
+    }));
+  }, [defaultdata.showcurrencytab]);
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 5;
   const MenuProps = {
@@ -355,34 +434,32 @@ const ITDashboard = ({service}) => {
   };
 
   const handlechange = (e) => {
-    setemail(e.target.value);
-    filterdata("emailtype", e.target.value.toString());
+    //setemail(e.target.value)
+    setdefaultdata((prev) => ({ ...prev, emailstatus: e.target.value }));
+    filterdata('emailstatus', e.target.value.toString());
   };
-  function getColumnLetter(columnNumber) {
-    let dividend = columnNumber;
-    let columnName = "";
-    let modulo;
-
-    while (dividend > 0) {
-      modulo = (dividend - 1) % 26;
-      columnName = String.fromCharCode(65 + modulo) + columnName;
-      dividend = Math.floor((dividend - modulo) / 26);
-    }
-
-    return columnName;
-  }
-  const handleResize = (index, width) => {
-    setColumns((prevColumns) => {
-      const newColumns = [...prevColumns];
-      newColumns[index].width = width;
-      return newColumns;
-    });
+  const handlecio = (e) => {
+    setdefaultdata((prev) => ({ ...prev, cio: e.target.value }));
+    //setcio(e.target.value);
+    filterdata('cio', e.target.value.toString());
   };
+  const handleapplicant = (e) => {
+    // setapplicant(e.target.value)
+    setdefaultdata((prev) => ({
+      ...prev,
+      applicantstatusdata: e.target.value,
+    }));
+    filterdata('applicant_status', e.target.value.toString());
+  };
+
+
+
   const handlecallchange = (e) => {
-    setcall(e.target.value);
-    filterdata("calltype", e.target.value.toString());
+    // setcall(e.target.value);
+    setdefaultdata((prev) => ({ ...prev, callstatus: e.target.value }));
+    filterdata('callstatus', e.target.value.toString());
   };
-  const showprofilesidebar = (i, v) => {
+  const showprofilesidebar = (i, v, v1) => {
     if (document.querySelector("i.profilefetch.show")) {
       document
         .querySelector("i.profilefetch.show")
@@ -390,10 +467,16 @@ const ITDashboard = ({service}) => {
     }
     i.target.querySelector("i").classList.replace("hide", "show");
 
-    setprofilebar((prev) => ({ ...prev, status: true, email: v }));
+    //setprofilebar((prev)=>( {...prev,status:true,email:v} ));
+    dispatch(profilesidebar({ status: true, email: v, type: v1}));
   };
   const closebar = () => {
-    setprofilebar((prev) => ({ ...prev, status: false, email: "" }));
+    setdefaultdata((prev) => ({
+      ...prev,
+      profilebar: { status: false, email: "" },
+    }));
+
+    //setprofilebar((prev)=>( {...prev,status:false,email:''} ));
     if (document.querySelector("i.profilefetch.show")) {
       document
         .querySelector("i.profilefetch.show")
@@ -410,11 +493,29 @@ const ITDashboard = ({service}) => {
       })
       .join("\r\n\r\n");
   };
+  function getColumnLetter(columnNumber) {
+    let dividend = columnNumber;
+    let columnName = "";
+    let modulo;
+
+    while (dividend > 0) {
+      modulo = (dividend - 1) % 26;
+      columnName = String.fromCharCode(65 + modulo) + columnName;
+      dividend = Math.floor((dividend - modulo) / 26);
+    }
+
+    return columnName;
+  }
   return (
     <>
       <div className={" custom-table "}>
         {showeditmodal.state == true ? (
-          <Editmodal show={showeditmodal} fn={editinfo}></Editmodal>
+          <Editmodal
+            alldata={d2}
+            changedata={changedata}
+            show={showeditmodal}
+            fn={editinfo}
+          ></Editmodal>
         ) : (
           <></>
         )}
@@ -424,6 +525,7 @@ const ITDashboard = ({service}) => {
           platform={platform}
           changedata={changedata}
           except={true}
+          completedata={d2}
           alldata={d}
           showmailbox={showmailbox}
           showdupemailbox={showdupemailbox}
@@ -434,7 +536,7 @@ const ITDashboard = ({service}) => {
           showcurrencies={showcurrency}
         ></Header>
         {defaultdata.opensendmailbox ? (
-          <ITEmailbox
+          <PScronbox
             page="itdata"
             platform={platform}
             service={service}
@@ -446,12 +548,12 @@ const ITDashboard = ({service}) => {
               document.querySelector("#totalsending").value
             )}
             fn={closeemailsendbox}
-          ></ITEmailbox>
+          ></PScronbox>
         ) : (
           <></>
         )}
         {defaultdata.opendupesendmailbox ? (
-          <ITEmailbox
+          <PScronbox
             page="itdata"
             platform={platform}
             alldata={d}
@@ -462,12 +564,12 @@ const ITDashboard = ({service}) => {
               document.querySelector("#totalsending").value
             )}
             fn={closedupeemailsendbox}
-          ></ITEmailbox>
+          ></PScronbox>
         ) : (
           <></>
         )}
         {defaultdata.opencronbox ? (
-          <Cronlist platform={platform} service={service} closecronbox={closecronbox}></Cronlist>
+          <Cronlist platform={platform} service='ps' closecronbox={closecronbox}></Cronlist>
         ) : (
           <></>
         )}
@@ -505,7 +607,7 @@ const ITDashboard = ({service}) => {
                           key={column.key}
                           width={column.width}
                           type={column.type}
-                          costtab={false}
+                          costtab={defaultdata.showcurrencytab}
                           getColumnLetter={getColumnLetter}
                           index={index}
                           onResize={(width) => handleResize(index, width)}
@@ -518,19 +620,132 @@ const ITDashboard = ({service}) => {
                       <th>
                         <div className="headers">Sr. no</div>
                       </th>
-                      <th style={{ background: "white" }}>
+                      <th
+                        style={{
+                          background: "white",
+                          position: "sticky",
+                          left: 0,
+                          zindex: 1,
+                        }}
+                      >
                         <div className="headers">
-                          CONTACT PERSON
+                          APPLN.NO.{" "}
                           <i
                             className="ti ti-sort-ascending"
-                            onClick={() => {
-                              sortdata("cp");
+                            onClick={(e) => {
+                              sortdata(e, 'appno');
+                            }}
+                          ></i>
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('appno', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Title{" "}
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'title');
                             }}
                           ></i>{" "}
                         </div>
                         <input
                           className="filter"
-                          onKeyUp={(e) => filterdata("cp", e.target.value)}
+                          onKeyUp={(e) => filterdata('title', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          APPLICANT NAME
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'applicantname');
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('applicantname', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Applicant Status
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'applicant_status');
+                            }}
+                          ></i>{" "}
+                        </div>
+
+                        <FormControl sx={{ m: 0, width: "100%" }}>
+                          <Select
+                            labelId="demo-multiple-name-label"
+                            id="demo-multiple-name"
+                            multiple
+                            value={defaultdata.applicantstatusdata}
+                            onChange={handleapplicant}
+                            input={<OutlinedInput label="Name" />}
+                            MenuProps={MenuProps}
+                          >
+                            {defaultvalue.applicantstatus.map((name) => (
+                              <MenuItem key={name.key} value={name.key}>
+                                {name.value}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          CONTACT INFO OF
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'cio');
+                            }}
+                          ></i>{" "}
+                        </div>
+
+                        <FormControl sx={{ m: 0, width: "100%" }}>
+                          <Select
+                            labelId="demo-multiple-name-label"
+                            id="demo-multiple-name"
+                            multiple
+                            value={defaultdata.cio}
+                            onChange={handlecio}
+                            input={<OutlinedInput label="Name" />}
+                            MenuProps={MenuProps}
+                          >
+                            {defaultvalue.contactinfostatus.map((name) => (
+                              <MenuItem key={name.key} value={name.key}>
+                                {name.value}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          CONTACT PERSON
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'cpf');
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('cpf', e.target.value)}
                           type="text"
                         ></input>
                       </th>
@@ -539,14 +754,14 @@ const ITDashboard = ({service}) => {
                           EMAIL ID
                           <i
                             className="ti ti-sort-ascending"
-                            onClick={() => {
-                              sortdata("email");
+                            onClick={(e) => {
+                              sortdata(e, 'emailid');
                             }}
                           ></i>{" "}
                         </div>
                         <input
                           className="filter"
-                          onKeyUp={(e) => filterdata("email", e.target.value)}
+                          onKeyUp={(e) => filterdata('emailid', e.target.value)}
                           type="text"
                         ></input>
                       </th>
@@ -555,14 +770,14 @@ const ITDashboard = ({service}) => {
                           Domain
                           <i
                             className="ti ti-sort-ascending"
-                            onClick={() => {
-                              sortdata("domain");
+                            onClick={(e) => {
+                              sortdata(e, 'domain');
                             }}
                           ></i>{" "}
                         </div>
                         <input
                           className="filter"
-                          onKeyUp={(e) => filterdata("domain", e.target.value)}
+                          onKeyUp={(e) => filterdata('domain', e.target.value)}
                           type="text"
                         ></input>
                       </th>
@@ -571,30 +786,14 @@ const ITDashboard = ({service}) => {
                           PH. NO.
                           <i
                             className="ti ti-sort-ascending"
-                            onClick={() => {
-                              sortdata("p_h_n");
+                            onClick={(e) => {
+                              sortdata(e, 'p_h_n');
                             }}
                           ></i>{" "}
                         </div>
                         <input
                           className="filter"
-                          onKeyUp={(e) => filterdata("p_h_n", e.target.value)}
-                          type="text"
-                        ></input>
-                      </th>
-                      <th style={{ background: "white" }}>
-                        <div className="headers">
-                        Website.
-                          <i
-                            className="ti ti-sort-ascending"
-                            onClick={() => {
-                              sortdata("website");
-                            }}
-                          ></i>{" "}
-                        </div>
-                        <input
-                          className="filter"
-                          onKeyUp={(e) => filterdata("website", e.target.value)}
+                          onKeyUp={(e) => filterdata('p_h_n', e.target.value)}
                           type="text"
                         ></input>
                       </th>
@@ -603,16 +802,14 @@ const ITDashboard = ({service}) => {
                           First Email Date
                           <i
                             className="ti ti-sort-ascending"
-                            onClick={() => {
-                              sortdata("firstemail");
+                            onClick={(e) => {
+                              sortdata(e, 'firstemail');
                             }}
                           ></i>{" "}
                         </div>
                         <input
                           className="filter"
-                          onKeyUp={(e) =>
-                            filterdata("firstemail", e.target.value)
-                          }
+                          onKeyUp={(e) => filterdata('firstemail', e.target.value)}
                           type="text"
                         ></input>
                       </th>
@@ -621,16 +818,14 @@ const ITDashboard = ({service}) => {
                           FollowUp date
                           <i
                             className="ti ti-sort-ascending"
-                            onClick={() => {
-                              sortdata("followup");
+                            onClick={(e) => {
+                              sortdata(e, 'followupdate');
                             }}
                           ></i>{" "}
                         </div>
                         <input
                           className="filter"
-                          onKeyUp={(e) =>
-                            filterdata("followup", e.target.value)
-                          }
+                          onKeyUp={(e) => filterdata('followupdate', e.target.value)}
                           type="text"
                         ></input>
                       </th>
@@ -639,16 +834,14 @@ const ITDashboard = ({service}) => {
                           Next Follow Up
                           <i
                             className="ti ti-sort-ascending"
-                            onClick={() => {
-                              sortdata("nextfollowup");
+                            onClick={(e) => {
+                              sortdata(e, 'nextfollowupdate');
                             }}
                           ></i>{" "}
                         </div>
                         <input
                           className="filter"
-                          onKeyUp={(e) =>
-                            filterdata("nextfollowup", e.target.value)
-                          }
+                          onKeyUp={(e) => filterdata('nextfollowupdate', e.target.value)}
                           type="text"
                         ></input>
                       </th>
@@ -657,18 +850,18 @@ const ITDashboard = ({service}) => {
                           Email Status
                           <i
                             className="ti ti-sort-ascending"
-                            onClick={() => {
-                              sortdata("emailtype");
+                            onClick={(e) => {
+                              sortdata(e, 'emailstatus');
                             }}
                           ></i>{" "}
                         </div>
 
-                        <FormControl sx={{ m: 0, width: 100 }}>
+                        <FormControl sx={{ m: 0, width: "100%" }}>
                           <Select
                             labelId="demo-multiple-name-label"
                             id="demo-multiple-name"
                             multiple
-                            value={emailstatusdata}
+                            value={defaultdata.emailstatus}
                             onChange={handlechange}
                             input={<OutlinedInput label="Name" />}
                             MenuProps={MenuProps}
@@ -686,17 +879,17 @@ const ITDashboard = ({service}) => {
                           Call Status
                           <i
                             className="ti ti-sort-ascending"
-                            onClick={() => {
-                              sortdata("calltype");
+                            onClick={(e) => {
+                              sortdata(e, 'callstatus');
                             }}
                           ></i>{" "}
                         </div>
-                        <FormControl sx={{ m: 0, width: 100 }}>
+                        <FormControl sx={{ m: 0, width: "100%" }}>
                           <Select
                             labelId="call-name-label"
                             id="call-name"
                             multiple
-                            value={callstatusdata}
+                            value={defaultdata.callstatus}
                             onChange={handlecallchange}
                             input={<OutlinedInput label="Name" />}
                             MenuProps={MenuProps}
@@ -714,30 +907,31 @@ const ITDashboard = ({service}) => {
                           Comment
                           <i
                             className="ti ti-sort-ascending"
-                            onClick={() => {
-                              sortdata("comment");
+                            onClick={(e) => {
+                              sortdata(e, 'comment');
                             }}
                           ></i>{" "}
                         </div>
                         <input
                           className="filter"
-                          onKeyUp={(e) => filterdata("comment", e.target.value)}
+                          onKeyUp={(e) => filterdata('comment', e.target.value)}
                           type="text"
                         ></input>
                       </th>
+                      
                       <th style={{ background: "white" }}>
                         <div className="headers">
                           Sent on
                           <i
                             className="ti ti-sort-ascending"
-                            onClick={() => {
-                              sortdata("senton");
+                            onClick={(e) => {
+                              sortdata(e, 'senton');
                             }}
                           ></i>{" "}
                         </div>
                         <input
                           className="filter"
-                          onKeyUp={(e) => filterdata("senton", e.target.value)}
+                          onKeyUp={(e) => filterdata('senton', e.target.value)}
                           type="text"
                         ></input>
                       </th>
@@ -746,16 +940,14 @@ const ITDashboard = ({service}) => {
                           Cron Status
                           <i
                             className="ti ti-sort-ascending"
-                            onClick={() => {
-                              sortdata("crondate");
+                            onClick={(e) => {
+                              sortdata(e, 'crondate');
                             }}
                           ></i>{" "}
                         </div>
                         <input
                           className="filter"
-                          onKeyUp={(e) =>
-                            filterdata("crondate", e.target.value)
-                          }
+                          onKeyUp={(e) => filterdata('crondate', e.target.value)}
                           type="text"
                         ></input>
                       </th>
@@ -764,181 +956,253 @@ const ITDashboard = ({service}) => {
                           Assigned
                           <i
                             className="ti ti-sort-ascending"
-                            onClick={() => {
-                              sortdata("assigned");
+                            onClick={(e) => {
+                              sortdata(e, 'fromname');
                             }}
                           ></i>{" "}
                         </div>
                         <input
                           className="filter"
-                          onKeyUp={(e) =>
-                            filterdata("assigned", e.target.value)
-                          }
+                          onKeyUp={(e) => filterdata('fromname', e.target.value)}
                           type="text"
                         ></input>
                       </th>
                       <th style={{ background: "white" }}>
                         <div className="headers">
-                          Filename
+                          Assigned2
                           <i
                             className="ti ti-sort-ascending"
-                            onClick={() => {
-                              sortdata("filename");
+                            onClick={(e) => {
+                              sortdata(e, 'username');
                             }}
                           ></i>{" "}
                         </div>
                         <input
                           className="filter"
-                          onKeyUp={(e) =>
-                            filterdata("filename", e.target.value)
-                          }
+                          onKeyUp={(e) => filterdata('username', e.target.value)}
                           type="text"
                         ></input>
                       </th>
+                
                     </tr>
                   </>
                 )}
                 itemContent={(index, user) => (
                   <>
-                    <td>{500 * (1 - 1) + (index + 1)}</td>
+                    <td>
+                      {offset.current.limit * (offset.current.page - 1) +
+                        (index + 1)}
+                    </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 1, 1);
+                        pickvalue(e,{key:'APPLN.NO.'});
+                      }}
+                      className="column-value"
+                      style={{
+                        position: "sticky",
+                        left: 0,
+                        zIndex: 1,
+                      }}
+                    >
+                      {/* <input className='appno' value={user[2]} onClick={(event)=>pushdata(event,user[2])} style={{'position':"absolute",'top':'18px','left':'0'}} type='checkbox'></input> */}
+                      <img className='flagwidth' src={`https://www.anuation.com/crm/assets/flags/${user['country'].toLowerCase()}.png`}/>
+                      <a
+                        target="blank"
+                        href={
+                          "https://patentscope.wipo.int/search/en/detail.jsf?docId=" +
+                          user['appno']
+                        }
+                      >
+                        <span>{user['appno']}</span>
+                      </a>
+                      
+                      <i
+                        onClick={() => {
+                          editinfo(true, user['appno']);
+                        }}
+                        style={{
+                          position: "absolute",
+                          top: "1px",
+                          right: "5px",
+                          background: "#5d87ff",
+                          width: "14px",
+                          height: "14px",
+                          display: "flex",
+                          lineHeight: "14px",
+                          borderRadius: "50%",
+                          color: "white",
+                          justifyContent: "center",
+                        }}
+                        className="ti ti-edit"
+                      ></i>
+                    </td>
+                    <td
+                      onClick={(e) => {
+                        pickvalue(e,{key:'Title'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user["cp"]}
+                      {user['title']}
+                    </td>
+
+                    <td
+                      onClick={(e) => {
+                        pickvalue(e,{key:'APPLICANT NAME'});
+                      }}
+                      className="column-value"
+                      style={{}}
+                    >
+                      {user['applicantname']}
+                    </td>
+
+                    <td
+                      onClick={(e) => {
+                        pickvalue(e,{key:'Applicant Status'});
+                      }}
+                      className="column-value"
+                      style={{}}
+                    >
+                      {user['applicant_status']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 2, 2);
+                        pickvalue(e,{key:'CONTACT INFO OF'});
                       }}
-                      className={`cursor-pointer text-primary column-value align-items-center ${tablesetting.countred(user["email"], "email", d) ? "red-dupe" : ""
+                      className="column-value"
+                      style={{}}
+                    >
+                      {user['cio']}
+                    </td>
+                    <td
+                      onClick={(e) => {
+                        pickvalue(e,{key:'CONTACT PERSON'});
+                      }}
+                      className="column-value"
+                      style={{}}
+                    >
+                      {user['cpf']}
+                    </td>
+                    <td
+                      onClick={(e) => {
+                        pickvalue(e,{key:'EMAIL ID'});
+                      }}
+                      className={`cursor-pointer text-primary column-value align-items-center ${tablesetting.countred(user['emailid'], 'emailid', d) ? "red-dupe" : ""
                         }`}
                       style={{}}
-                    > <i className="ti ti-refresh rotate hide profilefetch"></i>
-                    <span className="email-id">{user["email"]}</span>
-                  </td>
-                  <td
-                      onClick={(e) => {
-                        pickvalue(e, 4, 3);
-                      }}
-                      className={`cursor-pointer text-primary column-value align-items-center ${tablesetting.countred(user["domain"], "domain", d) ? "red-dupe" : ""
-                        }`}
-                      style={{}}
-                    > <i className="ti ti-refresh rotate hide profilefetch"></i>
-                    <span className="email-id">{user["domain"]}</span>
-                  </td>
-                  <td
-                      onClick={(e) => {
-                        pickvalue(e, 5, 4);
-                      }}
-                      className={`cursor-pointer text-primary column-value align-items-center ${tablesetting.countred(user["p_h_n"], "p_h_n", d) ? "red-dupe" : ""
-                        }`}
-                      style={{}}
-                    > <i className="ti ti-refresh rotate hide profilefetch"></i>
-                    <span className="email-id">{user["p_h_n"]}</span>
-                  </td>
+                    >
+                      <i className="ti ti-refresh rotate hide profilefetch"></i>
+                      <span className="email-id">{user['emailid']}</span>
+                    </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 6, 5);
+                        pickvalue(e,{key:'Domain'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user["website"]}
+                      {user['domain']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 7, 6);
+                        pickvalue(e,{key:'PH. NO.'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user["firstemail"]}
+                      {user['p_h_n']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 8, 7);
+                        pickvalue(e,{key:'First Email Date'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user["followup"]}
+                      {user['firstemail']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 9, 8);
+                        pickvalue(e,{key:'FollowUp date'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user["nextfollowup"]}
+                      {user['followupdate']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 10, 9);
+                        pickvalue(e,{key:'Next Follow Up'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {emailstatus[user["emailtype"]] ?? ""}
+                      {user['nextfollowupdate']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 11, 10);
+                        pickvalue(e, {key:'Email Status'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {callstatus[user["calltype"]] ?? ""}
+                      {emailstatus[user['emailstatus']] ?? ""}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 12, 11);
+                        pickvalue(e,{key:'Call Status'});
+                      }}
+                      className="column-value"
+                      style={{}}
+                    >
+                      {callstatus[user['callstatus']] ?? ""}
+                    </td>
+                    <td
+                      onClick={(e) => {
+                        pickvalue(e,{key:'Comment'});
                       }}
                       className="column-value"
                       style={{}}
                       dangerouslySetInnerHTML={{
-                        __html: removeduplicate(user["comment"]),
+                        __html: removeduplicate(user['comment']),
                       }}
                     />
+
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 13, 12);
+                        pickvalue(e,{key:'Sent on'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user["senton"]}
+                      {user['senton']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 14, 13);
+                        pickvalue(e, 54, 56,{key:'Cron Status'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user["crondate"]}
+                      {user['crondate']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 15, 14);
+                        pickvalue(e,{key:'Assigned'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user["assigned"]}
+                      {defaultvalue.username[user['username']] ?? user['username']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 16, 15);
+                        pickvalue(e,{key:'Assigned2'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user["filename"]}
+                      {user['fromemail']}
                     </td>
                   </>
                 )}
@@ -953,6 +1217,43 @@ const ITDashboard = ({service}) => {
                 >
                   Current
                 </span>
+                <span
+                  id="statussheet"
+                  className={`sheet`}
+                  onClick={() =>
+                    loaddata({ ...formdata, sheet: "statussheet" })
+                  }
+                >
+                  Status Sheet
+                </span>
+                <span
+                  className={`sheet`}
+                  id="exhausted"
+                  onClick={() => loaddata({ ...formdata, sheet: "exhausted" })}
+                >
+                  Exhausted
+                </span>
+                <span
+                  className={`sheet`}
+                  id="converted"
+                  onClick={() => loaddata({ ...formdata, sheet: "converted" })}
+                >
+                  Converted
+                </span>
+                <span
+                  className={`sheet`}
+                  id="pipeline"
+                  onClick={() => loaddata({ ...formdata, sheet: "pipeline" })}
+                >
+                  Pipeline
+                </span>
+                <span
+                  className={`sheet`}
+                  id="dnc"
+                  onClick={() => loaddata({ ...formdata, sheet: "dnc" })}
+                >
+                  Dnc
+                </span>
               </div>
               <span className="label label-default">
                 <span className="text-white">
@@ -962,7 +1263,65 @@ const ITDashboard = ({service}) => {
               <div className="divider text-start d-flex">
                 {
                   <>
-
+                    <span>
+                      <select
+                        className="form-select bg-white height-28 padding-filter"
+                        id="recordlimit"
+                        onChange={(e) => {
+                          callpages(e, "limit");
+                        }}
+                      >
+                        {" "}
+                        <option value=""> Limit</option>
+                        {[
+                          5000, 7000, 10000,
+                        ].map((item, key) => (
+                          <option key={key} value={item}>
+                            {item}
+                          </option>
+                        ))}
+                      </select>
+                    </span>
+                    {auth.type == "2" ? (
+                      <span>
+                        <select
+                          className="form-select bg-white height-28 padding-filter"
+                          id="username"
+                          onChange={(e) => {
+                            calluser(e, "username");
+                          }}
+                        >
+                          <option value="All">All User</option>
+                          {defaultvalue.usernames.map((item, key) => {
+                            return (
+                              <option key={key} value={item.key}>
+                                {item.name}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </span>
+                    ) : (
+                      <></>
+                    )}
+                    <span>
+                      <select
+                        className="form-select bg-white height-28 padding-filter"
+                        id="pages"
+                        onChange={(e) => {
+                          callpages(e, "pages");
+                        }}
+                      >
+                        <option value=""> Select page</option>
+                        {defaultdata.totalpages.map((item, key) => {
+                          return (
+                            <option key={key} value={item}>
+                              {"Page " + item}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </span>
                   </>
                 }
               </div>
@@ -970,14 +1329,9 @@ const ITDashboard = ({service}) => {
           </div>
         </div>
         <Uploadsidebar />
-        {profilebar.status ? (
-          <Sidebarprofile closebar={closebar} email={profilebar.email} />
-        ) : (
-          <></>
-        )}
       </div>
     </>
   );
 };
 
-export default ITDashboard;
+export default PSdashboard;

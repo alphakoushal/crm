@@ -1,6 +1,7 @@
 import React,{useState} from "react";
 import Style from "../reducers/Style";
 import Headerblank from "../component/Header-blank";
+import Header from "../component/Header";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Snackbar from '@mui/material/Snackbar';

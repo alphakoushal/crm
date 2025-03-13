@@ -1,15 +1,16 @@
-import { Route,Routes } from "react-router-dom";
-import Analyticdashboard from "../screens/Analytics-screen";
-import Analyticemailemplate from "../screens/Analytic-template";
-import Editanalytictemplate from "../screens/Edit-analytic-template";
-import AnalytictemplateList from "../screens/Analytic-template-list";
-const AnalyticRoutes = () => (
-    <Routes path="/">
-    <Route path="/analytic-dashboard" element={<Analyticdashboard />} ></Route>
-    <Route path="/analytic-templates" element={<Analyticemailemplate />} ></Route>
-    <Route path="/edit-analytic-template" element={<Editanalytictemplate />} ></Route>
-    <Route path="/analytic-templates-list" element={<AnalytictemplateList />} ></Route>
-  </Routes>
-);
+import Analyticdashboard from "../screens/Analytics-screen.js";
+import Analyticemailemplate from "../screens/Analytic-template.js";
+import AnalytictemplateList from "../screens/Analytic-template-list.js";
+import Editanalytictemplate from "../screens/Edit-analytic-template.js";
+import Notfound from "../screens/Not-found.js";
+const analyticRoutes = [
+    { path: "/",header:false, name:'Dashboard', element: <Analyticdashboard /> },
+    { path: "/dashboard",header:false, name:'Dashboard', element: <Analyticdashboard /> },
+    { path: "/analytic-dashboard",header:true, name:'Dashboard', element: <Analyticdashboard /> },
+    { path: "/analytic-templates",header:true,name:'Add Template', element: <Analyticemailemplate /> },
+    { path: "/analytic-templates-list",header:true,name:'Template List', element: <AnalytictemplateList /> },
+    { path: "/edit-analytic-template",header:false,name:'Edit Template', element: <Editanalytictemplate /> },
+    { path: "*",header:false,name:'Not found', element: <Notfound /> },
+];
 
-export default AnalyticRoutes;
+export default analyticRoutes;

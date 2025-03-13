@@ -7,7 +7,7 @@ import moment from 'moment'
 import Headerblank from "../component/Header-blank";
 import Uploaddata from "../services/uploaddata";
 import { Link } from "react-router-dom";
-const ITTemplateList = () =>{
+const ITTemplateList = ({service}) =>{
   const [templatelist,settemplate]=useState([]);
   const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:''});
 
@@ -16,14 +16,15 @@ const ITTemplateList = () =>{
   const sendtome = async(e,id) =>{
     e.preventDefault();
     let email  = document.querySelector('#sendtome').value;
-    let res =await Uploaddata.sendtomeitemail({'email':email,'id':id,matter:'2'}).then((resposne)=>{return resposne});
+    let res =await Uploaddata.sendtomeitemail({'email':email,'id':id,matter:(service=='ps' ? '3' : '2')}).then((resposne)=>{return resposne});
     if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true, message: res.data.message,color:'success',icon:'success' })) }
 else {setvalidate((validate)=>({...validate,status:true,message:res.data.errors.error,color:'error',icon:'error'}));}
 setTimeout(()=>{},1000);
   }
   const fetchlist = async (type) =>{
-let data=await Fetchdata.fetchITtemplate({'type':type,matter:'2'}).then((response)=>{ return response});
+let data=await Fetchdata.fetchITtemplate({'type':type,matter:(service=='ps' ? '4' : '2')}).then((response)=>{ return response});
 settemplate(data.data.data);
+
   }
   useEffect(()=>{
     document.querySelector('table').classList.add("table","table-bordered","table-hover");

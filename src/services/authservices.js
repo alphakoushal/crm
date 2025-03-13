@@ -1,7 +1,6 @@
 import axios from "axios";
 import { json } from "react-router-dom";
-
-const API_URL = "https://www.anuation.com/oldcrm/";
+import { API_URL } from "../constant/Constant";
 let axiosConfig = { 'content-type': 'application/x-www-form-urlencoded' };
 const login = (data) => {
     return axios({

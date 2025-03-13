@@ -1,11 +1,11 @@
 import axios from "axios";
-const API_URL = "https://www.anuation.com/oldcrm/employee/auth/";
+import { API_URL } from "../constant/Constant";
 let axiosConfig = { 'content-type': 'application/x-www-form-urlencoded' };
 const updatecomments =(data)=>{
 return axios({
     method : "POST",
     headers : axiosConfig,
-    url : API_URL,
+    url : `${API_URL}employee/auth/`,
     data :data,
 }).then((response)=>{ return response;})
 }
