@@ -22,11 +22,14 @@ const config = {
         "240621150648429843": [
           { name: "Chris Brown", account: 6 },
           { name: "San Joy", account: 7 },
+          { name: "Sanchit", account: 14 },
+          { name: "Henry", account: 15 },
         ],
         "230703121732279703": [
           { name: "Tanisha Yadav", account: 8 },
           { name: "Pam Jones", account: 10 },
           { name: "Alina Shaw", account: 11 },
+          { name: "Emily", account: 16 },
         ],
       },
     username: {

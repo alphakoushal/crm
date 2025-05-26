@@ -280,7 +280,7 @@ const Emailbox = ({
             <form className="form-horizontal filing-form_data">
               <div className="modal-header d-flex align-items-center">
                 <h4 className="modal-title" id="myLargeModalLabel">
-                  Total {defaultvalue.mailtypeaccount[mailtypeaccount]} Record{" "}
+                  Total {defaultvalue.mailtypeaccount[mailtypeaccount]} Records{" "}
                   {emailsdata.length}
                 </h4>
                 <button
@@ -418,7 +418,7 @@ const Emailbox = ({
                           <option value="transfer">Transfer</option>
                         </>
                       ) : (
-                        <></>
+                        <> <option value="transfer">Transfer</option></>
                       )}
                     </select>
                   </div>

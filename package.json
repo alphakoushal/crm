@@ -1,7 +1,7 @@
 {
   "name": "crm",
   "version": "0.1.0",
-  "homepage": "https://www.anuation.com/itcrm",
+  "homepage": "https://www.anuation.com/crm",
   "private": true,
   "dependencies": {
     "@ckeditor/ckeditor5-basic-styles": "^41.0.0",
@@ -28,6 +28,8 @@
     "dexie": "^3.2.4",
     "export-xlsx": "^0.1.4",
     "faker": "^6.6.6",
+    "framer-motion": "^12.6.3",
+    "libphonenumber-js": "^1.12.8",
     "lodash": "^4.17.21",
     "material-ui-popup-state": "^5.0.10",
     "million": "^3.0.6",

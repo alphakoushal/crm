@@ -1,17 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import Uploaddata from "../../services/uploaddata";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import moment from 'moment'
 import { useFetcher } from "react-router-dom";
+import { motion } from "framer-motion";
 const Editmodal = function ({ show, fn ,changedata,alldata}) {
     let other=JSON.parse(show.data.otherdetail);
+    const containerRef = useRef(null);
+    const [constraints, setConstraints] = useState(null);
     other={...other,color:other?.color ?? "#ffffff"};
     const [data, updatedata] = useState({ 'email': show.data.email_id, 'app': show.data.appno, 'status': false, 'message': '','ref_no': other.ref_no,'isr':other.isr,'color':other.color,'drawing':other.drawing,'priority':other.priority,'claim':other.claim,'pages':other.pages,'a_p_h_n':other.a_p_h_n,'agent_email_id':other.agent_email_id,'agent_name':other.agent_name,'p_h_n':other.p_h_n,'company_name':other.company_name,'c_p_l':other.c_p_l,'c_p_f':other.c_p_f,'deadline_30_month':other.deadline_30_month,'deadline_31_month':other.deadline_30_month,'p_date':other.p_date,'APPLICANT_NAME':other.APPLICANT_NAME,'c_i_o':other.c_i_o,'applicant_status':other.applicant_status});
   const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:''});
     useEffect(() => {
         updatedata({ 'email': show.data.email_id, 'app': show.data.appno, 'status': false, 'message': '','ref_no': other.ref_no,'isr':other.isr,'color':other.color,'drawing':other.drawing,'priority':other.priority,'claim':other.claim,'pages':other.pages,'a_p_h_n':other.a_p_h_n,'agent_email_id':other.agent_email_id,'agent_name':other.agent_name,'p_h_n':other.p_h_n,'company_name':other.company_name,'c_p_l':other.c_p_l,'c_p_f':other.c_p_f,'deadline_30_month':other.deadline_30_month,'deadline_31_month':other.deadline_30_month,'p_date':other.p_date,'APPLICANT_NAME':other.APPLICANT_NAME,'c_i_o':other.c_i_o,'applicant_status':other.applicant_status});
     }, [show.data]);
+    useEffect(() => {
+        if (containerRef.current) {
+          const { width, height } = containerRef.current.getBoundingClientRect();
+          setConstraints({
+            top: -height / 2 + 50,
+            bottom: height / 2 - 50,
+            left: -width / 2 + 50,
+            right: width / 2 - 50,
+          });
+        }
+      }, [show]);
     useEffect(()=>{
         document.querySelector('#PRIOTITY_DATE').value=data.p_date;
         deadlinedate(data.p_date, 'p_date'); 
@@ -111,7 +125,13 @@ document.querySelector('#d31').value=moment(v).add(31, 'M').subtract(1, 'd').for
                 <MuiAlert elevation={6} variant="filled" color={validate.color} severity={validate.icon}>{validate.message}</MuiAlert>
             </Snackbar>
             {show.state ?
-                <div className="modal fade filing-form show" id="filing-form-modal" tabIndex="-1" role="dialog" aria-labelledby="edit-modal-label" style={{ "display": "block", "padding-left": "17px" }}>
+                <div ref={containerRef} className="modal fade filing-form show" id="filing-form-modal" tabIndex="-1" role="dialog" aria-labelledby="edit-modal-label" style={{ "display": "block", "padding-left": "17px" }}>
+<motion.div
+        className="modal-box"
+        drag
+        dragConstraints={constraints}
+        dragElastic={0.2}
+      >
                     <div className="modal-dialog modal-lg modal-dialog-centered" role="document">
                         <div className="modal-content">
                         <div className="modal-header d-flex align-items-center">
@@ -319,6 +339,7 @@ document.querySelector('#d31').value=moment(v).add(31, 'M').subtract(1, 'd').for
                             </form>
                         </div>
                     </div>
+                    </motion.div>
                 </div>
                 : <></>}
         </>

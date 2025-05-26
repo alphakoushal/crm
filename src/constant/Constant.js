@@ -1,5 +1,6 @@
 import moment from "moment";
 import config from "./Import-detail-of-crm";
+import { getCountryCallingCode } from 'libphonenumber-js';
 const callstatus = {
   1: "NI",
   2: "lb",
@@ -167,6 +168,17 @@ const defaultvalue = {
     { key: "12", value: "Approached" },
     { key: "13", value: "Pipeline" },
   ],
+  timezonetime:function timezone(code,countryCode)
+  {
+    try {
+      const callingCode = getCountryCallingCode(countryCode);
+      code=(code=='N/A' || code=='' ? [callingCode,''] : code.split(' '));
+    } catch (error) {
+      code=(code=='N/A' || code=='' ? '' : code.split(' '));
+    }
+    let timezone = (code.length>=2 && typeof(this.timezone[code[0]])!=='undefined' && this.timezone[code[0]].timezone!=='' ? this.timezone[code[0]].timezone : 'Asia/Kolkata');
+return timezone;
+  },
   timezone: {
     93: { timezone: "Asia/Kabul" },
     355: { timezone: "Europe/Tirane" },
@@ -424,7 +436,7 @@ const defaultvalue = {
     242: { timezone: "Africa/Brazzaville" },
     262: { timezone: "Indian/Mayotte" },
     40: { timezone: "Europe/Bucharest" },
-    7: { timezone: "" },
+    7: { timezone: "Europe/Moscow" },
     250: { timezone: "Africa/Kigali" },
     590: { timezone: "" },
     290: { timezone: "Atlantic/St_Helena" },
@@ -494,6 +506,17 @@ const defaultvalue = {
     263: { timezone: "Africa/Harare" },
   },
   filinglang: [
+    { code: "malay", value: "Malay" },
+    { code: "jamaican", value: "Jamaican" },
+    { code: "lao", value: "Lao" },
+    { code: "uzbek", value: "Uzbek" },
+    { code: "samoan", value: "Samoan" },
+    { code: "tajik", value: "Tajik" },
+    { code: "sesotho", value: "Sesotho" },
+    { code: "polish", value: "Polish" },
+    { code: "serbian", value: "Serbian" },
+    { code: "persian", value: "Persian" },
+    { code: "icelandic", value: "Icelandic" },
     { code: "albanian", value: "Albanian" },
     { code: "armenian", value: "Armenian" },
     { code: "azerbaijani", value: "Azerbaijani" },
@@ -523,7 +546,8 @@ const defaultvalue = {
     { code: "slovak", value: "Slovak" },
     { code: "turkmen", value: "Turkmen" },
     { code: "turkish", value: "Turkish" },
-    { code: "UkVie", value: "Ukrainian & Vietnamese" },
+    { code: "Ukrainian", value: "Ukrainian" },
+    { code: "Vietnamese", value: "Vietnamese" },
     { code: "eng", value: "English" },
     { code: "ger", value: "German" },
     { code: "spa", value: "Spanish" },
@@ -613,28 +637,7 @@ const defaultvalue = {
     { from: "fre", to: "eng", currency: "USD", cost: "0.14", type: "word" },
   ],
   accounts: config.accounts,
-  analyticaccounts: {
-    "240621150648429643": [
-      { name: "Abhishek Singh", account: 1 },
-      { name: "Ben Williams", account: 2 },
-      { name: "Alex Turner", account: 12 },
-      { name: "Zen Harper", account: 13 },
-    ],
-    "230703121732279603": [
-      { name: "Sheetal Gupta", account: 3 },
-      { name: "June Wood", account: 4 },
-      { name: "Bella Carter", account: 5 },
-    ],
-    "240621150648429843": [
-      { name: "Chris Brown", account: 6 },
-      { name: "San Joy", account: 7 },
-    ],
-    "230703121732279703": [
-      { name: "Tanisha Yadav", account: 8 },
-      { name: "Pam Jones", account: 10 },
-      { name: "Alina Shaw", account: 11 },
-    ],
-  },
+  analyticaccounts: config.accounts,
   analyticusers: [
     { account: "240621150648429643", name: "Abhishek" },
     { account: "230703121732279603", name: "Sheetal" },
@@ -1830,10 +1833,9 @@ const tablesetting = {
           value != collection[i].split("!")[1]
         ) {
           t = 0;
-        }
-        else if (
+        } else if (
           collection[i].indexOf("!") > -1 &&
-          (value.indexOf(collection[i].split("!")[1])==-1)
+          value.indexOf(collection[i].split("!")[1]) == -1
         ) {
           t = 0;
         }
@@ -1883,15 +1885,14 @@ const tablesetting = {
           t = 0;
         } else if (
           collection[i].indexOf("!=") > -1 &&
-          (value != collection[i].split("!")[1])
+          value != collection[i].split("!")[1]
         ) {
           t = 0;
-        }
-        else if (
+        } else if (
           collection[i].indexOf("!") > -1 &&
-          !collection.some(exclude => value.includes(exclude.split("!")[1]))
+          !collection.some((exclude) => value.includes(exclude.split("!")[1]))
         ) {
-           t = 0;
+          t = 0;
         }
       }
     }
@@ -1920,6 +1921,15 @@ const tablesetting = {
         collection[i] == "<" &&
         moment().format("YYYY-MM-DD") <= moment(value).format("YYYY-MM-DD")
       ) {
+      } else if (
+        collection[i].indexOf(">") > -1 &&
+        parseInt(value) > parseInt(collection[i].split(">")[1])
+      ) {
+        t = 0;
+      } else if (
+        collection[i].indexOf("<") > -1 &&
+        parseInt(value) < parseInt(collection[i].split("<")[1])
+      ) {
         t = 0;
       } else {
         if (value.indexOf(collection[i]) > -1) {
@@ -1933,10 +1943,9 @@ const tablesetting = {
           value != collection[i].split("!")[1]
         ) {
           t = 0;
-        }
-        else if (
+        } else if (
           collection[i].indexOf("!") > -1 &&
-          (value.indexOf(collection[i].split("!")[1])==-1)
+          value.indexOf(collection[i].split("!")[1]) == -1
         ) {
           t = 0;
         }

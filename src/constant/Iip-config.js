@@ -17,7 +17,6 @@ const config = {
     ],
     "191214150648429653": [{ name: "Isha", account: 1 }],
     "231220121357187063": [{ name: "Sara", account: 6 }],
-    "191214201403624914": [{ name: "Sara", account: 6 }],
     "191214201403624915": [
       { name: "Grace", account: 2 },
       { name: "Maya", account: 3 },
@@ -27,18 +26,18 @@ const config = {
   },
   username: {
     "240513115857792863": "Garry",
-    "191214150648429653": "Maya",
+    "191214201403624914": "Maya",
     "191214201403624915": "Jyoti",
     "231220121357187063": "Mohini",
   },
   usernames: [
     { key: "240513115857792863", name: "Garry" },
-    { key: "191214150648429653", name: "Maya" },
+    { key: "191214201403624914", name: "Maya" },
     { key: "191214201403624915", name: "Jyoti" },
   ],
   usernames2: [
     { account: "240513115857792863", name: "Garry" },
-    { account: "191214150648429653", name: "Maya" },
+    { account: "191214201403624914", name: "Maya" },
     { account: "191214201403624915", name: "Jyoti" },
   ],
 };

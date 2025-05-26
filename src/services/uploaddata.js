@@ -213,9 +213,16 @@ const itaxiosrequest = (formdata) =>{
         url : `${API_URL}employee/auth/react-index`,
     }).then((response)=>{return response;})
 }
-
+const pctaxiosrequest = (data) =>{
+    return axios({
+  headers:axiosConfig,
+  data: data,
+  url:API_URL+'employee/auth/react-index',
+  method:'POST'
+    }).then((response)=>{return response;})
+  }
 const Uploaddata = {
-  uploaddata,itaxiosrequest,sendtemplatetome,uploadformula,updateanalyticinfo,iiprecordtransfer,submitanalyticemails,transferdatatopct,transferdatatoiippct,createpdf,fetchcomment,assignsheet,updateinfo,addpct,createssheet,updatepct,uploadanalyticdata,emailformat,ITemailformat,mailtemplate,analyticmailtemplate,ITmailtemplate,sendtome,sendtomeitemail
+  uploaddata,pctaxiosrequest,itaxiosrequest,sendtemplatetome,uploadformula,updateanalyticinfo,iiprecordtransfer,submitanalyticemails,transferdatatopct,transferdatatoiippct,createpdf,fetchcomment,assignsheet,updateinfo,addpct,createssheet,updatepct,uploadanalyticdata,emailformat,ITemailformat,mailtemplate,analyticmailtemplate,ITmailtemplate,sendtome,sendtomeitemail
 }
 
 export default Uploaddata;

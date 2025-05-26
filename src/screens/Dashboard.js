@@ -37,6 +37,7 @@ import Dupeemailprocess from "../component/modals/Dupeemailprocess";
 import Cronlist from "../component/modals/cron-list";
 import ResizableColumn2 from "../component/Resize-two";
 import Pivotprocess from "../component/modals/Pivot.js";
+
 function Loading() {
   return <h2>🌀 Loading...</h2>;
 }
@@ -353,12 +354,6 @@ const Dashboard = () => {
       sd(copy);
       dispatch(userprofileupdate(copy.length));
     }
-  }
-  function timezone(code)
-  {
-    code=(code=='N/A' || code=='' ? '' : code.split(' '));
-    let timezone = (code.length>=2 && typeof(defaultvalue.timezone[code[0]])!=='undefined' && defaultvalue.timezone[code[0]].timezone!=='' ? defaultvalue.timezone[code[0]].timezone : 'Asia/Kolkata');
-return timezone;
   }
   async function pickvalue(e, i, ni,key) {
     e.stopPropagation();
@@ -1055,6 +1050,7 @@ return timezone;
                             onClick={(e) => {
                               sortdata(e, 13,{key:'timezone'});
                             }}
+                            
                           ></i>{" "}
                         </div>
                         <input
@@ -2151,7 +2147,7 @@ return timezone;
                       className="column-value"
                       style={{}}
                     >
-                    <Clock country={user[3]} timezone={timezone(user[13])} />
+                    <Clock country={user[3]} timezone={defaultvalue.timezonetime(user[13],user[3])} />
                     </td>
                     <td
                       onClick={(e) => {
@@ -2919,7 +2915,7 @@ return timezone;
                         {" "}
                         <option value=""> Limit</option>
                         {[
-                          10, 100, 500, 1000, 2000, 3000, 5000, 7000, 10000,
+                          3000, 5000, 7000, 10000,20000,
                         ].map((item, key) => (
                           <option key={key} value={item}>
                             {item}

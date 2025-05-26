@@ -9,6 +9,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from '@mui/material/InputLabel'; 
 import '../component/style/calcost.css'
+import { useSearchParams } from "react-router-dom";
 const Trademarkcalculator = ({calcstate,updatevalue}) =>{
 let coststage=[{'value':"IP Type Selection"},{'value':"Country Selection"},{'value':"Stages Selection"},{'value':"Detailed Report"}]
 let service = ['Patent','Trademark','Design'];
@@ -16,14 +17,18 @@ let detailservice = ['Filing','Examination','Granting','Annuity'];
 let applicantstatus = [{'name':'Large','key':'3'},{'name':'Small','key':'2'}];
 let applicantstatusnumber = {'2':'s','3':'l'};
 let applicantstatusvalue = {'2':'Small','3':'Large'};
+const auth = JSON.parse(localStorage.getItem("user"));
 const [getdata,setdata]=useState([]);
 const [tab,settab]=useState('tab1');
 const [countrytab,setcountrytab]=useState('');
 const currenttrans=useRef([]);
+const [searchParams, setSearchParams] = useSearchParams();
 const [currenttrans1,updatecurrenttrans1]=useState([]);
 const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:'',file:''});
 const [qtab,setqtab]=useState('');
-const [formuladata,setformuladata]=useState({'matter':calcstate,'ref':'','breakup':'no','appno':'ES2022/070522','applicant':'Koushal sethi','c':0,'classes':[],'as':'','country':[]});
+const [query, setQuery] = useState("");
+const lowerQuery = query.toLowerCase();
+const [formuladata,setformuladata]=useState({'defaultentity':'','defaultfilling':false,'defaultexamination':false,'defaultgranting':false,'defaultannuity':false,'matter':calcstate,'ref':'','breakup':'no','appno':'ES2022/070522','applicant':'Koushal sethi','c':0,'classes':[],'as':'','country':[]});
 const updatedata = (k,value) =>{
     setformuladata((prev)=>({...prev,[k]:value}))
 }
@@ -34,7 +39,7 @@ function handleclass(e) {
     setformuladata((prev)=>({...prev,['classes']:e.target.value,['c']:e.target.value.length}))
   }
 const createpdf = async () =>{
-    let createpdf = await Uploaddata.createpdf({'data':JSON.stringify(formuladata),'country':JSON.stringify(getdata),'posttype':'createtradepdf'}).then((response)=>{return response;});
+    let createpdf = await Uploaddata.createpdf({'matter':'2','userid':auth.userid,'data':JSON.stringify(formuladata),'country':JSON.stringify(getdata),'posttype':'createtradepdf','id':searchParams.get("id")}).then((response)=>{return response;});
     if(createpdf.data.success)
     {
         setvalidate((prev)=>({...prev,file:createpdf.data.file,status:true,message:`${createpdf.data.message} ${createpdf.data.file}`,color:'success',icon:'success'}))
@@ -153,6 +158,35 @@ const pushcountryentity = (e,c,cindex) =>{
     nested['country'][cindex]['entity'] = e.target.value;
     setformuladata(nested);
 
+}
+const pushcountryentitywithglobal = (k,value) =>{
+    let nested ={...formuladata};
+    nested['defaultentity']=value;
+    nested['country'].map((item,index)=>{
+        nested['country'][index]['entity'] = value;
+    })
+setformuladata(nested);
+}
+const pushcountryservicewithglobal = (e,indexvalue) =>{
+    if(e.target.checked)
+{
+    let nested ={...formuladata};
+    nested['country'].map((item,index)=>{
+        nested['country'][index]['service'] = [...new Set([...nested['country'][index]['service'],indexvalue+1])];
+    })
+    
+    setformuladata(nested);
+}
+else
+{
+    let nested ={...formuladata};
+    nested['country'].map((item,index)=>{
+        nested['country'][index]['service'] = nested['country'][index]['service'].filter((item,inx)=>item!==indexvalue+1);
+    })
+    
+    setformuladata(nested);
+
+}
 }
 const pushcountryaction = (e,c,cindex,index) =>{
     if(e.target.checked)
@@ -331,9 +365,11 @@ return <>
                                                         </nav>
                                                     </div>
                                                     <div className="col-3">
-                                                        <div className="text-center mb-n5">
-                                                            <img src="https://www.anuation.com/crm/assets/icons/svg/icon-dd-chat.svg" alt="modernize-img" className="img-fluid mb-n4"/>
-                                                        </div>
+                                                    <form class="position-relative ">
+                    <input value={query} onChange={(e) => setQuery(e.target.value)}  type="text" class="form-control search-chat py-2 ps-5 bg-white" placeholder="Search Country"/>
+                    
+                    <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
+                  </form>
                                                     </div>
                                                 </div>
                                             </div>
@@ -344,6 +380,13 @@ return <>
                                                     <div className="col-md-12">
                                                         {
                                                             defaultvalue.continent_country.map((value,index)=>{
+                                                                const [continent, countries] = Object.entries(value)[0];
+                                                                const filtered = countries.filter(
+                                                                  (country) =>
+                                                                    country.name.toLowerCase().includes(lowerQuery) ||
+                                                                    country.code.toLowerCase().includes(lowerQuery)
+                                                                );
+                                                                if (filtered.length === 0) return null;
                                                         return <div key={index} className="accordion" id="regularAccordionRobots">
                                                             <div className="accordion-item">
                                                                 <h2 id="regularHeadingSix" className="accordion-header">
@@ -351,12 +394,12 @@ return <>
                                                                         {Object.keys(value)[0]}
                                                                     </button>
                                                                 </h2>
-                                                                <div id="regularCollapseSix" className={`accordion-collapse collapse ${countrytab=='tab'+(index+1) ? 'show' : ''}`} aria-labelledby="regularHeadingSix" data-bs-parent="#regularAccordionRobots">
+                                                                <div id="regularCollapseSix" className={`accordion-collapse collapse ${countrytab=='tab'+(index+1) || lowerQuery!=='' ? 'show' : ''}`} aria-labelledby="regularHeadingSix" data-bs-parent="#regularAccordionRobots">
                                                                     <div className="accordion-body p-2">
 
                                                                         <div className="row">
                                                                             {
-                                                                               value[Object.keys(value)[0]].map((val,ind)=>{
+                                                                               filtered.map((val,ind)=>{
                                                                                 return <div key={ind} className="col-md-3">            
                                                            <div className="form-check me-3 py-2">
                                                                                 <input onChange={(e)=>{pushvalue(e,val.code)}} className="form-check-input" type="checkbox" value={val.code} id={`country${val.code}`}/>
@@ -411,7 +454,34 @@ return <>
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="card">
+                <div class="card-body">
+                  <div class="d-flex mb-3 align-items-center">
+                    <h4 class="card-title mb-0">Default Values</h4>
+                  </div>
+                  {
+                    detailservice.map((item,index)=>{
+                        return <div class="form-check form-check-inline">
+                        <input onChange={(e)=>{pushcountryservicewithglobal(e,index)}} class="form-check-input" type="checkbox" id={`inlineCheckbox${index}`} value={index}/>
+                        <label class="form-check-label" for={`inlineCheckbox${index}`}>{item}</label>
+                      </div>
+                  })
+                  }
+                  
 
+                  <div class="form-check form-check-inline">
+                  <select onChange={(e)=>{pushcountryentitywithglobal('defaultentity',e.target.value)}} className="form-select">
+                                    <option>Choose Your Option</option>
+                                    {
+                                                                applicantstatus.map((value,index)=>{
+                                                                    return <option Selected={formuladata['defaultentity']==(value['key']) ? 'Selected' : false} key ={value['key']} value={value['key']}> {value['name']}</option>
+                                                                })
+                                                            }
+                                </select>
+                  </div>
+                  
+                </div>
+              </div>
                                         <div className="accordion" id="regularAccordionRobots">
 
 {

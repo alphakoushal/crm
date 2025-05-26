@@ -174,8 +174,16 @@ url:API_URL+'employee/auth/react-index',
 method:'POST'
   }).then((response)=>{return response;})
 }
+const pctaxiosrequest = (data) =>{
+  return axios({
+headers:axiosConfig,
+data: data,
+url:API_URL+'employee/auth/react-index',
+method:'POST'
+  }).then((response)=>{return response;})
+}
 const Fetchdata = {
-  fetchapp,itaxiosrequest,fetchusernanlytic,pausecron,deletecron,reschedulecron,fetchanalytictemplatedata,fetchanalytictemplate,fetchformula,fetchcountry,fetchdomain,freshdata,fetchdata,fetchcomment,fetchstatusheetdata,fetchitdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchanalyticcrondata,fetchtemp,fetchITtemplate,fetchtemplate
+  fetchapp,itaxiosrequest,pctaxiosrequest,fetchusernanlytic,pausecron,deletecron,reschedulecron,fetchanalytictemplatedata,fetchanalytictemplate,fetchformula,fetchcountry,fetchdomain,freshdata,fetchdata,fetchcomment,fetchstatusheetdata,fetchitdata,geteditdata,fetchhistory,Analyticdata,fetchcrondata,fetchanalyticcrondata,fetchtemp,fetchITtemplate,fetchtemplate
 }
 
 export default Fetchdata;

@@ -197,7 +197,7 @@ if(web=='')
                                                 <label className="col-sm-12" htmlFor="APPLICANT_STATUS">Applicant Status:</label>
                                                 <div className="dropdown col-sm-12 error_field_group" id="APPLICANT_STATUS-group">
                                                     <select className="form-control restrictedinput validate-field"  id="APPLICANT_STATUS" name="APPLICANT_STATUS">
-                                                        <option value="">APPLICANT STATUS</option><option selected="" value="small">small</option><option value="large">large</option>                                                    </select>
+                                                        <option value="">APPLICANT STATUS</option><option selected="" value="Small">small</option><option value="Large">large</option>                                                    </select>
                                                 </div>
                                             </div>
                                

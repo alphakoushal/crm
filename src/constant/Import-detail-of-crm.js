@@ -1,4 +1,4 @@
-const CRM = 'crm4'; // This should be set in .env file
+const CRM = 'crm1'; // This should be set in .env file
 
 let config;
 
