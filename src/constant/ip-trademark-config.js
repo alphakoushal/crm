@@ -1,12 +1,12 @@
 const config = {
-  apiBaseUrl: "https://www.anuation.com/oldcrm/",
+  apiBaseUrl: "https://www.anuation.com/trademark-backend/",
   assetsurl: "https://www.anuation.com/crm/assets/",
-  basepath: "crm",
+  basepath: "trademark-crm",
   anuationcomkey: "",
   anuationlabskey: "",
   lastaccountcount: "27",
-  crmtype: "crm1",
-  name: "Anuation CRM",
+  crmtype: "crm5",
+  name: "Anuation Trademark CRM",
   authKey: "CRM1_SECRET_KEY",
   featureFlags: {
     enableEmailTracking: false,
@@ -106,6 +106,7 @@ const config = {
       { name: "Ruhi Sharma", account: 25 },
     ],
     "240120121357187064": [
+     
       { name: "Komal", account: 18 },
     ],
     "240513115857792863": [{ name: "Gary", account: 19 }],

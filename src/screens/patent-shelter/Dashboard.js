@@ -8,51 +8,46 @@ import React, {
   lazy,
   useCallback,
 } from "react";
-import Header from "../component/Header";
-import Fetchdata from "../services/fetchdata";
+import Header from "../../component/Header.js";
+import Fetchdata from "../../services/fetchdata";
 import { TableVirtuoso } from "react-virtuoso";
 import { useDispatch, useSelector } from "react-redux";
-import { userprofileupdate, profilesidebar } from "../reducers/Userdata";
-import Uploadsidebar from "../component/modals/Analytics/Uploadsidebar.js";
-import Commentmodal from "../component/modals/comments";
-import Uploaddata from "../services/uploaddata";
-import Style from "../component/style/style";
-import Clock from "../component/Clock.js";
-import AnalyticEditmodal from "../component/modals/AnalyticEditmodal.js";
+import { userprofileupdate,profilesidebar } from "../../reducers/Userdata";
+import Uploadsidebar from "../../component/Uploadsidebar";
+import Commentmodal from "../../component/modals/comments";
+import Uploaddata from "../../services/uploaddata";
+import Style from "../../component/style/style";
+import Clock from "../../component/Clock.js";
+import Editmodal from "../../component/modals/Editmodal";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import Filterinput from "./component/Filterinput.js";
-import Filterselect from "./component/Filterselect.js";
 import {
   callstatus,
-  analyticcallstatus,
   emailstatus,
   costs,
   standard,
   tablesetting,
   defaultvalue,
-} from "../constant/Constant.js";
+} from "../../constant/Constant.js";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import Sidebarprofile from "../component/modals/Sidebarprofile";
-import AnalyticEmailbox from "../component/modals/Analytics/Unique-email-cron-modal.js";
-import Dupeemailprocess from "../component/modals/Dupeemailprocess";
-import Cronlist from "../component/modals/cron-list";
-import ResizableColumn2 from "../component/Resize-two";
-import Pivotprocess from "../component/modals/Pivot.js";
-import Datanalyticsidebar from "../component/modals/Analytics/Data-analytic-sidebar.js";
+import Sidebarprofile from "../../component/modals/Sidebarprofile";
+import PScronbox from "../../component/modals/patentshelter/Cronbox.js";
+import Cronlist from "../../component/modals/cron-list";
+import ResizableColumn2 from "../../component/Resize-two";
+import Pivotprocess from "../../component/modals/Pivot.js";
 function Loading() {
   return <h2>🌀 Loading...</h2>;
 }
 let filtered = [];
-const Analyticdashboard = () => {
+const Dashboard = ({service}) => {
   const [d, sd] = useState([]);
   const [d2, gd] = useState([]);
   const [defaultdata, setdefaultdata] = useState({
     totalpages: [],
     profilebar: { status: false, email: "" },
     opencronbox: false,
-    showanalyticsidebar: false,
+    opendupesendmailbox: false,
     opensendmailbox: false,
     sortDown: true,
     showcurrencytab: false,
@@ -68,33 +63,25 @@ const Analyticdashboard = () => {
     monthdata: [],
   });
   const [columns, setColumns] = useState([
-    { width: 140, css: "", type: "", key: "First Name" },
-    { width: 110, css: "", type: "", key: "Last Name" },
-    { width: 110, css: "", type: "", key: "Company" },
-    { width: 110, css: "", type: "", key: "Designation" },
-    { width: 110, css: "", type: "", key: "Field/Expertise" },
-    { width: 110, css: "", type: "", key: "Technology" },
-    { width: 110, css: "", type: "", key: "Contact Info of" },
-    { width: 110, css: "", type: "", key: "Company Type" },
-    { width: 110, css: "", type: "", key: "Email ID" },
-    { width: 110, css: "", type: "", key: "Web Domain" },
-    { width: 110, css: "", type: "", key: "Phone No" },
-    { width: 110, css: "", type: "", key: "Alt Phone No." },
-    { width: 110, css: "", type: "", key: "City" },
-    { width: 110, css: "", type: "", key: "Country" },
-    { width: 110, css: "", type: "", key: "Linkedin Profile" },
-    { width: 110, css: "", type: "", key: "Email Date" },
-    { width: 110, css: "", type: "", key: "Follow up" },
-    { width: 110, css: "", type: "", key: "Next Follow up" },
+    { width: 140, css: "", type: "", key: "APPLN.NO." },
+    { width: 110, css: "", type: "", key: "Title" },
+    { width: 110, css: "", type: "", key: "APPLICANT NAME" },
+    { width: 110, css: "", type: "", key: "Applicant Status" },
+    { width: 110, css: "", type: "", key: "CONTACT INFO OF" },
+    { width: 110, css: "", type: "", key: "CONTACT PERSON" },
+    { width: 110, css: "", type: "", key: "EMAIL ID" },
+    { width: 110, css: "", type: "", key: "Domain" },
+    { width: 110, css: "", type: "", key: "PH. NO." },
+    { width: 110, css: "", type: "", key: "First Email Date" },
+    { width: 110, css: "", type: "", key: "FollowUp date" },
+    { width: 110, css: "", type: "", key: "Next Follow Up" },
     { width: 110, css: "", type: "", key: "Email Status" },
-    { width: 110, css: "", type: "", key: "Call Date" },
     { width: 110, css: "", type: "", key: "Call Status" },
-    { width: 110, css: "", type: "", key: "Comments" },
-    { width: 110, css: "", type: "", key: "Assigned to" },
-    { width: 110, css: "", type: "", key: "Last Name Sent Account" },
-    { width: 110, css: "", type: "", key: "Last Email Sent Account" },
-    { width: 110, css: "", type: "", key: "Account History" },
+    { width: 110, css: "", type: "", key: "Comment" },
+    { width: 110, css: "", type: "", key: "Sent on" },
     { width: 110, css: "", type: "", key: "Cron Status" },
+    { width: 110, css: "", type: "", key: "Assigned" },
+    { width: 110, css: "", type: "", key: "Email sent from" },
   ]);
   const handleResize = (index, width) => {
     setColumns((prevColumns) => {
@@ -103,21 +90,15 @@ const Analyticdashboard = () => {
       return newColumns;
     });
   };
-        function showanalyticsidebar(value) {
-          setdefaultdata((prev) => ({
-      ...prev,
-      showanalyticsidebar: value,
-    }));
-    }
   const [showeditmodal, updateeditmodal] = useState({ state: false, data: {} });
   const countries = useRef([]);
   const offset = useRef({ limit: 0, page: 0 });
   const processing = useRef(false);
   const months = useRef([]);
-  const platform = useRef("analytics");
+    const platform = useRef(service);
   const auth = JSON.parse(localStorage.getItem("user"));
   const valued = useSelector((state) => state.userdata.value);
-  const pivotmodalstate = useSelector((state) => state.crmstyle.pivot);
+  const pivotmodalstate = useSelector((state)=>state.crmstyle.pivot);
   const dispatch = useDispatch();
   useEffect(() => {
     clearfilter();
@@ -129,11 +110,12 @@ const Analyticdashboard = () => {
     file_refresh: "comment",
     offset: "1",
     w_id: "",
+    service:service,
     anuationuser_uniqueid: auth.userid,
     accounttype: auth.type,
     org: auth.org,
     recordlimit: auth.type == "1" ? 10000 : 0,
-    posttype: "local-analytic-data",
+    posttype: "ps-current-data",
     email: "",
     domain: "",
     platform: platform.current,
@@ -208,7 +190,7 @@ const Analyticdashboard = () => {
     let datas = {};
     document.querySelector(".ti-refresh").classList.add("rotate");
     document.querySelector(".body-wrapper1").classList.add("loader");
-    data = await Fetchdata.Analyticdata(formdata, signal)
+    data = await Fetchdata.itaxiosrequest(formdata, signal)
       .then((response) => {
         return response;
       })
@@ -219,7 +201,12 @@ const Analyticdashboard = () => {
     if (data.data.success) {
       datas = data.data.data;
       countries.current = data.data.country;
+      months.current = data.data.monthdata;
       processing.current = false;
+      offset.current = {
+        page: data.data.currentpage,
+        limit: data.data.recordlimit,
+      };
       setdefaultdata((prev) => ({
         ...prev,
         totalpages: new Array(data.data.totalpage)
@@ -262,13 +249,10 @@ const Analyticdashboard = () => {
     setdefaultdata((prev) => ({ ...prev, opendupesendmailbox: false }));
   };
 
-  function filterdata(index, value, keys = {}) {
+  function filterdata(index, value,keys={}) {
     let i = 0;
     let filters = document.querySelectorAll(".filter");
-    index =
-      Object.keys(keys).length > 0 && keys.key == "timezone"
-        ? "timezone"
-        : index;
+    index =(Object.keys(keys).length>0 && keys.key=='timezone' ? 'timezone' : index);
     let obj = { key: index, value: value };
 
     if (filtered.length == 0) {
@@ -303,7 +287,7 @@ const Analyticdashboard = () => {
       } else {
         sv = sv !== "" ? sv.toLowerCase().split(",") : "";
         copy = copy.filter((f) => {
-          return tablesetting.returndataanalytic(sv, f[e.key], e.key) > -1;
+          return tablesetting.returndata(sv, f[e.key], e.key) > -1;
         });
       }
       i++;
@@ -313,47 +297,30 @@ const Analyticdashboard = () => {
       dispatch(userprofileupdate(copy.length));
     }
   }
-  function timezone(code) {
-    code =
-      code != "N/A" &&
-      code != "" &&
-      typeof code != "undefined" &&
-      typeof code == "string"
-        ? code?.split(" ")
-        : "";
-    let timezone =
-      code.length >= 2 &&
-      typeof defaultvalue.timezone[code[0]] !== "undefined" &&
-      defaultvalue.timezone[code[0]].timezone !== ""
-        ? defaultvalue.timezone[code[0]].timezone
-        : "Asia/Kolkata";
-    return timezone;
-  }
-  async function pickvalue(e, i, ni, key) {
-    console.log(e, i, ni, key);
+
+  async function pickvalue(e,key) {
     e.stopPropagation();
+    console.log( e.target.getElementsByTagName("span"));
     if (e.detail == 1) {
       document.querySelector(".cell-name").value = key.key;
       document.querySelector(".cell-value").innerHTML =
-        i == "8" && e.target.tagName == "TD"
+      e.target.getElementsByTagName("span").length > 0
           ? e.target.getElementsByTagName("span")[0].innerHTML
-          : i == "2" && e.target.tagName == "TD"
-          ? e.target.getElementsByTagName("a")[0].innerHTML
-          : e.target.innerHTML;
-    } else if (e.detail == 2 && i == "8") {
+          :  e.target.innerHTML;
+    } else if (e.detail == 2 && key?.id == "emailid") {
       showprofilesidebar(
         e,
         e.target.getElementsByTagName("span")[0].innerHTML,
-        "email"
+        e.target.parentNode.children[9].innerHTML
       );
-    } else if (e.detail == 2 && i == "21") {
+    } else if (e.detail == 2 && key?.id == "comment") {
       let formdata = {
         publication_value: e.target.closest("tr").querySelectorAll("td")[1]
           .innerText,
         email: e.target.closest("tr").querySelectorAll("td")[12].innerText,
         domain: e.target.closest("tr").querySelectorAll("td")[13].innerText,
         type: "3",
-        table: "ip",
+        table:'ip'
       };
       const fetchcomment = await Uploaddata.fetchcomment(formdata).then(
         (response) => {
@@ -370,7 +337,7 @@ const Analyticdashboard = () => {
     if (state) {
       const getdata = await Fetchdata.geteditdata({
         publication_value: app,
-        type: "editanalyticdata",
+        type: "editdata",
       }).then((response) => {
         return response;
       });
@@ -383,24 +350,23 @@ const Analyticdashboard = () => {
     event.nativeEvent.stopImmediatePropagation();
     event.stopPropagation();
   }
-  function sortdata(event, index = 0, key = {}) {
-    console.log(event, index);
+  function sortdata(event, index = 0,key={}) {
     const copy = [...d];
     if (event.detail == 1) {
       if (defaultdata.sortDown) {
         copy.sort(
           (a, b) =>
             -(
-              (typeof a[index] == "number" ? a[index] : a[index]?.trim()) >
-              (typeof b[index] == "number" ? b[index] : b[index]?.trim())
+              (typeof a[index] == "number" ? a[index] : a[index].trim()) >
+              (typeof b[index] == "number" ? b[index] : b[index].trim())
             )
         );
       } else {
         copy.sort(
           (a, b) =>
             -(
-              (typeof a[index] == "number" ? a[index] : a[index]?.trim()) <
-              (typeof b[index] == "number" ? b[index] : b[index]?.trim())
+              (typeof a[index] == "number" ? a[index] : a[index].trim()) <
+              (typeof b[index] == "number" ? b[index] : b[index].trim())
             )
         );
       }
@@ -433,6 +399,7 @@ const Analyticdashboard = () => {
       totalpages: [],
       profilebar: { status: false, email: "" },
       opencronbox: false,
+      opendupesendmailbox: false,
       opensendmailbox: false,
       sortDown: true,
       showcurrencytab: false,
@@ -469,12 +436,12 @@ const Analyticdashboard = () => {
   const handlechange = (e) => {
     //setemail(e.target.value)
     setdefaultdata((prev) => ({ ...prev, emailstatus: e.target.value }));
-    filterdata(18, e.target.value.toString());
+    filterdata('emailstatus', e.target.value.toString());
   };
   const handlecio = (e) => {
     setdefaultdata((prev) => ({ ...prev, cio: e.target.value }));
     //setcio(e.target.value);
-    filterdata(6, e.target.value.toString());
+    filterdata('cio', e.target.value.toString());
   };
   const handleapplicant = (e) => {
     // setapplicant(e.target.value)
@@ -482,61 +449,15 @@ const Analyticdashboard = () => {
       ...prev,
       applicantstatusdata: e.target.value,
     }));
-    filterdata(8, e.target.value.toString());
+    filterdata('applicant_status', e.target.value.toString());
   };
-  const handledupe = (e) => {
-    //setdupe(e.target.value)
-    setdefaultdata((prev) => ({ ...prev, dupedata: e.target.value }));
-    filterdata(53, e.target.value.toString());
-  };
-  const handleagentdupe = (e) => {
-    setdefaultdata((prev) => ({ ...prev, agentdupedata: e.target.value }));
-    filterdata(61, e.target.value.toString());
-  };
-  const handlecountry = (e) => {
-    console.log(defaultdata.countrydata, filtered);
-    if (e.target.value.includes("all")) {
-      //setcountry(countries.current)
-      setdefaultdata((prev) => ({ ...prev, countrydata: countries.current }));
-      filterdata(13, countries.current.toString());
-    } else if (e.target.value.includes("unall")) {
-      //setcountry([])
-      setdefaultdata((prev) => ({ ...prev, countrydata: [] }));
-      filterdata(13, [].toString());
-    } else {
-      // setcountry(e.target.value)
-      setdefaultdata((prev) => ({ ...prev, countrydata: e.target.value }));
-      filterdata(13, e.target.value.toString());
-    }
-  };
-  const handlemonthdata = (e) => {
-    if (e.target.value.includes("all")) {
-      //  setmonth(months.current)
-      setdefaultdata((prev) => ({ ...prev, monthdata: e.target.value }));
-      filterdata(55, months.current.toString());
-    } else if (e.target.value.includes("unall")) {
-      //setmonth([])
-      setdefaultdata((prev) => ({ ...prev, monthdata: [] }));
-      filterdata(55, [].toString());
-    } else {
-      //  setmonth(e.target.value)
-      setdefaultdata((prev) => ({ ...prev, monthdata: e.target.value }));
-      filterdata(55, e.target.value.toString());
-    }
-  };
-  const handlegen = (e) => {
-    //setgen(e.target.value)
-    setdefaultdata((prev) => ({ ...prev, gendata: e.target.value }));
-    filterdata(54, e.target.value.toString());
-  };
-  const handleagentgen = (e) => {
-    setdefaultdata((prev) => ({ ...prev, agentgendata: e.target.value }));
-    filterdata(62, e.target.value.toString());
-  };
+
+
+
   const handlecallchange = (e) => {
     // setcall(e.target.value);
     setdefaultdata((prev) => ({ ...prev, callstatus: e.target.value }));
-    filterdata(20, e.target.value.toString());
+    filterdata('callstatus', e.target.value.toString());
   };
   const showprofilesidebar = (i, v, v1) => {
     if (document.querySelector("i.profilefetch.show")) {
@@ -547,7 +468,7 @@ const Analyticdashboard = () => {
     i.target.querySelector("i").classList.replace("hide", "show");
 
     //setprofilebar((prev)=>( {...prev,status:true,email:v} ));
-    dispatch(profilesidebar({ status: true, email: v, type: v1 }));
+    dispatch(profilesidebar({ status: true, email: v, type: v1}));
   };
   const closebar = () => {
     setdefaultdata((prev) => ({
@@ -589,12 +510,12 @@ const Analyticdashboard = () => {
     <>
       <div className={" custom-table "}>
         {showeditmodal.state == true ? (
-          <AnalyticEditmodal
+          <Editmodal
             alldata={d2}
             changedata={changedata}
             show={showeditmodal}
             fn={editinfo}
-          ></AnalyticEditmodal>
+          ></Editmodal>
         ) : (
           <></>
         )}
@@ -606,7 +527,6 @@ const Analyticdashboard = () => {
           except={true}
           completedata={d2}
           alldata={d}
-           showanalyticsidebar={showanalyticsidebar}
           showmailbox={showmailbox}
           showdupemailbox={showdupemailbox}
           showcronbox={showcronbox}
@@ -616,10 +536,10 @@ const Analyticdashboard = () => {
           showcurrencies={showcurrency}
         ></Header>
         {defaultdata.opensendmailbox ? (
-          <AnalyticEmailbox
-            page="ip"
-            filtered={filtered}
+          <PScronbox
+            page="itdata"
             platform={platform}
+            service={service}
             alldata={d}
             changedata={changedata}
             closeemailsendbox={closeemailsendbox}
@@ -628,23 +548,28 @@ const Analyticdashboard = () => {
               document.querySelector("#totalsending").value
             )}
             fn={closeemailsendbox}
-          ></AnalyticEmailbox>
+          ></PScronbox>
         ) : (
           <></>
         )}
-        {pivotmodalstate ? (
-          <Pivotprocess
-            page="freshdata"
+        {defaultdata.opendupesendmailbox ? (
+          <PScronbox
+            page="itdata"
             platform={platform}
             alldata={d}
-            column="58"
-          ></Pivotprocess>
+            changedata={changedata}
+            closeemailsendbox={closedupeemailsendbox}
+            emailsdata={d.slice(
+              0,
+              document.querySelector("#totalsending").value
+            )}
+            fn={closedupeemailsendbox}
+          ></PScronbox>
         ) : (
           <></>
         )}
-
         {defaultdata.opencronbox ? (
-          <Cronlist platform={platform} closecronbox={closecronbox}></Cronlist>
+          <Cronlist platform={platform} service={service} closecronbox={closecronbox}></Cronlist>
         ) : (
           <></>
         )}
@@ -664,7 +589,6 @@ const Analyticdashboard = () => {
               </li>
               <li className="col-10">
                 <textarea
-                  disabled
                   style={{ height: "40px" }}
                   className="form-control cell-value"
                 ></textarea>
@@ -696,73 +620,83 @@ const Analyticdashboard = () => {
                       <th>
                         <div className="headers">Sr. no</div>
                       </th>
-                      <Filterinput
-                        fieldname={"First Name"}
-                        id={"0"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"Last Name"}
-                        id={"1"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"Company"}
-                        id={"2"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"Designation"}
-                        id={"3"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"Field/Expertise"}
-                        id={"4"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"Technology"}
-                        id={"5"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterselect
-                        defaultv={defaultvalue.contactinfostatus}
-                        values={defaultdata.cio}
-                        event={handlecio}
-                        fieldname={"Contact Info of"}
-                        id={"6"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterselect>
-
-                      <th style={{ background: "white" }}>
+                      <th
+                        style={{
+                          background: "white",
+                          position: "sticky",
+                          left: 0,
+                          zindex: 1,
+                        }}
+                      >
                         <div className="headers">
-                          Company Type
+                          APPLN.NO.{" "}
                           <i
                             className="ti ti-sort-ascending"
                             onClick={(e) => {
-                              sortdata(e, 7);
+                              sortdata(e, 'appno');
+                            }}
+                          ></i>
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('appno', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Title{" "}
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'title');
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('title', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          APPLICANT NAME
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'applicantname');
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('applicantname', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Applicant Status
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'applicant_status');
                             }}
                           ></i>{" "}
                         </div>
 
                         <FormControl sx={{ m: 0, width: "100%" }}>
                           <Select
-                            labelId="up-multiple-name-label"
-                            id="up-multiple-name"
-                            value={defaultdata.dupedata}
+                            labelId="demo-multiple-name-label"
+                            id="demo-multiple-name"
                             multiple
-                            onChange={handledupe}
-                            label="Age"
+                            value={defaultdata.applicantstatusdata}
+                            onChange={handleapplicant}
+                            input={<OutlinedInput label="Name" />}
+                            MenuProps={MenuProps}
                           >
-                            {defaultvalue.dupestatus.map((name) => (
+                            {defaultvalue.applicantstatus.map((name) => (
                               <MenuItem key={name.key} value={name.key}>
                                 {name.value}
                               </MenuItem>
@@ -770,120 +704,159 @@ const Analyticdashboard = () => {
                           </Select>
                         </FormControl>
                       </th>
-                      <Filterinput
-                        fieldname={"Email ID"}
-                        id={"8"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"Additional Email ID"}
-                        id={"27"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"Web Domain"}
-                        id={"9"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"Phone No"}
-                        id={"10"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"Alt Phone No."}
-                        id={"11"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"City"}
-                        id={"12"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
                       <th style={{ background: "white" }}>
                         <div className="headers">
-                          Country{" "}
+                          CONTACT INFO OF
                           <i
                             className="ti ti-sort-ascending"
                             onClick={(e) => {
-                              sortdata(e, 13);
+                              sortdata(e, 'cio');
                             }}
                           ></i>{" "}
                         </div>
-                        <FormControl sx={{ m: 0, width: "100px" }}>
+
+                        <FormControl sx={{ m: 0, width: "100%" }}>
                           <Select
-                            labelId="up-multiple-name-label"
-                            id="up-multiple-name"
-                            value={defaultdata.countrydata}
+                            labelId="demo-multiple-name-label"
+                            id="demo-multiple-name"
                             multiple
-                            onChange={handlecountry}
-                            label="Age"
+                            value={defaultdata.cio}
+                            onChange={handlecio}
+                            input={<OutlinedInput label="Name" />}
+                            MenuProps={MenuProps}
                           >
-                            <MenuItem key="_blank" value="_blank">
-                              Blank
-                            </MenuItem>
-                            <MenuItem key="all" value="all">
-                              Check All
-                            </MenuItem>
-                            <MenuItem key="unall" value="unall">
-                              Uncheck All
-                            </MenuItem>
-                            {countries.current.map((name) => (
-                              <MenuItem key={name} value={name}>
-                                {name}
+                            {defaultvalue.contactinfostatus.map((name) => (
+                              <MenuItem key={name.key} value={name.key}>
+                                {name.value}
                               </MenuItem>
                             ))}
                           </Select>
                         </FormControl>
                       </th>
-                      <Filterinput
-                        fieldname={"Timezone"}
-                        id={"13"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"Linkedin Profile"}
-                        id={"14"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"First Email Date"}
-                        id={"15"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"FollowUp date"}
-                        id={"16"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"Next Follow Up"}
-                        id={"17"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          CONTACT PERSON
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'cpf');
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('cpf', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          EMAIL ID
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'emailid');
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('emailid', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Domain
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'domain');
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('domain', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          PH. NO.
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'p_h_n');
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('p_h_n', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          First Email Date
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'firstemail');
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('firstemail', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          FollowUp date
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'followupdate');
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('followupdate', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Next Follow Up
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'nextfollowupdate');
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('nextfollowupdate', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
                       <th style={{ background: "white" }}>
                         <div className="headers">
                           Email Status
                           <i
                             className="ti ti-sort-ascending"
                             onClick={(e) => {
-                              sortdata(e, 18);
+                              sortdata(e, 'emailstatus');
                             }}
                           ></i>{" "}
                         </div>
 
-                        <FormControl sx={{ m: 0, width: "150px" }}>
+                        <FormControl sx={{ m: 0, width: "100%" }}>
                           <Select
                             labelId="demo-multiple-name-label"
                             id="demo-multiple-name"
@@ -893,7 +866,7 @@ const Analyticdashboard = () => {
                             input={<OutlinedInput label="Name" />}
                             MenuProps={MenuProps}
                           >
-                            {defaultvalue.analyticnames.map((name) => (
+                            {defaultvalue.names.map((name) => (
                               <MenuItem key={name.key} value={name.key}>
                                 {name.value}
                               </MenuItem>
@@ -903,31 +876,15 @@ const Analyticdashboard = () => {
                       </th>
                       <th style={{ background: "white" }}>
                         <div className="headers">
-                          Call Date
-                          <i
-                            className="ti ti-sort-ascending"
-                            onClick={(e) => {
-                              sortdata(e, 19);
-                            }}
-                          ></i>{" "}
-                        </div>
-                        <input
-                          className="filter"
-                          onKeyUp={(e) => filterdata(19, e.target.value)}
-                          type="text"
-                        ></input>
-                      </th>
-                      <th style={{ background: "white" }}>
-                        <div className="headers">
                           Call Status
                           <i
                             className="ti ti-sort-ascending"
                             onClick={(e) => {
-                              sortdata(e, 20);
+                              sortdata(e, 'callstatus');
                             }}
                           ></i>{" "}
                         </div>
-                        <FormControl sx={{ m: 0, width: "150px" }}>
+                        <FormControl sx={{ m: 0, width: "100%" }}>
                           <Select
                             labelId="call-name-label"
                             id="call-name"
@@ -937,7 +894,7 @@ const Analyticdashboard = () => {
                             input={<OutlinedInput label="Name" />}
                             MenuProps={MenuProps}
                           >
-                            {defaultvalue.analyticcallnames.map((name) => (
+                            {defaultvalue.callnames.map((name) => (
                               <MenuItem key={name.key} value={name.key}>
                                 {name.value}
                               </MenuItem>
@@ -945,42 +902,88 @@ const Analyticdashboard = () => {
                           </Select>
                         </FormControl>
                       </th>
-                      <Filterinput
-                        fieldname={"Comment"}
-                        id={"21"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"Assigned to"}
-                        id={"26"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"Last Name Sent Account"}
-                        id={"22"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"Last Email Sent Account"}
-                        id={"23"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"Account History"}
-                        id={"24"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
-                      <Filterinput
-                        fieldname={"Cron status"}
-                        id={"25"}
-                        filterdata={filterdata}
-                        sortdata={sortdata}
-                      ></Filterinput>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Comment
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'comment');
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('comment', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Sent on
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'senton');
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('senton', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Cron Status
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'crondate');
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('crondate', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Assigned
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'fromname');
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('fromname', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                      <th style={{ background: "white" }}>
+                        <div className="headers">
+                          Assigned2
+                          <i
+                            className="ti ti-sort-ascending"
+                            onClick={(e) => {
+                              sortdata(e, 'username');
+                            }}
+                          ></i>{" "}
+                        </div>
+                        <input
+                          className="filter"
+                          onKeyUp={(e) => filterdata('username', e.target.value)}
+                          type="text"
+                        ></input>
+                      </th>
+                
                     </tr>
                   </>
                 )}
@@ -992,32 +995,30 @@ const Analyticdashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 2, 0, { key: "First Name" });
+                        pickvalue(e,{key:'APPLN.NO.'});
                       }}
                       className="column-value"
                       style={{
-                        background: user[0],
                         position: "sticky",
                         left: 0,
                         zIndex: 1,
                       }}
                     >
-                      <img
-                        className="flagwidth"
-                        src={`https://www.anuation.com/crm/assets/flags/${user[13].toLowerCase()}.png`}
-                      />
+                      {/* <input className='appno' value={user[2]} onClick={(event)=>pushdata(event,user[2])} style={{'position':"absolute",'top':'18px','left':'0'}} type='checkbox'></input> */}
+                      <img className='flagwidth' src={`https://www.anuation.com/crm/assets/flags/${user['country'].toLowerCase()}.png`}/>
                       <a
                         target="blank"
                         href={
                           "https://patentscope.wipo.int/search/en/detail.jsf?docId=" +
-                          user[0]
+                          user['appno']
                         }
                       >
-                        {user[0]}
+                        <span>{user['appno']}</span>
                       </a>
+                      
                       <i
                         onClick={() => {
-                          editinfo(true, user[29]);
+                          editinfo(true, user['appno']);
                         }}
                         style={{
                           position: "absolute",
@@ -1037,286 +1038,221 @@ const Analyticdashboard = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 1, 1, { key: "Second Name" });
+                        pickvalue(e,{key:'Title'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user[1]}
+                      {user['title']}
                     </td>
+
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 3, 2, { key: "Company" });
-                      }}
-                      className="column-value small"
-                      style={{}}
-                    >
-                      {user[2]}
-                    </td>
-                    <td
-                      onClick={(e) => {
-                        pickvalue(e, 4, 3, { key: "Designation" });
+                        pickvalue(e,{key:'APPLICANT NAME'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user[3]}
+                      {user['applicantname']}
                     </td>
+
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 5, 4, { key: "Field/Expertise" });
+                        pickvalue(e,{key:'Applicant Status'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user[4]}
+                      {user['applicant_status']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 6, 5, { key: "Technology" });
+                        pickvalue(e,{key:'CONTACT INFO OF'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user[5]}
+                      {user['cio']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 7, 6, { key: "Contact Info of" });
+                        pickvalue(e,{key:'CONTACT PERSON'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user[6]}
+                      {user['cpf']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 54, 8, { key: "Company Type" });
+                        pickvalue(e,{key:'EMAIL ID'});
                       }}
-                      className="column-value"
-                      style={{}}
-                    >
-                      {user[7]}
-                    </td>
-                    <td
-                      onClick={(e) => {
-                        pickvalue(e, 8, 9, { key: "EMAIL ID" });
-                      }}
-                      className={`cursor-pointer text-primary column-value align-items-center 
-                        `}
+                      className={`cursor-pointer text-primary column-value align-items-center ${tablesetting.countred(user['emailid'], 'emailid', d) ? "red-dupe" : ""
+                        }`}
                       style={{}}
                     >
                       <i className="ti ti-refresh rotate hide profilefetch"></i>
-                      <span className="email-id">{user[8]}</span>
+                      <span className="email-id">{user['emailid']}</span>
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 27, 9, { key: "Additional Email ID" });
+                        pickvalue(e,{key:'Domain'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user[27]}
+                      {user['domain']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 9, 10, { key: "Web Domain" });
-                      }}
-                      className={`column-value ${
-                        tablesetting.countred(user[9], 9, d) &&
-                        typeof user[9] != "undefined" &&
-                        user[9] != ""
-                          ? "red-dupe"
-                          : ""
-                      }`}
-                      style={{}}
-                    >
-                      {user[9]}
-                    </td>
-                    <td
-                      onClick={(e) => {
-                        pickvalue(e, 10, 11, { key: "Phone No" });
+                        pickvalue(e,{key:'PH. NO.'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user[10]}
+                      {user['p_h_n']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 11, 12, { key: "Alt Phone No." });
-                      }}
-                      className={`cursor-pointer text-primary column-value align-items-center ${
-                        tablesetting.countred(user[11], 11, d) && user[11] != ""
-                          ? "red-dupe"
-                          : ""
-                      }`}
-                      style={{}}
-                    >
-                      <i className="ti ti-refresh rotate hide profilefetch"></i>
-                      <span className="email-id">{user[11]}</span>
-                    </td>
-                    <td
-                      onClick={(e) => {
-                        pickvalue(e, 12, 13, { key: "City" });
+                        pickvalue(e,{key:'First Email Date'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user[12]}
+                      {user['firstemail']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 13, 14, { key: "Country" });
+                        pickvalue(e,{key:'FollowUp date'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user[13]}
+                      {user['followupdate']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 13, 14, { key: "Timezone" });
+                        pickvalue(e,{key:'Next Follow Up'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      <Clock country={user[13]} timezone={timezone(user[10])} />
+                      {user['nextfollowupdate']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 13, 14, { key: "Linkedin Profile" });
+                        pickvalue(e, {key:'Email Status'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user[14]}
+                      {emailstatus[user['emailstatus']] ?? ""}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 14, 15, { key: "First Email Date" });
-                      }}
-                      className="column-value small"
-                      style={{}}
-                    >
-                      {user[15]}
-                    </td>
-                    <td
-                      onClick={(e) => {
-                        pickvalue(e, 15, 16, { key: "FollowUp date" });
-                      }}
-                      className="column-value small"
-                      style={{}}
-                    >
-                      {user[16]}
-                    </td>
-                    <td
-                      onClick={(e) => {
-                        pickvalue(e, 16, 17, { key: "Next Follow Up" });
-                      }}
-                      className="column-value small"
-                      style={{}}
-                    >
-                      {user[17]}
-                    </td>
-                    <td
-                      onClick={(e) => {
-                        pickvalue(e, 20, 21, { key: "Email Status" });
+                        pickvalue(e,{key:'Call Status'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {emailstatus[user[18]] ?? ""}
+                      {callstatus[user['callstatus']] ?? ""}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 21, 22, { key: "Call Date" });
-                      }}
-                      className="column-value"
-                      style={{}}
-                    >
-                      {user[19]}
-                    </td>
-                    <td
-                      onClick={(e) => {
-                        pickvalue(e, 22, 23, { key: "Call Status" });
-                      }}
-                      className="column-value"
-                      style={{}}
-                    >
-                      {analyticcallstatus[user[20]] ??
-                        (user[20] != "_blank" ? user[20] : "")}
-                    </td>
-                    <td
-                      onClick={(e) => {
-                        pickvalue(e, 21, 27, { key: "Comment" });
+                        pickvalue(e,{key:'Comment'});
                       }}
                       className="column-value"
                       style={{}}
                       dangerouslySetInnerHTML={{
-                        __html: removeduplicate(user[21]),
+                        __html: removeduplicate(user['comment']),
                       }}
                     />
+
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 26, 26, { key: "Assigned to" });
+                        pickvalue(e,{key:'Sent on'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user[26] ?? ""}
+                      {user['senton']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 22, 26, { key: "Last name Sent Account" });
+                        pickvalue(e, 54, 56,{key:'Cron Status'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user[22] ?? ""}
+                      {user['crondate']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 23, 26, {
-                          key: "Last Email Sent Account",
-                        });
+                        pickvalue(e,{key:'Assigned'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user[23] ?? ""}
+                      {defaultvalue.username[user['username']] ?? user['username']}
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 25, 27, { key: "Account History" });
-                      }}
-                      className="column-value"
-                      style={{}}
-                      dangerouslySetInnerHTML={{
-                        __html: removeduplicate(user[24] ?? ""),
-                      }}
-                    />
-                    <td
-                      onClick={(e) => {
-                        pickvalue(e, 25, 26, { key: "Cron status" });
+                        pickvalue(e,{key:'Assigned2'});
                       }}
                       className="column-value"
                       style={{}}
                     >
-                      {user[25] ?? ""}
+                      {user['fromemail']}
                     </td>
                   </>
                 )}
               />
             </Suspense>
             <div className="footable-pagination-wrapper text-center fixed d-inline-grid">
-              <div className="divider text-start ps-sm-1">
+              <div className="divider">
                 <span
                   id="current"
                   className="active sheet"
                   onClick={() => loaddata({ ...formdata, sheet: "current" })}
                 >
                   Current
+                </span>
+                <span
+                  id="statussheet"
+                  className={`sheet`}
+                  onClick={() =>
+                    loaddata({ ...formdata, sheet: "statussheet" })
+                  }
+                >
+                  Status Sheet
+                </span>
+                <span
+                  className={`sheet`}
+                  id="exhausted"
+                  onClick={() => loaddata({ ...formdata, sheet: "exhausted" })}
+                >
+                  Exhausted
+                </span>
+                <span
+                  className={`sheet`}
+                  id="converted"
+                  onClick={() => loaddata({ ...formdata, sheet: "converted" })}
+                >
+                  Converted
+                </span>
+                <span
+                  className={`sheet`}
+                  id="pipeline"
+                  onClick={() => loaddata({ ...formdata, sheet: "pipeline" })}
+                >
+                  Pipeline
+                </span>
+                <span
+                  className={`sheet`}
+                  id="dnc"
+                  onClick={() => loaddata({ ...formdata, sheet: "dnc" })}
+                >
+                  Dnc
                 </span>
               </div>
               <span className="label label-default">
@@ -1338,7 +1274,7 @@ const Analyticdashboard = () => {
                         {" "}
                         <option value=""> Limit</option>
                         {[
-                          10, 100, 500, 1000, 2000, 3000, 5000, 7000, 10000,
+                          5000, 7000, 10000,
                         ].map((item, key) => (
                           <option key={key} value={item}>
                             {item}
@@ -1393,17 +1329,9 @@ const Analyticdashboard = () => {
           </div>
         </div>
         <Uploadsidebar />
-        {defaultdata.showanalyticsidebar ? (
-          <Datanalyticsidebar
-            showanalyticsidebar={showanalyticsidebar}
-            data={d2}
-          />
-        ) : (
-          <></>
-        )}
       </div>
     </>
   );
 };
 
-export default Analyticdashboard;
+export default Dashboard;

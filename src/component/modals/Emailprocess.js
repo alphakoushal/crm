@@ -30,6 +30,7 @@ const Emailbox = ({
   alldata,
 }) => {
   const [templatelist, settemplate] = useState([]);
+  const templates = useRef();
   const [userlist, setchooseuser] = useState([]);
   const [crontime, setCrontime] = useState(dayjs(moment()));
   let mailtypeaccount = document.querySelector("#mailtypeaccount").value;
@@ -50,12 +51,13 @@ const Emailbox = ({
     modalstatus: true,
   });
   const fetchlist = async (type) => {
-    let data = await Fetchdata.fetchtemplate({ type: type }).then(
+    let data = await Fetchdata.fetchtemplate({ type: type, anuationuser_uniqueid:auth.userid??'' }).then(
       (response) => {
         return response;
       }
     );
     settemplate(data.data.data);
+    templates.current=data.data.data
   };
 
   async function emailformat(
@@ -241,6 +243,11 @@ const Emailbox = ({
       }
     }
   }
+  function changetype(e){
+    let type=e.target.value;
+    let filtered = templates.current.filter((item,index)=>item.client_type==type ? item : null);
+    settemplate(filtered);
+  }
   useEffect(() => {
     document
       .querySelector("table")
@@ -399,6 +406,17 @@ const Emailbox = ({
                       id="nextfollowup"
                       placeholder="Choose date"
                     />
+                  </div>
+                   <div className="col-md-3">
+                    <label class="text-start w-100" data-shrink="true">
+                      Template Type
+                    </label>
+                    <select onChange={(e)=>changetype(e)} id="templatetype" className="form-select">
+                      <option value="">Template Type</option>
+                          <option value="1">Agent</option>
+                          <option value="2">Individual</option>
+                          <option value="3">Both</option>
+                    </select>
                   </div>
                   <div className="col-md-3">
                     <label class="text-start w-100" data-shrink="true">

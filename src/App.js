@@ -4,7 +4,6 @@ import {
   Route,
 } from "react-router-dom";
 import Login from "./screens/Login.js";
-import Freshdata from "./screens/Freshdata.js";
 import Editcountryformula from "./screens/Edit-country-formula.js";
 import Countrylist from "./screens/formula-country.js";
 import Calculatecost from "./screens/calculate-cost.js";
@@ -19,6 +18,10 @@ function App() {
   let auth = localStorage.getItem("user");
   const crmRoutes = getRoutesByCRM(config.crmtype);
   auth = auth != "" ? JSON.parse(auth) : { userid: "", type: "", org: "" };
+    const allowedRoutes = crmRoutes.filter((route) =>
+      route.roles.includes(auth?.role??'user')
+    );
+    console.log(auth?.role??'user',allowedRoutes);
   return (
     <div
       className="page-wrapper"
@@ -41,7 +44,7 @@ function App() {
             {auth.type == 2 ? (
               <>
                 <Route path="/countrylist" element={<Countrylist />}></Route>
-                <Route path="/freshdata" element={<Freshdata />}></Route>
+          
                 <Route
                   path="edit-country-formula"
                   element={<Editcountryformula />}
@@ -50,9 +53,9 @@ function App() {
             ) : (
               <></>
             )}
-            {auth.type == 1 || auth.type == 3 || auth.type == 2 ? (
+            {auth.type == 1 || auth.type == 3 || auth.type == 2 || auth.type == 4 ? (
               <>
-                {crmRoutes.map((route, index) => (
+                {allowedRoutes.map((route, index) => (
                   <Route
                     key={index}
                     path={route.path}

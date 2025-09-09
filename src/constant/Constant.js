@@ -1,6 +1,6 @@
 import moment from "moment";
 import config from "./Import-detail-of-crm";
-import { getCountryCallingCode } from 'libphonenumber-js';
+import { getCountryCallingCode } from "libphonenumber-js";
 const callstatus = {
   1: "NI",
   2: "lb",
@@ -86,6 +86,127 @@ const standard = {
   CO: { other: 1650 },
 };
 const defaultvalue = {
+  phoneCodeToCountry: {
+    1: { code: "US", name: "United States" },
+    7: { code: "RU", name: "Russia" },
+    20: { code: "EG", name: "Egypt" },
+    27: { code: "ZA", name: "South Africa" },
+    30: { code: "GR", name: "Greece" },
+    31: { code: "NL", name: "Netherlands" },
+    32: { code: "BE", name: "Belgium" },
+    33: { code: "FR", name: "France" },
+    34: { code: "ES", name: "Spain" },
+    36: { code: "HU", name: "Hungary" },
+    39: { code: "IT", name: "Italy" },
+    40: { code: "RO", name: "Romania" },
+    41: { code: "CH", name: "Switzerland" },
+    43: { code: "AT", name: "Austria" },
+    44: { code: "GB", name: "United Kingdom" },
+    45: { code: "DK", name: "Denmark" },
+    46: { code: "SE", name: "Sweden" },
+    47: { code: "NO", name: "Norway" },
+    48: { code: "PL", name: "Poland" },
+    49: { code: "DE", name: "Germany" },
+    51: { code: "PE", name: "Peru" },
+    52: { code: "MX", name: "Mexico" },
+    53: { code: "CU", name: "Cuba" },
+    54: { code: "AR", name: "Argentina" },
+    55: { code: "BR", name: "Brazil" },
+    56: { code: "CL", name: "Chile" },
+    57: { code: "CO", name: "Colombia" },
+    58: { code: "VE", name: "Venezuela" },
+    60: { code: "MY", name: "Malaysia" },
+    61: { code: "AU", name: "Australia" },
+    62: { code: "ID", name: "Indonesia" },
+    63: { code: "PH", name: "Philippines" },
+    64: { code: "NZ", name: "New Zealand" },
+    65: { code: "SG", name: "Singapore" },
+    66: { code: "TH", name: "Thailand" },
+    81: { code: "JP", name: "Japan" },
+    82: { code: "KR", name: "South Korea" },
+    84: { code: "VN", name: "Vietnam" },
+    86: { code: "CN", name: "China" },
+    90: { code: "TR", name: "Turkey" },
+    91: { code: "IN", name: "India" },
+    92: { code: "PK", name: "Pakistan" },
+    93: { code: "AF", name: "Afghanistan" },
+    94: { code: "LK", name: "Sri Lanka" },
+    95: { code: "MM", name: "Myanmar" },
+    98: { code: "IR", name: "Iran" },
+    211: { code: "SS", name: "South Sudan" },
+    212: { code: "MA", name: "Morocco" },
+    213: { code: "DZ", name: "Algeria" },
+    216: { code: "TN", name: "Tunisia" },
+    218: { code: "LY", name: "Libya" },
+    220: { code: "GM", name: "Gambia" },
+    221: { code: "SN", name: "Senegal" },
+    222: { code: "MR", name: "Mauritania" },
+    223: { code: "ML", name: "Mali" },
+    224: { code: "GN", name: "Guinea" },
+    225: { code: "CI", name: "Ivory Coast" },
+    226: { code: "BF", name: "Burkina Faso" },
+    227: { code: "NE", name: "Niger" },
+    228: { code: "TG", name: "Togo" },
+    229: { code: "BJ", name: "Benin" },
+    230: { code: "MU", name: "Mauritius" },
+    231: { code: "LR", name: "Liberia" },
+    232: { code: "SL", name: "Sierra Leone" },
+    233: { code: "GH", name: "Ghana" },
+    234: { code: "NG", name: "Nigeria" },
+    235: { code: "TD", name: "Chad" },
+    236: { code: "CF", name: "Central African Republic" },
+    237: { code: "CM", name: "Cameroon" },
+    238: { code: "CV", name: "Cape Verde" },
+    239: { code: "ST", name: "São Tomé and Príncipe" },
+    240: { code: "GQ", name: "Equatorial Guinea" },
+    241: { code: "GA", name: "Gabon" },
+    242: { code: "CG", name: "Congo" },
+    243: { code: "CD", name: "Congo (DRC)" },
+    244: { code: "AO", name: "Angola" },
+    245: { code: "GW", name: "Guinea-Bissau" },
+    246: { code: "IO", name: "British Indian Ocean Territory" },
+    248: { code: "SC", name: "Seychelles" },
+    249: { code: "SD", name: "Sudan" },
+    250: { code: "RW", name: "Rwanda" },
+    251: { code: "ET", name: "Ethiopia" },
+    252: { code: "SO", name: "Somalia" },
+    253: { code: "DJ", name: "Djibouti" },
+    254: { code: "KE", name: "Kenya" },
+    255: { code: "TZ", name: "Tanzania" },
+    256: { code: "UG", name: "Uganda" },
+    257: { code: "BI", name: "Burundi" },
+    258: { code: "MZ", name: "Mozambique" },
+    260: { code: "ZM", name: "Zambia" },
+    261: { code: "MG", name: "Madagascar" },
+    262: { code: "RE", name: "Réunion" },
+    263: { code: "ZW", name: "Zimbabwe" },
+    264: { code: "NA", name: "Namibia" },
+    265: { code: "MW", name: "Malawi" },
+    266: { code: "LS", name: "Lesotho" },
+    267: { code: "BW", name: "Botswana" },
+    268: { code: "SZ", name: "Eswatini" },
+    269: { code: "KM", name: "Comoros" },
+    351: { name: "Portugal", code: "PT" },
+     352: { name: "Luxembourg", code: "LU" },
+     353: { name: "Ireland", code: "IE" },
+     354: { name: "Iceland", code: "IS" },
+     357: { name: "Cyprus", code: "CY" },
+     358: { name: "Finland", code: "FY" },
+     359: { name: "Bulgaria", code: "BG" },
+     380: { name: "Ukraine", code: "UA" },
+     385: { name: "Croatia", code: "HR" },
+     386: { name: "Slovenia", code: "SI" },
+     420: { name: "Czech Republic", code: "CZ" },
+     421: { name: "Slovakia", code: "SK" },
+     423: { name: "Liechtenstein", code: "LI" },
+     852: { name: "Hong Kong", code: "HK" },
+     886: { name: "Taiwan", code: "TW" },
+     966: { name: "Saudi Arabia", code: "SA" },
+     971: { name: "United Arab Emirates", code: "AE" },
+     972: { name: "Israel", code: "IL" },
+     973: { name: "Bahrain", code: "BH" },
+     380: { name: "Ukraine", code: "UA" },
+  },
   mailtypeaccount: { 1: "Individual", 2: "Agent" },
   names: [
     { key: "_blank", value: "Blank" },
@@ -168,16 +289,30 @@ const defaultvalue = {
     { key: "12", value: "Approached" },
     { key: "13", value: "Pipeline" },
   ],
-  timezonetime:function timezone(code,countryCode)
-  {
+  timezonetime: function timezone(code, countryCode) {
     try {
       const callingCode = getCountryCallingCode(countryCode);
-      code=(code=='N/A' || code=='' ? [callingCode,''] : code.split(' '));
+      code = code == "N/A" || code == "" ? [callingCode, ""] : code.split(" ");
     } catch (error) {
-      code=(code=='N/A' || code=='' ? '' : code.split(' '));
+      code = code == "N/A" || code == "" ? "" : code.split(" ");
     }
-    let timezone = (code.length>=2 && typeof(this.timezone[code[0]])!=='undefined' && this.timezone[code[0]].timezone!=='' ? this.timezone[code[0]].timezone : 'Asia/Kolkata');
-return timezone;
+    let timezone =
+      code.length >= 2 &&
+      typeof this.timezone[code[0]] !== "undefined" &&
+      this.timezone[code[0]].timezone !== ""
+        ? this.timezone[code[0]].timezone
+        : "Asia/Kolkata";
+    return timezone;
+  },
+  phoneextension: function (code, countryCode) {
+    try {
+      const callingCode = getCountryCallingCode(countryCode);
+      code = code == "N/A" || code == "" ? [callingCode, ""] : code.split(" ");
+    } catch (error) {
+      code = code == "N/A" || code == "" ? "" : code.split(" ");
+    }
+    let timezone = code.length >= 2 ? code[0] : "";
+    return timezone;
   },
   timezone: {
     93: { timezone: "Asia/Kabul" },
@@ -599,6 +734,7 @@ return timezone;
     turkmen: "Turkmen",
     turkish: "Turkish",
     UkVie: "Ukrainian & Vietnamese",
+    Vietnamese: "Vietnamese",
     eng: "English",
     ger: "German",
     spa: "Spanish",
@@ -614,6 +750,25 @@ return timezone;
   },
   transcost: [
     { from: "eng", to: "jap", currency: "USD", cost: "0.17", type: "word" },
+    { from: "eng", to: "polish", currency: "USD", cost: "0.17", type: "word" },
+    { from: "eng", to: "italian", currency: "USD", cost: "0.10", type: "word" },
+    { from: "eng", to: "indonesian", currency: "USD", cost: "0.10", type: "word" },
+    { from: "eng", to: "turkish", currency: "USD", cost: "0.14", type: "word" },
+    { from: "eng", to: "swedish", currency: "USD", cost: "0.8", type: "word" },
+    {
+      from: "Vietnamese",
+      to: "eng",
+      currency: "USD",
+      cost: "0.11",
+      type: "word",
+    },
+    {
+      from: "eng",
+      to: "Vietnamese",
+      currency: "USD",
+      cost: "0.11",
+      type: "word",
+    },
     { from: "jap", to: "eng", currency: "USD", cost: "0.15", type: "char" },
     { from: "eng", to: "kor", currency: "USD", cost: "0.12", type: "word" },
     { from: "kor", to: "eng", currency: "USD", cost: "0.12", type: "char" },
@@ -625,14 +780,14 @@ return timezone;
     { from: "ger", to: "eng", currency: "USD", cost: "0.17", type: "word" },
     { from: "eng", to: "chn", currency: "USD", cost: "0.10", type: "word" },
     { from: "chn", to: "eng", currency: "USD", cost: "0.10", type: "word" },
-    { from: "eng", to: "rus", currency: "USD", cost: "0.06", type: "word" },
-    { from: "rus", to: "eng", currency: "USD", cost: "0.06", type: "word" },
+    { from: "eng", to: "rus", currency: "USD", cost: "0.09", type: "word" },
+    { from: "rus", to: "eng", currency: "USD", cost: "0.09", type: "word" },
     { from: "eng", to: "arb", currency: "USD", cost: "25", type: "page" },
     { from: "arb", to: "eng", currency: "USD", cost: "25", type: "page" },
     { from: "eng", to: "far", currency: "USD", cost: "25", type: "page" },
     { from: "far", to: "eng", currency: "USD", cost: "25", type: "page" },
-    { from: "eng", to: "tha", currency: "USD", cost: "0.08", type: "word" },
-    { from: "tha", to: "eng", currency: "USD", cost: "0.08", type: "word" },
+    { from: "eng", to: "tha", currency: "USD", cost: "0.10", type: "word" },
+    { from: "tha", to: "eng", currency: "USD", cost: "0.10", type: "word" },
     { from: "eng", to: "fre", currency: "USD", cost: "0.12", type: "word" },
     { from: "fre", to: "eng", currency: "USD", cost: "0.14", type: "word" },
   ],
@@ -642,7 +797,7 @@ return timezone;
     { account: "240621150648429643", name: "Abhishek" },
     { account: "230703121732279603", name: "Sheetal" },
     { account: "230703121732279703", name: "Tanisha" },
-    { account: "240621150648429843", name: "Sanchit" },
+    { account: "240621150648429843", name: "Sanchit1" },
   ],
   username: config.username,
   usernames: config.usernames,
@@ -1938,11 +2093,11 @@ const tablesetting = {
           t = 0;
         } else if (collection[i] == "!n/a" && value != "n/a") {
           t = 0;
-        } else if (
+        } else if (// for exact match
           collection[i].indexOf("!=") > -1 &&
-          value != collection[i].split("!")[1]
+          value == collection[i].split("!=")[1]
         ) {
-          t = 0;
+          return -1;
         } else if (
           collection[i].indexOf("!") > -1 &&
           value.indexOf(collection[i].split("!")[1]) == -1

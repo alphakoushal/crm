@@ -245,7 +245,7 @@
 }
 
 .ANC {
-    color: #000
+    color: #000 !important
 }
 
 .ARCH {
@@ -22927,10 +22927,10 @@
     --bs-white-rgb: 255,255,255;
     --bs-black-rgb: 0,0,0;
     --bs-font-sans-serif: "Plus Jakarta Sans",sans-serif;
-    --bs-font-monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    --bs-font-monospace: "SFMono-Regular","Menlo","Monaco,Consolas","Liberation Mono","Courier New",monospace;
     --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
     --bs-body-font-family: var(--bs-font-sans-serif);
-    --bs-body-font-size: 0.875rem;
+    --bs-body-font-size: 0.815rem;
     --bs-body-font-weight: 400;
     --bs-body-line-height: 1.5;
     --bs-body-color: #5A6A85;
@@ -45966,6 +45966,9 @@ html[dir=rtl] .welcome-bg-img {
 .shopping-cart {
     width: 500px!important
 }
+.analyitc-cart {
+    width: 95%!important
+}
 
 @media (max-width: 991.98px) {
     .app-header.fixed-header .navbar-collapse {
@@ -46091,7 +46094,7 @@ animation: mymove 1s infinite;
     box-shadow: 1px 0 20px 0 rgba(0,0,0,.12);
     margin-top: 0px
 }
-
+.w-full{width: 100%;}
 .left-sidebar {
     width: 270px;
     background-color: #fff;
@@ -54387,6 +54390,7 @@ ul {
     height: 100%;
     width: 100%;
     opacity: .3;
+    top:0;
     background: radial-gradient(#d2f1df,#d3d7fa,#bad8f4) 0 0/400% 400%;
     animation: 15s ease 0s infinite normal none running gradient
 }
@@ -54463,5 +54467,8 @@ position: relative;
 .loader {height: 4px;position: absolute;width: 100%;--c:no-repeat linear-gradient(#6100ee 0 0);background: var(--c),var(--c),#d7b8fc;background-size: 60% 100%;animation: l16 3s infinite;}
 @keyframes l16 {0%   {background-position:-150% 0,-150% 0}66%  {background-position: 250% 0,-150% 0}100% {background-position: 250% 0, 250% 0}}
 .grid-col{display: grid;grid-template-columns: repeat(6, 1fr);}.app-content{max-height:130px;overflow: overlay;}
-.accounts div{height: 2.4375em;line-height: 2.4375em;}.accounts>label{top:-8px;}
-
+.accounts div{height: 2.4375em;line-height: 2.4375em;}.accounts>label{top:-8px;}.deadline-expired{color:white !important;background-color: red;}
+button.focus:focus {
+     background-color: #070707 !important;
+    color: white !important;
+}

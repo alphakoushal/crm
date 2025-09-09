@@ -2,15 +2,24 @@ import React,{useRef,useEffect,useCallback,useState} from "react";
 import Header from "../component/Header";
 import Fetchdata from "../services/fetchdata";
 import Chart from 'react-apexcharts'
+import format from 'date-fns/format';
+import { addDays} from 'date-fns';
+import DateRangePickerComponent from "../component/Daterangepicker";
 const Useranalytics = () => {
      const platform = useRef("anuation");
+     let Daterangepicker = useRef({startDate:new Date(),endDate:addDays(new Date(), 7)});
      const auth = JSON.parse(localStorage.getItem("user"));
      const [analyticdata,setanalyticdata] = useState({scheduleemail:[],sentemail:[]});
      const activeheader = useRef("user-analytics");
+     const setDaterangepicker = (data) => {
+        Daterangepicker.current = data;
+                 fetchanalyticdata();
+            fetchschedulcron();
+  }
      const fetchschedulcron =useCallback(async()=>{ 
       try
       {
-         const fetchdata = await Fetchdata.fetchusernanlytic({posttype:'scheduled_mails','userid':auth.userid});
+         const fetchdata = await Fetchdata.fetchusernanlytic({posttype:'scheduled_mails','userid':auth.userid,'startdate':format(Daterangepicker.current.startDate,'yyyy-MM-dd'),'enddate':format(Daterangepicker.current.endDate,'yyyy-MM-dd')});
      if(fetchdata.data.success){
             setanalyticdata(prevData => ({...prevData,scheduleemail:fetchdata.data.data[auth.userid]}));
         }
@@ -21,7 +30,7 @@ const Useranalytics = () => {
      const fetchanalyticdata =useCallback(async()=>{ 
       try
       {
-         const fetchdata = await Fetchdata.fetchusernanlytic({posttype:'getpast_mail_sents','userid':auth.userid});
+         const fetchdata = await Fetchdata.fetchusernanlytic({posttype:'getpast_mail_sents','userid':auth.userid,'startdate':format(Daterangepicker.current.startDate,'yyyy-MM-dd'),'enddate':format(Daterangepicker.current.endDate,'yyyy-MM-dd')});
      if(fetchdata.data.success){
         setanalyticdata(prevData => ({...prevData,sentemail:fetchdata.data.data[auth.userid]}));
         }
@@ -33,7 +42,7 @@ const Useranalytics = () => {
         useEffect(()=>{ 
             fetchanalyticdata();
             fetchschedulcron();
-        },[]);
+        },[Daterangepicker]);
         useEffect(()=>{
         },[analyticdata]); 
     return (
@@ -53,12 +62,15 @@ const Useranalytics = () => {
           showcurrencies={false}
         ></Header>
               <div class="body-wrapper">
+               
         <div class="container-fluid">
           <div class="row">
             <div class="col-lg-8 d-flex align-items-stretch">
-              <div class="card w-100 bg-primary-subtle overflow-hidden shadow-none">
+              <div class="card w-100 bg-primary-subtle  shadow-none">
                 <div class="card-body position-relative">
+                   
                   <div class="row">
+                    
                     <div class="col-sm-8">
                       <div class="d-flex align-items-center mb-7">
                         <div class="rounded-circle overflow-hidden me-6">
@@ -85,6 +97,7 @@ const Useranalytics = () => {
                       </div>
                     </div>
                     <div class="col-sm-4">
+                      <DateRangePickerComponent setDaterangepicker={setDaterangepicker}></DateRangePickerComponent>
                       <div class="welcome-bg-img mb-n7 text-end">
                         <img src={"../crm/assets/images/backgrounds/welcome-bg.svg"} alt="modernize-img" class="img-fluid"/>
                       </div>
@@ -102,16 +115,17 @@ const Useranalytics = () => {
     chart: {
       type: "donut",
     },
-    dataLabels: {
-        enabled: false,
-    },
-
     legend: {
         show: false,
     },
 
     stroke: {
         show: false,
+    },
+     tooltip: {
+      style: {
+        fontSize: '14px',
+      },
     },
     plotOptions: {
         pie: {
@@ -134,7 +148,13 @@ const Useranalytics = () => {
             },
         },
     },
-    labels: ["", "", ""], // Label inside the radial bar
+    labels: ["LB", "Ringing", "Callback"],
+        dataLabels: {
+        enabled: false,
+        style: {
+        fontSize: '12px',
+      },
+    },
   }} series={[60, 25, 15]} height={110} type="donut" />
                 </div>
               </div>

@@ -6,23 +6,15 @@ import TemplateList from "../screens/Templatelist";
 import Notfound from "../screens/Not-found";
 import QuotationList from "../screens/Quotationlist";
 import Gmailemaillist from "../screens/Gmail/Emaillist";
-import PctForm from "../screens/pct/Pct-form";
-import Dashboardfreshdata from "../screens/pct/pct-fresh-data";
-import PctallFreshdata from "../screens/pct/pct-all-fresh-data";
-import Freshdata from "../screens/Freshdata";
-const IPRoutes = [
+const IPtrademarkRoutes = [
   { path: "/",header:true,name:'Dashboard', element: <Dashboard />, roles: ['admin', 'user', 'manager']  },
   { path: "/dashboard",header:true,name:'Dashboard', element: <Dashboard />, roles: ['admin', 'user', 'manager']  },
-  { path: "/pct-form",header:false,name:'Add Application', element: <PctForm />, roles: ['admin', 'user', 'manager']  },
-  // { path: "/pct-fresh-data",header:false,name:'Application List', element: <Dashboardfreshdata />, roles: ['admin', 'user', 'manager','operation']  },
   { path: "/templates",header:true,name:'Templates', element: <Emailemplate />, roles: ['admin', 'user', 'manager']  },
   { path: "/templates-list",header:true,name:'Template List', element: <TemplateList />, roles: ['admin', 'user', 'manager']  },
   { path: "/edit-template",header:false,name:'Edit Template', element: <Editemailemplate />, roles: ['admin', 'user', 'manager']  },
   { path: "/quotation-list",header:true,name:'Quotation List', element: <QuotationList />, roles: ['admin', 'user', 'manager']  },
   { path: "/gmail-list",header:true,name:'Gmail List', element: <Gmailemaillist />, roles: ['admin', 'user', 'manager']  },
-  { path: "/freshdata",header:true,name:'Fresh data', element: <Freshdata />, roles: ['admin', 'manager', 'operation']  },
-  { path: "/pct-fresh-data",header:true,name:'All Fresh data', element: <PctallFreshdata />, roles: ['admin', 'manager', 'operation']  },
   { path: "*",header:false,name:'Not found', element: <Notfound />,roles: ['admin', 'user', 'manager'] },
-]; 
+];
 
-export default IPRoutes;
+export default IPtrademarkRoutes;

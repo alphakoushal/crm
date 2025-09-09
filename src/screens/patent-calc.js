@@ -1641,7 +1641,7 @@ const Patentcalculator = ({ updatevalue, calcstate }) => {
                                                       defaultvalue
                                                         .filinglangcode[
                                                         parseddata.part5[0].fl
-                                                      ]
+                                                      ]??''
                                                     }
                                                   </th>
                                                   <td>

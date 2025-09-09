@@ -20,6 +20,7 @@ import Style from "../component/style/style";
 import Clock from "../component/Clock.js";
 import Editmodal from "../component/modals/Editmodal";
 import OutlinedInput from "@mui/material/OutlinedInput";
+import Datanalyticsidebar from "../component/modals/Ip/Data-analytic-sidebar.js";
 import {
   callstatus,
   emailstatus,
@@ -50,6 +51,7 @@ const Dashboard = () => {
     profilebar: { status: false, email: "" },
     opencronbox: false,
     opendupesendmailbox: false,
+    showanalyticsidebar: false,
     opensendmailbox: false,
     sortDown: true,
     showcurrencytab: false,
@@ -135,6 +137,12 @@ const Dashboard = () => {
       return newColumns;
     });
   };
+      function showanalyticsidebar(value) {
+          setdefaultdata((prev) => ({
+      ...prev,
+      showanalyticsidebar: value,
+    }));
+    }
   // const [profilebar,setprofilebar] =useState({status:false,email:''});
   //const [ciodata,setcio]=useState([]);
   // const [callstatusdata,setcall]=useState([]);
@@ -201,6 +209,7 @@ const Dashboard = () => {
     let user = document.querySelector("#username"),
       pages = document.querySelector("#pages").value,
       recordlimit = document.querySelector("#recordlimit").value;
+      recordlimit =recordlimit=='' ? 10000 : recordlimit;
     user = user ?? { value: auth.userid };
     if (type == "limit") {
       loaddata({
@@ -334,7 +343,6 @@ const Dashboard = () => {
       }
     }
     let copy = d2; //[...d2];
-
     filtered.forEach((e) => {
       var sv = e.value;
 
@@ -626,6 +634,7 @@ const Dashboard = () => {
         <Header
           platform={platform}
           changedata={changedata}
+          showanalyticsidebar={showanalyticsidebar}
           except={true}
           completedata={d2}
           alldata={d}
@@ -742,7 +751,7 @@ const Dashboard = () => {
                           <i
                             className="ti ti-sort-ascending"
                             onClick={(e) => {
-                              sortdata(e, 60);
+                              sortdata(e, 2);
                             }}
                           ></i>
                         </div>
@@ -2970,6 +2979,7 @@ const Dashboard = () => {
           </div>
         </div>
         <Uploadsidebar />
+        {defaultdata.showanalyticsidebar ? <Datanalyticsidebar showanalyticsidebar={showanalyticsidebar} data={d2}/> :<></>}
       </div>
     </>
   );

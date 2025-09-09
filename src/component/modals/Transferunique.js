@@ -212,7 +212,6 @@ const TransferEmailbox = ({
         let len=find.length;
         if(userlist.length==len)
         {
-          console.log(country.length,find.length,country,'matched');
           country = country.filter((e1) => {
             return e1.trim() != item[3].trim();
           });
@@ -221,7 +220,6 @@ const TransferEmailbox = ({
         }
         else
         {
-          console.log(country.length,find.length,country,'less');
           item[64]=userlist[len];
         }
       }
@@ -231,7 +229,6 @@ const TransferEmailbox = ({
         return item;
       }
     })
-    console.log(emailsdata);
   },[userlist])
   useEffect(() => {
 

@@ -1,7 +1,7 @@
-const CRM = 'crm1'; // This should be set in .env file
+const CRM = "crm1"; // This should be set in .env file
 
 let config;
-
+ 
 switch (CRM) {
   case "crm1":
     config = require("./Ip-config").default;
@@ -14,6 +14,9 @@ switch (CRM) {
     break;
   case "crm4":
     config = require("./it-config").default;
+    break;
+  case "crm5":
+    config = require("./ip-trademark-config").default;
     break;
   default:
     throw new Error("Invalid CRM environment specified.");

@@ -8,51 +8,46 @@ import React, {
   lazy,
   useCallback,
 } from "react";
-import Header from "../component/Header";
-import Fetchdata from "../services/fetchdata";
+import Header from "../../component/Header";
+import Fetchdata from "../../services/fetchdata";
 import { TableVirtuoso } from "react-virtuoso";
 import { useDispatch, useSelector } from "react-redux";
-import { userprofileupdate, profilesidebar } from "../reducers/Userdata";
-import Uploadsidebar from "../component/modals/Analytics/Uploadsidebar.js";
-import Commentmodal from "../component/modals/comments";
-import Uploaddata from "../services/uploaddata";
-import Style from "../component/style/style";
-import Clock from "../component/Clock.js";
-import AnalyticEditmodal from "../component/modals/AnalyticEditmodal.js";
+import { userprofileupdate, profilesidebar } from "../../reducers/Userdata";
+import Uploadsidebar from "../../component/modals/Analytics/Uploadsidebar.js";
+import Commentmodal from "../../component/modals/comments";
+import Uploaddata from "../../services/uploaddata";
+import Style from "../../component/style/style";
+import Clock from "../../component/Clock.js";
+import AnalyticEditmodal from "../../component/modals/AnalyticEditmodal.js";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import Filterinput from "./component/Filterinput.js";
-import Filterselect from "./component/Filterselect.js";
+import Filterinput from "../component/Filterinput.js";
+import Filterselect from "../component/Filterselect.js";
 import {
   callstatus,
-  analyticcallstatus,
   emailstatus,
   costs,
   standard,
   tablesetting,
   defaultvalue,
-} from "../constant/Constant.js";
+} from "../../constant/Constant.js";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import Sidebarprofile from "../component/modals/Sidebarprofile";
-import AnalyticEmailbox from "../component/modals/Analytics/Unique-email-cron-modal.js";
-import Dupeemailprocess from "../component/modals/Dupeemailprocess";
-import Cronlist from "../component/modals/cron-list";
-import ResizableColumn2 from "../component/Resize-two";
-import Pivotprocess from "../component/modals/Pivot.js";
-import Datanalyticsidebar from "../component/modals/Analytics/Data-analytic-sidebar.js";
+import AnalyticEmailbox from "../../component/modals/Analytics/Unique-email-cron-modal.js";
+import Cronlist from "../../component/modals/cron-list.js";
+import ResizableColumn2 from "../../component/Resize-two.js";
+import Pivotprocess from "../../component/modals/Pivot.js";
 function Loading() {
   return <h2>🌀 Loading...</h2>;
 }
 let filtered = [];
-const Analyticdashboard = () => {
+const Advancedashboard = () => {
   const [d, sd] = useState([]);
   const [d2, gd] = useState([]);
   const [defaultdata, setdefaultdata] = useState({
     totalpages: [],
     profilebar: { status: false, email: "" },
     opencronbox: false,
-    showanalyticsidebar: false,
     opensendmailbox: false,
     sortDown: true,
     showcurrencytab: false,
@@ -103,12 +98,6 @@ const Analyticdashboard = () => {
       return newColumns;
     });
   };
-        function showanalyticsidebar(value) {
-          setdefaultdata((prev) => ({
-      ...prev,
-      showanalyticsidebar: value,
-    }));
-    }
   const [showeditmodal, updateeditmodal] = useState({ state: false, data: {} });
   const countries = useRef([]);
   const offset = useRef({ limit: 0, page: 0 });
@@ -205,6 +194,7 @@ const Analyticdashboard = () => {
     let { signal } = abortc;
 
     processing.current = true;
+    formdata.advance = true;
     let datas = {};
     document.querySelector(".ti-refresh").classList.add("rotate");
     document.querySelector(".body-wrapper1").classList.add("loader");
@@ -218,7 +208,9 @@ const Analyticdashboard = () => {
       });
     if (data.data.success) {
       datas = data.data.data;
-      countries.current = data.data.country;
+      if (formdata.initialload) {
+        countries.current = data.data.country;
+      }
       processing.current = false;
       setdefaultdata((prev) => ({
         ...prev,
@@ -239,7 +231,7 @@ const Analyticdashboard = () => {
       .classList.add("table", "table-bordered", "table-hover");
   });
   useEffect(() => {
-    loaddata(formdata);
+    loaddata({ ...formdata, initialload: true });
   }, []);
   const showmailbox = () => {
     if (document.querySelector("#mailtypeaccount").value != "") {
@@ -261,7 +253,10 @@ const Analyticdashboard = () => {
   const closedupeemailsendbox = () => {
     setdefaultdata((prev) => ({ ...prev, opendupesendmailbox: false }));
   };
-
+function serverfilterdata(index, value, keys = {}) {
+    console.log(index, value, keys);
+     loaddata({ ...formdata, countrydata: value });
+}
   function filterdata(index, value, keys = {}) {
     let i = 0;
     let filters = document.querySelectorAll(".filter");
@@ -292,7 +287,6 @@ const Analyticdashboard = () => {
       }
     }
     let copy = d2; //[...d2];
-
     filtered.forEach((e) => {
       var sv = e.value;
 
@@ -494,19 +488,18 @@ const Analyticdashboard = () => {
     filterdata(61, e.target.value.toString());
   };
   const handlecountry = (e) => {
-    console.log(defaultdata.countrydata, filtered);
     if (e.target.value.includes("all")) {
       //setcountry(countries.current)
       setdefaultdata((prev) => ({ ...prev, countrydata: countries.current }));
-      filterdata(13, countries.current.toString());
+      serverfilterdata(13, countries.current.toString());
     } else if (e.target.value.includes("unall")) {
       //setcountry([])
       setdefaultdata((prev) => ({ ...prev, countrydata: [] }));
-      filterdata(13, [].toString());
+      serverfilterdata(13, [].toString());
     } else {
       // setcountry(e.target.value)
       setdefaultdata((prev) => ({ ...prev, countrydata: e.target.value }));
-      filterdata(13, e.target.value.toString());
+      serverfilterdata(13, e.target.value.toString());
     }
   };
   const handlemonthdata = (e) => {
@@ -606,7 +599,6 @@ const Analyticdashboard = () => {
           except={true}
           completedata={d2}
           alldata={d}
-           showanalyticsidebar={showanalyticsidebar}
           showmailbox={showmailbox}
           showdupemailbox={showdupemailbox}
           showcronbox={showcronbox}
@@ -821,7 +813,6 @@ const Analyticdashboard = () => {
                             labelId="up-multiple-name-label"
                             id="up-multiple-name"
                             value={defaultdata.countrydata}
-                            multiple
                             onChange={handlecountry}
                             label="Age"
                           >
@@ -1244,7 +1235,7 @@ const Analyticdashboard = () => {
                       className="column-value"
                       style={{}}
                     >
-                      {analyticcallstatus[user[20]] ??
+                      {callstatus[user[20]] ??
                         (user[20] != "_blank" ? user[20] : "")}
                     </td>
                     <td
@@ -1393,17 +1384,9 @@ const Analyticdashboard = () => {
           </div>
         </div>
         <Uploadsidebar />
-        {defaultdata.showanalyticsidebar ? (
-          <Datanalyticsidebar
-            showanalyticsidebar={showanalyticsidebar}
-            data={d2}
-          />
-        ) : (
-          <></>
-        )}
       </div>
     </>
   );
 };
 
-export default Analyticdashboard;
+export default Advancedashboard;

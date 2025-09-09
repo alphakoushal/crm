@@ -64,7 +64,7 @@ const AnalyticEmailbox = ({
 
   const changeuser = (e) => {
     if (e.target.value == "transfer") {
-      setaccounttouse(defaultvalue.analyticusers);
+      setaccounttouse(defaultvalue.usernames2);
     } else {
       setaccounttouse(defaultaccounts);
     }

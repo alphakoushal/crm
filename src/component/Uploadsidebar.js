@@ -102,7 +102,7 @@ const Uploadsidebar = () => {
       currentfetch.current = true;
       document.querySelector(".updatepct").classList.add("rotate");
       document.querySelector(".body-wrapper1").classList.add("loader");
-
+try{
       let updatepctstatus = await Uploaddata.updatepct({
         type: "updatepct",
       }).then((response) => {
@@ -120,6 +120,13 @@ const Uploadsidebar = () => {
         document.querySelector(".body-wrapper1").classList.remove("loader");
         setOpen({ status: true, message: updatepctstatus.data.errors.error });
       }
+    }
+        catch (error) {
+      currentfetch.current = false;
+      document.querySelector(".updatepct").classList.remove("rotate");
+      document.querySelector(".body-wrapper1").classList.remove("loader");
+      setOpen({ status: true, message: "An error occurred while updating." });
+    }
     }
   };
   const uploadfile = async () => {
@@ -182,7 +189,8 @@ const Uploadsidebar = () => {
         document.querySelector("#" + typeofsheet).files[0]
       );
       formdata.append("type", typeofsheet);
-      formdata.append("auth", auth);
+      formdata.append("userid", auth.userid);
+      formdata.append("auth", JSON.stringify(auth));
       let rs = await Uploaddata.uploadanalyticdata(formdata)
         .then((response) => {
           return response;
@@ -196,7 +204,7 @@ const Uploadsidebar = () => {
         document.querySelector(".body-wrapper1").classList.remove("loader");
         setOpen({ status: true, message: rs.data.message });
         if (typeofsheet == "uploadpctfreshdata") {
-          window.location.reload();
+          // window.location.reload();
         }
       } else {
         currentfetch.current = false;
@@ -361,34 +369,7 @@ const Uploadsidebar = () => {
                   </div>
                 </div>
               </div>
-              <div className="card card-body">
-                <div className="mb-3">
-                  <label htmlFor="assignfile" className="form-label">
-                    Upload Pct Fresh Data
-                  </label>
-                </div>
-                <div className="col-12">
-                  <div className="d-md-flex align-items-center mt-0 align-content-md-between gap-3">
-                    <input
-                      className="form-control form-control-sm flex-item"
-                      id="uploadpctfreshdata"
-                      type="file"
-                    />
-                    <div className="ms-auto mt-3 mt-md-0 ">
-                      <button
-                        onClick={() => uploadanalyticdata("uploadpctfreshdata")}
-                        type="submit"
-                        className="btn btn-info font-medium rounded-pill px-4"
-                      >
-                        <div className="d-flex align-items-center">
-                          Upload &nbsp;
-                          <i className="ti ti-refresh uploadpctfreshdata"></i>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
               <div className="card card-body">
                 <div className="mb-3">
                   <label htmlFor="assignfile" className="form-label">
@@ -420,6 +401,40 @@ const Uploadsidebar = () => {
           ) : (
             <></>
           )}
+          {auth.type == "2" || auth.type=='4' ? (
+            <>
+                          <div className="card card-body">
+                <div className="mb-3">
+                  <label htmlFor="assignfile" className="form-label">
+                    Upload Pct Fresh Data
+                  </label>
+                </div>
+                <div className="col-12">
+                  <div className="d-md-flex align-items-center mt-0 align-content-md-between gap-3">
+                    <input
+                      className="form-control form-control-sm flex-item"
+                      id="uploadpctfreshdata"
+                      type="file"
+                    />
+                    <div className="ms-auto mt-3 mt-md-0 ">
+                      <button
+                        onClick={() => uploadanalyticdata("uploadpctfreshdata")}
+                        type="submit"
+                        className="btn btn-info font-medium rounded-pill px-4"
+                      >
+                        <div className="d-flex align-items-center">
+                          Upload &nbsp;
+                          <i className="ti ti-refresh uploadpctfreshdata"></i>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div></>
+          ) : (
+            <></>
+          )
+        }
           <div className="card card-body">
             <div className="mb-3">
               <label htmlFor="formFileSm" className="form-label">

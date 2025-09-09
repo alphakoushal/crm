@@ -1,32 +1,32 @@
 import React,{useEffect, useMemo,useState,useRef,memo,Suspense,lazy,useCallback} from "react";
-import IpoperationHeader from "../layout/ip/ip-operation-header";
-import Fetchdata from "../services/fetchdata";
+import IpoperationHeader from "../../layout/ip/ip-operation-header";
+import Fetchdata from "../../services/fetchdata";
 import { TableVirtuoso } from "react-virtuoso";
 import { useDispatch,useSelector } from "react-redux";
-import { userprofileupdate } from "../reducers/Userdata";
-import Uploadsidebar from "../component/Uploadsidebar";
-import Commentmodal from "../component/modals/comments";
-import Uploaddata from "../services/uploaddata";
-import Style from "../component/style/style";
-import Editmodal from "../component/modals/Ip/freshdata-edit-modal.js";
+import { userprofileupdate } from "../../reducers/Userdata";
+import Uploadsidebar from "../../component/Uploadsidebar";
+import Commentmodal from "../../component/modals/comments";
+import Uploaddata from "../../services/uploaddata";
+import Style from "../../component/style/style";
+import Editmodal from "../../component/modals/Ip/freshdata-edit-modal.js";
 import OutlinedInput from '@mui/material/OutlinedInput';
-import { callstatus, emailstatus,costs,standard,tablesetting,defaultvalue} from '../constant/Constant.js';
+import { callstatus, emailstatus,costs,standard,tablesetting,defaultvalue } from "../../constant/Constant.js";
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import Sidebarprofile from "../component/modals/Sidebarprofile";
-import TransferEmailbox from "../component/modals/Transferunique.js";
-import TransferDupeemailprocess from "../component/modals/Transferdupe.js";
-import Pivotprocess from "../component/modals/Pivot.js";
-import Cronlist from "../component/modals/cron-list";
-import ResizableColumn2 from "../component/Resize-two";
-import Fetchipdata from "../services/pct/index.js";
+import Sidebarprofile from "../../component/modals/Sidebarprofile";
+import TransferEmailbox from "../../component/modals/Transferunique.js";
+import TransferDupeemailprocess from "../../component/modals/Transferdupe.js";
+import Pivotprocess from "../../component/modals/Pivot.js";
+import Cronlist from "../../component/modals/cron-list";
+import ResizableColumn2 from "../../component/Resize-two";
+import Fetchipdata from "../../services/pct/index.js";
 import { json } from "react-router-dom";
 function Loading() {
     return <h2>🌀 Loading...</h2>;
   }
    let filtered=[];
-const Freshdata =() =>{
+const PctallFreshdata =() =>{
     const [d,sd]=useState([]); const [d2,gd]=useState([]);
     const [defaultdata,setdefaultdata]=useState({profilebar:{status:false,email:''},opencronbox:false,opendupesendmailbox:false,opensendmailbox:false,sortDown:true,showcurrencytab:false,countrydata:[],agentdupedata:[],dupedata:[],applicantstatusdata:[],cio:[],callstatus:[],emailstatus:[],agentgendata:[],gendata:[],monthdata:[]});
       const [columns, setColumns] = useState([{"width":110,"css":"","type":"","key":"APPLN.NO."},{"width":110,"css":"","type":"","key":"Title"},{"width":110,"css":"","type":"select","key":"COUNTRY"},{"width":110,"css":"","type":"","key":"PRIOTITY DATE"},{"width":110,"css":"","type":"","key":"DEADLINE - 30 mth"},{"width":110,"css":"","type":"","key":"DEADLINE - 31 mth"},{"width":110,"css":"","type":"","key":"APPLICANT NAME"},{"width":110,"css":"","type":"","key":"Unique/Dupe"},{"width":110,"css":"","type":"","key":"Gen/Non Gen"},{"width":110,"css":"","type":"","key":"Applicant Status"},{"width":110,"css":"","type":"","key":"CONTACT INFO OF"},{"width":110,"css":"","type":"","key":"CONTACT PERSON"},{"width":110,"css":"","type":"","key":"EMAIL ID"},{"width":110,"css":"","type":"","key":"Domain"},{"width":110,"css":"","type":"","key":"PH. NO."},{"width":110,"css":"","type":"","key":"Pages"},{"width":110,"css":"","type":"","key":"Claim"},{"width":110,"css":"","type":"","key":"Priority"},{"width":110,"css":"","type":"","key":"Drawings"},{"width":110,"css":"","type":"","key":"ISR"},{"width":110,"css":"","type":"","key":"REF. NO."},{"width":110,"css":"","type":"","key":"First Email Date"},{"width":110,"css":"","type":"","key":"FollowUp date"},{"width":110,"css":"","type":"","key":"Next Follow Up"},{"width":110,"css":"","type":"","key":"Pct App Status"},{"width":110,"css":"","type":"","key":"Email Status"},{"width":110,"css":"","type":"","key":"Call Status"},{"width":110,"css":"","type":"","key":"Comment"},{"width":110,"css":"","type":"","key":"Agent name"},{"width":110,"css":"","type":"","key":"Agent Email Id"},{"width":110,"css":"","type":"","key":"Agent Domain"},{"width":110,"css":"","type":"","key":"Agent Phone"},{"width":110,"css":"","type":"","key":"Previous Email Status"},{"width":110,"css":"","type":"","key":"Company"},{"width":110,"css":"","type":"cost","key":"IN "},{"width":110,"css":"","type":"cost","key":"CA "},{"width":110,"css":"","type":"cost","key":"CN "},{"width":110,"css":"","type":"cost","key":"JP "},{"width":110,"css":"","type":"cost","key":"AU "},{"width":110,"css":"","type":"cost","key":"BR "},{"width":110,"css":"","type":"cost","key":"US "},{"width":110,"css":"","type":"cost","key":"KR "},{"width":110,"css":"","type":"cost","key":"EP "},{"width":110,"css":"","type":"cost","key":"RU "},{"width":110,"css":"","type":"cost","key":"MX "},{"width":110,"css":"","type":"cost","key":"MY "},{"width":110,"css":"","type":"cost","key":"PH "},{"width":110,"css":"","type":"cost","key":"TH "},{"width":110,"css":"","type":"cost","key":"ID "},{"width":110,"css":"","type":"cost","key":"NZ "},{"width":110,"css":"","type":"cost","key":"ZA "},{"width":110,"css":"","type":"cost","key":"VN "},{"width":110,"css":"","type":"cost","key":"SG "},{"width":110,"css":"","type":"cost","key":"CO "},{"width":110,"css":"","type":"","key":"Month"},{"width":110,"css":"","type":"","key":"Sent on"},{"width":110,"css":"","type":"","key":"Cron Status"},{"width":110,"css":"","type":"","key":"Assigned"},{"width":110,"css":"","type":"","key":"Agent Unique/Dupe"},{"width":110,"css":"","type":"","key":"Agent Gen/Non Gen"},{"width":110,"css":"","type":"","key":"Assigned value"},{"width":110,"css":"","type":"","key":"Filename"},{"width":110,"css":"","type":"","key":"Remarks"}]);
@@ -73,7 +73,7 @@ const Freshdata =() =>{
 "accounttype":auth.type,
 "org":auth.org,
 "auth":JSON.stringify(auth),
-"posttype":"local-fresh-data",
+"posttype":"fetch-all-fresh-data",
 "email": "",
 "domain": "",
 "platform":platform.current,
@@ -428,10 +428,50 @@ const pagination = (data) => {
   nextindex =(data.action=='next' && data.index==d.length-1 ? d.length-1 : data.index+1)
   editinfo(true,d[data.action=='previous' ? previosindex : nextindex][2]??'',(data.action=='previous' ? previosindex : nextindex))
 };
+const tableContainerRef = useRef(null);
+const viewportRef = useRef(null);
+  const handleKeyDown = (e) => {
+    if (e.ctrlKey && e.key === "ArrowRight") {
+      e.preventDefault();
+      const container = tableContainerRef.current;
+      if (container) {
+       container.scrollBy({
+        top: 0,
+        left: 5000,
+        behavior: "smooth",
+      });
+      }
+    }
+    else if (e.ctrlKey && e.key === "ArrowLeft") {
+      e.preventDefault();
+      const container = tableContainerRef.current;
+      if (container) {
+       container.scrollBy({
+        top: 0,
+        left: -5000,
+        behavior: "smooth",
+      });
+      }
+    }
+    else if (e.ctrlKey && e.key === "ArrowDown") {
+      e.preventDefault();
+      const container = tableContainerRef.current;
+      if (container) {
+       container.scrollToIndex(d.length - 1);  
+      }
+    }
+    else if (e.ctrlKey && e.key === "ArrowUp") {
+      e.preventDefault();
+      const container = tableContainerRef.current;
+      if (container) {
+       container.scrollToIndex(1);  
+      }
+    }
+  };
     return( 
 <>
  
-<div className={" custom-table "}>
+<div className={" custom-table "}  onKeyDown={handleKeyDown}>
 {showeditmodal.state==true ? <Editmodal pagination={pagination} lawfirmdata={lawfirmdata} agentdata={agentdata} alldata={d2} changedata={changedata} show={showeditmodal} fn={editinfo}></Editmodal> : <></> }
     <Commentmodal/>
     <Style></Style>
@@ -451,8 +491,13 @@ const pagination = (data) => {
             </li>
           </ul>
         <Suspense fallback={<Loading />}>
-    <TableVirtuoso 
+    <TableVirtuoso ref={tableContainerRef}
       components={{className:"koushal"}}
+      componentsProps={{
+    viewport: {
+      ref: viewportRef,  // This points to the internal scrollable DOM node
+    },
+  }}
       data={d}
       fixedHeaderContent={() => (
         <>
@@ -878,4 +923,4 @@ const pagination = (data) => {
     )
 }
 
-export default Freshdata;
+export default PctallFreshdata;

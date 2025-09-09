@@ -10,7 +10,7 @@ const login = (data) => {
         data: data
       }).then((response) => {
         if (response.data.userid) {
-          localStorage.setItem("user", JSON.stringify({'userid':response.data.userid,'type':response.data.reg_type,'name':response.data.name,'email':response.data.email,'gender':response.data.gender,'org':response.data.org}));
+          localStorage.setItem("user", JSON.stringify({'userid':response.data.userid,'role':response?.data?.role,'type':response.data.reg_type,'name':response.data.name,'email':response.data.email,'gender':response.data.gender,'org':response.data.org,'permission':response.data.permission??[]}));
         }
        return response;
       });

@@ -30,8 +30,10 @@ const Dupeemailprocess = ({
   alldata,
 }) => {
   let auth = localStorage.getItem("user");
+  auth = auth != "" ? JSON.parse(auth) : { userid: "", type: "", org: "" };
   const [newdupedata, setdupedata] = useState([]);
   const [templatelist, settemplate] = useState([]);
+  const templates = useRef();
   const [crontime, setCrontime] = useState(dayjs(moment()));
   const [userlist, setchooseuser] = useState([]);
   const inprocess = useRef(false);
@@ -39,12 +41,13 @@ const Dupeemailprocess = ({
     getdupedata(emailsdata);
   }, []);
   const fetchlist = async (type) => {
-    let data = await Fetchdata.fetchtemplate({ type: type }).then(
+    let data = await Fetchdata.fetchtemplate({ type: type,anuationuser_uniqueid:auth.userid??'' }).then(
       (response) => {
         return response;
       }
     );
     settemplate(data.data.data);
+    templates.current=data.data.data
   };
 
   function getdupedata(emailsdata) {
@@ -154,7 +157,6 @@ const Dupeemailprocess = ({
     let newd = dupedata.slice(0, document.querySelector("#totalsending").value);
     setdupedata(newd);
   }
-  auth = auth != "" ? JSON.parse(auth) : { userid: "", type: "", org: "" };
   let accounts =
     page == "freshdata"
       ? defaultvalue.usernames2
@@ -338,6 +340,11 @@ const Dupeemailprocess = ({
       }
     }
   }
+   function changetype(e){
+    let type=e.target.value;
+    let filtered = templates.current.filter((item,index)=>item.client_type==type ? item : null);
+    settemplate(filtered);
+  }
   useEffect(() => {
     document
       .querySelector("table")
@@ -520,6 +527,17 @@ const Dupeemailprocess = ({
                       id="nextfollowup"
                       placeholder="Choose date"
                     />
+                  </div>
+                                     <div className="col-md-3">
+                    <label class="text-start w-100" data-shrink="true">
+                      Template Type
+                    </label>
+                    <select onChange={(e)=>changetype(e)} id="templatetype" className="form-select">
+                      <option value="">Template Type</option>
+                          <option value="1">Agent</option>
+                          <option value="2">Individual</option>
+                          <option value="3">Both</option>
+                    </select>
                   </div>
                   <div className="col-md-3">
                     <label class="text-start w-100" data-shrink="true">

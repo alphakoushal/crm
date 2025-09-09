@@ -8,24 +8,13 @@ import {
   useNavigate,
   json,
 } from "react-router-dom";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Dialog from "@mui/material/Dialog";
-import { pivotmodal } from "../reducers/Style";
-import { profilesidebar } from "../reducers/Userdata";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { pivotmodal } from "../../reducers/Style";
+import { profilesidebar } from "../../reducers/Userdata";
 import { TextareaAutosize } from "@mui/base/TextareaAutosize";
 import { styled } from "@mui/system";
-import commentprocess from "../services/commentservice";
-import Addmodal from "./modals/addmodal";
-import Addapplication from "./modals/Analytics/Add-application";
+import commentprocess from "../../services/commentservice";
+import Addmodal from "../../component/modals/addmodal";
+import Addapplication from "../../component/modals/Analytics/Add-application";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import {
@@ -33,13 +22,13 @@ import {
   API_URL,
   emailstatus,
   callstatus,
-} from "../constant/Constant";
-import { useOnlinestatus } from "../services/Online";
-import Sidebarprofile from "./modals/Sidebarprofile";
-import Analyticsidebarprofile from "./modals/Analytics/Sidebarprofile";
-import config from "../constant/Import-detail-of-crm";
-import getRoutesByCRM from "../Routes";
-const Header = React.memo(
+} from "../../constant/Constant";
+import { useOnlinestatus } from "../../services/Online";
+import Sidebarprofile from "../../component/modals/Sidebarprofile";
+import Analyticsidebarprofile from "../../component/modals/Analytics/Sidebarprofile";
+import config from "../../constant/Import-detail-of-crm";
+import getRoutesByCRM from "../../Routes";
+const IpoperationHeader = React.memo(
   ({
     platform,
     alldata,
@@ -422,140 +411,6 @@ const Header = React.memo(
           <></>
         )}
 
-        <Dialog open={openemailbox.status} onClose={handleClose}>
-          <DialogTitle>{openemailbox.title}</DialogTitle>
-          <DialogContent>
-            <div className="row pt-3">
-              <div
-                className={`col-md-3 ${
-                  openemailbox.type == "followup_comment_react" ? "hide" : ""
-                }`}
-              >
-                <FormControl fullWidth>
-                  {openemailbox.type == "email_comment_react" ? (
-                    <>
-                      <InputLabel id="demo-simple-select-label">
-                        Email status
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={status}
-                        label="Email status"
-                        onChange={(event) => setstatus(event.target.value)}
-                      >
-                        {defaultvalue[
-                          `${auth.org == "2" ? "analytic" : ""}names`
-                        ].map((name) => (
-                          <MenuItem key={name.key} value={name.key}>
-                            {name.value}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </>
-                  ) : (
-                    <>
-                      <InputLabel id="demo-simple-select-label">
-                        Call status
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={status}
-                        label="Call status"
-                        onChange={(event) => setstatus(event.target.value)}
-                      >
-                        {defaultvalue[
-                          `${auth.org == "2" ? "analytic" : ""}callnames`
-                        ].map((name) => (
-                          <MenuItem key={name.key} value={name.key}>
-                            {name.value}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </>
-                  )}
-                </FormControl>
-              </div>
-              <div
-                className={`col-md-3 ${
-                  openemailbox.type == "followup_comment_react" ? "hide" : ""
-                }`}
-              >
-                <TextField
-                  autoFocus
-                  margin="dense"
-                  label="Follow Up date"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  placeholder="Enter your text here"
-                  id="name"
-                  type="date"
-                  fullWidth
-                  variant="standard"
-                />
-              </div>
-              <div className="col-md-3">
-                <TextField
-                  autoFocus
-                  margin="dense"
-                  label="Next Follow Up date"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  placeholder="Enter your text here"
-                  id="nextdate"
-                  type="date"
-                  fullWidth
-                  variant="standard"
-                />
-              </div>
-              <div className="col-md-3">
-                <select id="chooseaccount" className="form-select">
-                  <option value="">Choose Account</option>
-                  {accounts.map((e, i) => {
-                    return (
-                      <option key={i} value={e.account}>
-                        {e.name}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
-              <div className="col-md-12 pt-3">
-                <textarea
-                  aria-label="Description"
-                  rows={3}
-                  className="textarea"
-                  id="allapp"
-                  placeholder="Add comma Separated Application Number."
-                />
-              </div>
-              <div className="col-md-12 pt-3">
-                <textarea
-                  aria-label="Description"
-                  rows={3}
-                  className="textarea"
-                  id="textarea"
-                  placeholder="Description"
-                />
-              </div>
-            </div>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button
-              onClick={() => {
-                submitemailform(openemailbox.type);
-              }}
-            >
-              {validate.loadermessage}{" "}
-              <i className={`ti ti-refresh rotate ms-2 ${validate.loader}`}></i>
-            </Button>
-          </DialogActions>
-        </Dialog>
-
         <header className="app-header fixed-header">
           <nav className="navbar navbar-expand-lg navbar-light">
             <ul className="navbar-nav quick-links d-none d-lg-flex">
@@ -616,9 +471,6 @@ const Header = React.memo(
                                 ) : (
                                   <></>
                                 )}
-
-                                {auth.type == "2" ? (
-                                  <>
                                     <Link
                                       to="/freshdata"
                                       className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none"
@@ -632,36 +484,6 @@ const Header = React.memo(
                                         </span>
                                       </div>
                                     </Link>
-                                    <Link
-                                      to="/iip-freshdata"
-                                      className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none"
-                                    >
-                                      <div className="d-inline-block">
-                                        <h6 className="mb-1 fw-semibold bg-hover-primary">
-                                          IIP New Data
-                                        </h6>
-                                        <span className="fs-2 d-block text-dark">
-                                          Dashboard
-                                        </span>
-                                      </div>
-                                    </Link>
-                                    <Link
-                                      to="/countrylist"
-                                      className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none"
-                                    >
-                                      <div className="d-inline-block">
-                                        <h6 className="mb-1 fw-semibold bg-hover-primary">
-                                          Country List
-                                        </h6>
-                                        <span className="fs-2 d-block text-dark">
-                                          Dashboard
-                                        </span>
-                                      </div>
-                                    </Link>
-                                  </>
-                                ) : (
-                                  <></>
-                                )}
                               </div>
                             </div>
                           </div>
@@ -686,92 +508,6 @@ const Header = React.memo(
                           <div className="row">
                             <div className="col-6">
                               <div className="position-relative">
-                                <Link
-                                  onClick={(e) =>
-                                    handleClickOpen(
-                                      e,
-                                      "email_comment_react",
-                                      "Email Comments"
-                                    )
-                                  }
-                                  className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none"
-                                >
-                                  <div className="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
-                                    <img
-                                      src="https://www.anuation.com/crm/assets/icons/svg/icon-dd-chat.svg"
-                                      alt=""
-                                      className="img-fluid"
-                                      width="24"
-                                      height="24"
-                                    />
-                                  </div>
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">
-                                      {" "}
-                                      Email Comment
-                                    </h6>
-                                    <span className="fs-2 d-block text-dark">
-                                      Add New Email Comment
-                                    </span>
-                                  </div>
-                                </Link>
-                                <Link
-                                  onClick={(e) =>
-                                    handleClickOpen(
-                                      e,
-                                      "call_comment_react",
-                                      "Call Comments"
-                                    )
-                                  }
-                                  className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none"
-                                >
-                                  <div className="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
-                                    <img
-                                      src="https://www.anuation.com/crm/assets/icons/svg/icon-dd-chat.svg"
-                                      alt=""
-                                      className="img-fluid"
-                                      width="24"
-                                      height="24"
-                                    />
-                                  </div>
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">
-                                      {" "}
-                                      Call Comment
-                                    </h6>
-                                    <span className="fs-2 d-block text-dark">
-                                      Add New Call Comment
-                                    </span>
-                                  </div>
-                                </Link>
-                                <Link
-                                  onClick={(e) =>
-                                    handleClickOpen(
-                                      e,
-                                      "followup_comment_react",
-                                      "Next Followup"
-                                    )
-                                  }
-                                  className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none"
-                                >
-                                  <div className="bg-light rounded-1 me-3 p-6 d-flex align-items-center justify-content-center">
-                                    <img
-                                      src="https://www.anuation.com/crm/assets/icons/svg/icon-dd-chat.svg"
-                                      alt=""
-                                      className="img-fluid"
-                                      width="24"
-                                      height="24"
-                                    />
-                                  </div>
-                                  <div className="d-inline-block">
-                                    <h6 className="mb-1 fw-semibold bg-hover-primary">
-                                      Next Followup
-                                    </h6>
-                                    <span className="fs-2 d-block text-dark">
-                                      Update Followup
-                                    </span>
-                                  </div>
-                                </Link>
                                 <Link
                                   onClick={(e) => addentry(e)}
                                   className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none"
@@ -876,20 +612,6 @@ const Header = React.memo(
                     </Link>
                   </li>
                   <li
-                    title="Cron job status"
-                    onClick={() => showcronbox()}
-                    className="nav-item"
-                  >
-                    <Link
-                      className="nav-link notify-badge nav-icon-hover"
-                      data-bs-toggle="offcanvas"
-                      data-bs-target="#offcanvasRight"
-                      aria-controls="offcanvasRight"
-                    >
-                      <i className="ti ti-calendar-time"></i>
-                    </Link>
-                  </li>
-                  <li
                     title="Refresh Data"
                     onClick={() => refreshdata(formdatas, "hard")}
                     className="nav-item"
@@ -919,30 +641,6 @@ const Header = React.memo(
                     </Link>
                   </li>
                   <li
-                    title="Show currencies"
-                    onClick={() => showcurrencies()}
-                    className="nav-item"
-                  >
-                    <Link
-                      className="nav-link notify-badge nav-icon-hover"
-                      data-bs-toggle="offcanvas"
-                      data-bs-target="#offcanvasRight"
-                      aria-controls="offcanvasRight"
-                    >
-                      <i className="ti ti-zoom-money"></i>
-                    </Link>
-                  </li>
-
-                  <li title="Download file" className="nav-item">
-                    <Link
-                      className="nav-link notify-badge nav-icon-hover"
-                      to={`${API_URL}employee/auth/reactauth/export-excel.php?userid=${auth.userid}`}
-                    >
-                      {" "}
-                      <i className="ti ti-cloud-download"></i>{" "}
-                    </Link>
-                  </li>
-                  <li
                     title="Open sidebar"
                     onClick={() => showsidebar()}
                     className="nav-item"
@@ -957,42 +655,6 @@ const Header = React.memo(
                     </Link>
                   </li>
                   <li
-                    title="Check Record"
-                    onClick={() => openpivotmodal()}
-                    className="nav-item"
-                  >
-                    <Link
-                      className="nav-link notify-badge nav-icon-hover"
-                      data-bs-toggle="offcanvas"
-                      data-bs-target="#offcanvasRight"
-                      aria-controls="offcanvasRight"
-                    >
-                      <i className="ti ti-calculator"></i>
-                    </Link>
-                  </li>
-                  <li
-                    title="Open profile"
-                    onClick={() =>
-                      dispatch(
-                        profilesidebar({
-                          status: true,
-                          email: "",
-                          type: "domain",
-                        })
-                      )
-                    }
-                    className="nav-item"
-                  >
-                    <Link
-                      className="nav-link notify-badge nav-icon-hover"
-                      data-bs-toggle="offcanvas"
-                      data-bs-target="#offcanvasRight"
-                      aria-controls="offcanvasRight"
-                    >
-                      <i className="ti ti-user"></i>
-                    </Link>
-                  </li>
-                  <li
                     title="Copy data"
                     onClick={() => copydata()}
                     className="nav-item"
@@ -1004,20 +666,6 @@ const Header = React.memo(
                       aria-controls="offcanvasRight"
                     >
                       <i className="ti ti-copy"></i>
-                    </Link>
-                  </li>
-                  <li
-                    title="Copy data"
-                    onClick={() => showanalyticsidebar(true)}
-                    className="nav-item"
-                  >
-                    <Link
-                      className="nav-link notify-badge nav-icon-hover"
-                      data-bs-toggle="offcanvas"
-                      data-bs-target="#offcanvasRight"
-                      aria-controls="offcanvasRight"
-                    >
-                      <i className="ti ti-chart-bar"></i>
                     </Link>
                   </li>
                 </ul>
@@ -1222,4 +870,4 @@ const Header = React.memo(
   }
 );
 
-export default Header;
+export default IpoperationHeader;

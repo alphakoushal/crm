@@ -1,6 +1,7 @@
 import itRoutes from "./itroutes";
 import analyticRoutes from "./analyticroute";
 import IPRoutes from "./pctroutes";
+import IPtrademarkRoutes from "./ip-trademark-route";
 const getRoutesByCRM = (crmType) => {
     switch (crmType) {
         case "crm1":
@@ -11,6 +12,8 @@ const getRoutesByCRM = (crmType) => {
             return analyticRoutes;
         case "crm4":
             return itRoutes;
+        case "crm5":
+            return IPtrademarkRoutes;
         default:
             return [];
     }

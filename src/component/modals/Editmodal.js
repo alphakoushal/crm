@@ -10,10 +10,10 @@ const Editmodal = function ({ show, fn ,changedata,alldata}) {
     const containerRef = useRef(null);
     const [constraints, setConstraints] = useState(null);
     other={...other,color:other?.color ?? "#ffffff"};
-    const [data, updatedata] = useState({ 'email': show.data.email_id, 'app': show.data.appno, 'status': false, 'message': '','ref_no': other.ref_no,'isr':other.isr,'color':other.color,'drawing':other.drawing,'priority':other.priority,'claim':other.claim,'pages':other.pages,'a_p_h_n':other.a_p_h_n,'agent_email_id':other.agent_email_id,'agent_name':other.agent_name,'p_h_n':other.p_h_n,'company_name':other.company_name,'c_p_l':other.c_p_l,'c_p_f':other.c_p_f,'deadline_30_month':other.deadline_30_month,'deadline_31_month':other.deadline_30_month,'p_date':other.p_date,'APPLICANT_NAME':other.APPLICANT_NAME,'c_i_o':other.c_i_o,'applicant_status':other.applicant_status});
+    const [data, updatedata] = useState({ 'additional_email_id':'','email': show.data.email_id, 'app': show.data.appno, 'status': false, 'message': '','ref_no': other.ref_no,'isr':other.isr,'color':other.color,'drawing':other.drawing,'priority':other.priority,'claim':other.claim,'pages':other.pages,'a_p_h_n':other.a_p_h_n,'agent_email_id':other.agent_email_id,'agent_name':other.agent_name,'p_h_n':other.p_h_n,'company_name':other.company_name,'c_p_l':other.c_p_l,'c_p_f':other.c_p_f,'deadline_30_month':other.deadline_30_month,'deadline_31_month':other.deadline_30_month,'p_date':other.p_date,'APPLICANT_NAME':other.APPLICANT_NAME,'c_i_o':other.c_i_o,'applicant_status':other.applicant_status});
   const [validate,setvalidate]=useState({status:false,color:'error',icon:'error',message:''});
     useEffect(() => {
-        updatedata({ 'email': show.data.email_id, 'app': show.data.appno, 'status': false, 'message': '','ref_no': other.ref_no,'isr':other.isr,'color':other.color,'drawing':other.drawing,'priority':other.priority,'claim':other.claim,'pages':other.pages,'a_p_h_n':other.a_p_h_n,'agent_email_id':other.agent_email_id,'agent_name':other.agent_name,'p_h_n':other.p_h_n,'company_name':other.company_name,'c_p_l':other.c_p_l,'c_p_f':other.c_p_f,'deadline_30_month':other.deadline_30_month,'deadline_31_month':other.deadline_30_month,'p_date':other.p_date,'APPLICANT_NAME':other.APPLICANT_NAME,'c_i_o':other.c_i_o,'applicant_status':other.applicant_status});
+        updatedata({ 'additional_email_id':other.additional_email_id??'N/A','email': show.data.email_id, 'app': show.data.appno, 'status': false, 'message': '','ref_no': other.ref_no,'isr':other.isr,'color':other.color,'drawing':other.drawing,'priority':other.priority,'claim':other.claim,'pages':other.pages,'a_p_h_n':other.a_p_h_n,'agent_email_id':other.agent_email_id,'agent_name':other.agent_name,'p_h_n':other.p_h_n,'company_name':other.company_name,'c_p_l':other.c_p_l,'c_p_f':other.c_p_f,'deadline_30_month':other.deadline_30_month,'deadline_31_month':other.deadline_30_month,'p_date':other.p_date,'APPLICANT_NAME':other.APPLICANT_NAME,'c_i_o':other.c_i_o,'applicant_status':other.applicant_status});
     }, [show.data]);
     useEffect(() => {
         if (containerRef.current) {
@@ -74,7 +74,7 @@ const Editmodal = function ({ show, fn ,changedata,alldata}) {
         else if(data.p_h_n=='')
         {setvalidate((validate)=>({...validate,status:true,message:'Enter phone number'}));}
         else if(data.company_name=='' && data.c_i_o!='Individual')
-        {setvalidate((validate)=>({...validate,status:true,message:'Enter company number'}));}
+        {setvalidate((validate)=>({...validate,status:true,message:'Enter company name'}));}
         else if(data.c_p_f=='')
         {setvalidate((validate)=>({...validate,status:true,message:'Enter contact person first name'}));}
         else if(data.c_p_l=='')
@@ -189,8 +189,8 @@ document.querySelector('#d31').value=moment(v).add(31, 'M').subtract(1, 'd').for
                                                             <div className="dropdown col-sm-12 error_field_group" id="APPLICANT_STATUS-group">
                                                                 <select onChange={(e)=>{updatestate(e.target.value,'applicant_status')}} className="form-control restrictedinput validate-field" id="APPLICANT_STATUS" name="APPLICANT_STATUS">
                                                                     <option value="">APPLICANT STATUS</option>
-                                                                    <option selected={ data.applicant_status=='small' ? true: false } value="small">small</option>
-                                                                    <option selected={ data.applicant_status.toLowerCase()=='large' ? true: false } value="large">large</option>                                                    </select>
+                                                                    <option selected={ data.applicant_status.toLowerCase()=='small' ? true: false } value="Small">Small</option>
+                                                                    <option selected={ data.applicant_status.toLowerCase()=='large' ? true: false } value="Large">Large</option>                                                    </select>
                                                             </div>
                                                         </div>
 
@@ -283,6 +283,12 @@ document.querySelector('#d31').value=moment(v).add(31, 'M').subtract(1, 'd').for
                                                         </div>
                                                     </div>
                                                     <div className="row">
+                                                    <div className="form-group col-md-12">
+                                                            <label className="col-sm-12" htmlFor="additional_email_id">Additional E-mail-ID:</label>
+                                                            <div className="col-sm-12 error_field_group" id="additional_email_id-group">
+                                                                <input type="text" className="form-control " value={data.additional_email_id} onChange={(e) => (updatestate(e.target.value, 'additional_email_id'))}  id="additional_email_id" name="additional_email_id" placeholder="Additional Email ID" />
+                                                            </div>
+                                                        </div>
                                                         <div className="form-group col-md-2">
                                                             <label className="col-sm-12" htmlFor="PAGES">Pages:</label>
                                                             <div className="col-sm-12 error_field_group" id="PAGES-group">
