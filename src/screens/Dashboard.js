@@ -129,6 +129,10 @@ const Dashboard = () => {
     { width: 110, css: "", type: "", key: "Email sent from" },
     { width: 110, css: "", type: "", key: "Agent Unique/Dupe" },
     { width: 110, css: "", type: "", key: "Agent Gen/Non Gen" },
+    { width: 110, css: "", type: "", key: "" },
+    { width: 110, css: "", type: "", key: "" },
+    { width: 110, css: "", type: "", key: "" },
+    { width: 110, css: "", type: "", key: "" },
   ]);
   const handleResize = (index, width) => {
     setColumns((prevColumns) => {
@@ -1969,6 +1973,10 @@ const Dashboard = () => {
                           </Select>
                         </FormControl>
                       </th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
                     </tr>
                   </>
                 )}
@@ -2854,6 +2862,10 @@ const Dashboard = () => {
                     >
                       {user[62]}
                     </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                   </>
                 )}
               />

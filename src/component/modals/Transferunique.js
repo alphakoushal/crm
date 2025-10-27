@@ -33,12 +33,12 @@ const TransferEmailbox = ({
   const inprocess = useRef(false);
   let auth = localStorage.getItem("user");
   auth = auth != "" ? JSON.parse(auth) : { userid: "", type: "", org: "" };
-  let accounts =
-    page == "freshdata"
-      ? defaultvalue.usernames2
-      : defaultvalue.accounts[auth.userid] !== undefined
-      ? defaultvalue.accounts[auth.userid]
-      : Object.values(defaultvalue.accounts).flat();
+  let accounts = ["freshdata", "allFreshdata","masterdata"].includes(page) ? [] :
+    ["finalmasterdata"].includes(page)
+    ? defaultvalue.usernames2
+    : defaultvalue.accounts[auth.userid] !== undefined
+    ? defaultvalue.accounts[auth.userid]
+    : Object.values(defaultvalue.accounts).flat();
   const [validate, setvalidate] = useState({
     status: false,
     color: "error",
@@ -92,8 +92,8 @@ const TransferEmailbox = ({
             fromemail: val[63],
             fromname: val[58],
             agentemail_id: val[27],
-            country:val[3],
-            userid:val[64],
+            country: val[3],
+            userid: val[64],
             deadline_30_month: val[5],
             applicant_name: val[7],
             application_no: val[2],
@@ -131,14 +131,13 @@ const TransferEmailbox = ({
     setchooseuser(e.target.value);
   }
   async function choosetype(e, type) {
-
     let appno = emailsdata.map((item) => {
       return item[2];
     });
     e.preventDefault();
     let t = document.querySelector("#templateid");
-    let title = '';
-    let nextfollowup = '';
+    let title = "";
+    let nextfollowup = "";
 
     if (inprocess.current == true) {
       setvalidate((validate) => ({
@@ -152,13 +151,13 @@ const TransferEmailbox = ({
         status: true,
         message: "Please Choose Email format",
       }));
-    } else if (userlist.length == 0) {
+    } else if (userlist.length == 0 && !["transfertomasterdata","transfertofinalmasterdata"].includes(t.value)) {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Please Choose Account",
       }));
-    }  else {
+    } else {
       inprocess.current = true;
       const res = await emailformat(
         t.value,
@@ -200,42 +199,40 @@ const TransferEmailbox = ({
       }
     }
   }
-  let country=[];
+  let country = [];
   useEffect(() => {
-    emailsdata.map((item)=>{
-
+    emailsdata.map((item) => {
       let find = country.filter((e1) => {
         return e1.trim() === item[3].trim();
       });
       if (find.length >= 1) {
         country.push(item[3]);
-        let len=find.length;
-        if(userlist.length==len)
-        {
+        let len = find.length;
+        if (userlist.length == len) {
           country = country.filter((e1) => {
             return e1.trim() != item[3].trim();
           });
-          item[64]=userlist[0];
+          item[64] = userlist[0];
           country.push(item[3]);
+        } else {
+          item[64] = userlist[len];
         }
-        else
-        {
-          item[64]=userlist[len];
-        }
-      }
-      else{
+      } else {
         country.push(item[3]);
-        item[64]=userlist[0];
+        item[64] = userlist[0];
         return item;
       }
-    })
-  },[userlist])
+    });
+  }, [userlist]);
   useEffect(() => {
-
     document
       .querySelector("table")
       .classList.add("table", "table-bordered", "table-hover");
-    page == "freshdata" ? <></> : fetchlist("1");
+    ["freshdata", "masterdata", "allFreshdata","finalmasterdata"].includes(page) ? (
+      <></>
+    ) : (
+      fetchlist("1")
+    );
   }, []);
 
   return (
@@ -270,8 +267,8 @@ const TransferEmailbox = ({
             <form className="form-horizontal filing-form_data">
               <div className="modal-header d-flex align-items-center">
                 <h4 className="modal-title" id="myLargeModalLabel">
-                  Total {defaultvalue.mailtypeaccount[mailtypeaccount]} Record{" "}
-                  {emailsdata.length}
+                  Total {defaultvalue.mailtypeaccount[mailtypeaccount]} Record
+                  To Transfer {emailsdata.length}
                 </h4>
                 <button
                   onClick={() => {
@@ -345,7 +342,9 @@ const TransferEmailbox = ({
                         <td className="column-value">{user[10]}</td>
                         <td className="column-value">{user[58]}</td>
                         <td className="column-value">{user[63]}</td>
-                        <td className="column-value">{defaultvalue.username[user[64]]??''}</td>
+                        <td className="column-value">
+                          {defaultvalue.username[user[64]] ?? ""}
+                        </td>
                         <td className="column-value">{user[3]}</td>
                       </>
                     )}
@@ -360,13 +359,19 @@ const TransferEmailbox = ({
                       );
                     })}
                     {auth.userid == "191214201403624913" &&
-                    page == "freshdata" ? (
+                    ["freshdata","allFreshdata","finalmasterdata"].includes(
+                      page
+                    ) ? (
                       <>
                         <option value="assigned">Assigned</option>
                         <option value="transfer">Transfer</option>
                       </>
                     ) : (
-                      <></>
+                      <>
+                        <option value={page=="masterdata" ? "transfertofinalmasterdata":"transfertomasterdata"}>
+                          Transfer To {page=="masterdata" ? "(Final Masterdata)":"Master data"}
+                        </option>
+                      </>
                     )}
                   </select>
                   <FormControl className="accounts" sx={{ width: "100%" }}>

@@ -153,12 +153,14 @@ const TransferDupeemailprocess = ({
     setdupedata(newd);
   }
   auth = auth != "" ? JSON.parse(auth) : { userid: "", type: "", org: "" };
-  let accounts =
-    page == "freshdata"
-      ? defaultvalue.usernames2
-      : defaultvalue.accounts[auth.userid] !== undefined
-      ? defaultvalue.accounts[auth.userid]
-      : Object.values(defaultvalue.accounts).flat();
+
+        let accounts = ["freshdata", "allFreshdata","masterdata"].includes(page) ? [] :
+          ["finalmasterdata"].includes(page)
+          ? defaultvalue.usernames2
+          : defaultvalue.accounts[auth.userid] !== undefined
+          ? defaultvalue.accounts[auth.userid]
+          : Object.values(defaultvalue.accounts).flat();
+
   const [validate, setvalidate] = useState({
     status: false,
     color: "error",

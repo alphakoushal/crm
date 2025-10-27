@@ -1,6 +1,4 @@
-import { responsiveFontSizes } from "@mui/material";
-import axios, { AxiosHeaders } from "axios";
-import { method } from "lodash";
+import axios from "axios";
 import { API_URL } from "../constant/Constant";
 
 let axiosConfig = { 'content-type': 'application/x-www-form-urlencoded' };
@@ -84,7 +82,8 @@ const emailformat = (data) =>{
     let transferurl=`${API_URL}employee/auth/react-index.php`;
     let assignedurl=`${API_URL}employee/auth/reactauth/allocate-record-from-fresh-data-to-bd-team.php`;
     let cronurl=`${API_URL}employee/auth/reactauth/emailformat_testing.php`;
-    let urls= data.t=='assigned' ? assignedurl : (data.t=='transfer' ? transferurl : cronurl);
+    let url_Structure={'assigned':assignedurl,'transfer':transferurl,'transfertomasterdata':transferurl,'transfertofinalmasterdata':transferurl};
+    let urls= url_Structure[data.t]??cronurl;
     data.posttype = data.t;
     return axios({
         method :'POST',

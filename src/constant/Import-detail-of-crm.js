@@ -8,7 +8,7 @@ switch (CRM) {
     break;
   case "crm2":
     config = require("./Iip-config").default;
-    break;
+    break; 
   case "crm3":
     config = require("./analytic-config").default;
     break;

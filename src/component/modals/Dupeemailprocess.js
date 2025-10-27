@@ -35,6 +35,7 @@ const Dupeemailprocess = ({
   const [templatelist, settemplate] = useState([]);
   const templates = useRef();
   const [crontime, setCrontime] = useState(dayjs(moment()));
+  let mailtypeaccount = document.querySelector("#mailtypeaccount").value;
   const [userlist, setchooseuser] = useState([]);
   const inprocess = useRef(false);
   useEffect(() => {
@@ -64,24 +65,29 @@ const Dupeemailprocess = ({
         isa: e[18],
         standard: standard,
       });
-
-      if (e[12] !== "" && e[12] != "n/a") {
-        if (e[54] == "Email") {
+      let chooseddomain=mailtypeaccount == "2" ? e[28] : e[12];
+      let choosedemail=mailtypeaccount == "2" ? e[27] : e[11];
+      let emailtypeselection=mailtypeaccount == "2" ? e[62] : e[54];
+      let contact_person= mailtypeaccount == "2" ? e[26] : e[10];
+      if (chooseddomain !== "" && chooseddomain != "n/a") {
+        if (emailtypeselection == "Email") {
+          
           //FOR GENERIC DATA
           let find = dupedata.findIndex((e1) => {
-            return e1[7].trim() === e[11].trim();
+            return e1[7].trim() === choosedemail.trim();
           });
+         
           if (find > -1) {
             if (
               page == "freshdata"
                 ? dupedata[find][2].split(",,").length >= 1
                 : dupedata[find][2].split(",,").length >= 1
             ) {
-              dupedata[find][1] = `${e[11]},,${dupedata[find][1]}`; //email
+              dupedata[find][1] = `${choosedemail},,${dupedata[find][1]}`; //email
               dupedata[find][2] = `${e[2]},,${dupedata[find][2]}`; //app
               dupedata[find][3] = `${e[1]},,${dupedata[find][3]}`; //title
               dupedata[find][4] = `${e[7]},,${dupedata[find][4]}`; //applicant name
-              dupedata[find][6] = `${e[10]},,${dupedata[find][6]}`; //contact person name
+              dupedata[find][6] = `${contact_person},,${dupedata[find][6]}`; //contact person name
               dupedata[find][5] = `${e[5]},,${dupedata[find][5]}`; //Deadline
               dupedata[find][8] = `${e[6]},,${dupedata[find][8]}`; //Deadline 31
               dupedata[find][9] = `${incost},,${dupedata[find][9]}`; //in cost
@@ -90,18 +96,18 @@ const Dupeemailprocess = ({
             }
           } else if (
             emailsdata.filter((e1) => {
-              return e1[11].trim() === e[11].trim();
+              return (mailtypeaccount == "2" ? e1[27].trim() : e1[11].trim()) === choosedemail.trim();
             }).length > 1
           ) {
             dupedata.push([
-              e[12].trim(),
-              e[11].trim(),
+              chooseddomain.trim(),
+              choosedemail.trim(),
               e[2].trim(),
               e[1].trim(),
               e[7].trim(),
               e[5].trim(),
-              e[10].trim(),
-              e[11].trim(),
+              contact_person.trim(),
+              choosedemail.trim(),
               e[6].trim(),
               incost,
               e[27].trim(),
@@ -112,32 +118,32 @@ const Dupeemailprocess = ({
           }
         } else {
           let find = dupedata.findIndex((e1) => {
-            return e1[0] === e[12];
+            return e1[0] === chooseddomain;
           });
           if (find > -1) {
-            dupedata[find][1] = `${e[11]},,${dupedata[find][1]}`; //email
+            dupedata[find][1] = `${choosedemail},,${dupedata[find][1]}`; //email
             dupedata[find][2] = `${e[2]},,${dupedata[find][2]}`; //app
             dupedata[find][3] = `${e[1]},,${dupedata[find][3]}`; //title
             dupedata[find][4] = `${e[7]},,${dupedata[find][4]}`; //applicant name
-            dupedata[find][6] = `${e[10]},,${dupedata[find][6]}`; //contact person name
+            dupedata[find][6] = `${contact_person},,${dupedata[find][6]}`; //contact person name
             dupedata[find][5] = `${e[5]},,${dupedata[find][5]}`; //Deadline
             dupedata[find][8] = `${e[6]},,${dupedata[find][8]}`; //Deadline
             dupedata[find][9] = `${incost},,${dupedata[find][9]}`; //in cost
             dupedata[find][10] = `${e[27]},,${dupedata[find][10]}`; //agent email
           } else if (
             emailsdata.filter((e1) => {
-              return e1[12] === e[12];
+              return (mailtypeaccount == "2" ? e1[28].trim() : e1[12].trim()) === chooseddomain;
             }).length > 1
           ) {
             dupedata.push([
-              e[12],
-              e[11],
+              chooseddomain,
+              choosedemail,
               e[2],
               e[1],
               e[7],
               e[5],
-              e[10],
-              e[11],
+              contact_person,
+              choosedemail,
               e[6],
               incost,
               e[27],
@@ -196,6 +202,7 @@ const Dupeemailprocess = ({
       H: crontime.$H,
       M: crontime.$m,
       platform: platform.current,
+      mailtypeaccount: mailtypeaccount,
       crondate: crondate,
       userid: auth.userid,
       dupeprocess: "yes",
@@ -221,6 +228,7 @@ const Dupeemailprocess = ({
         })
       ),
     };
+    console.log(emailsdata);
     return Uploaddata.emailformat(formdata).then((resposne) => {
       return resposne;
     });

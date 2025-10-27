@@ -16,10 +16,16 @@ const QuotationList = () =>{
   const deleteq = async(id) =>{ 
     let confirm = window.confirm("Are you sure you want to delete this quotation?");
     if (confirm) {
+      try{
   let res =await Uploaddata.pctaxiosrequest({'id':id,'posttype':'deletequotation'}).then((resposne)=>{return resposne});
     if (res.data.success) { setvalidate((prev)=>({ ...prev, status: true, message: res.data.message,color:'success',icon:'success' })) }
 else {setvalidate((validate)=>({...validate,status:true,message:res.data.errors.error,color:'error',icon:'error'}));}
 setTimeout(()=>{fetchlist('');},1000);
+    }
+    catch(err)
+    {
+
+    }
  }
 
   }
@@ -27,8 +33,14 @@ setTimeout(()=>{fetchlist('');},1000);
     setvalidate((prev)=>({...prev,file:'',status:false,message:``,color:'success',icon:'success'}));
   }
   const fetchlist = async (type) =>{
+    try{
 let data=await Fetchdata.pctaxiosrequest({'userid':auth.userid,'posttype':'fetchquotationlist'}).then((response)=>{ return response});
 settemplate(data.data.data);
+  }
+  catch(err)
+  {
+
+  }
   }
   useEffect(()=>{
     document.querySelector('table').classList.add("table","table-bordered","table-hover");

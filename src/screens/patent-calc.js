@@ -255,30 +255,34 @@ const Patentcalculator = ({ updatevalue, calcstate }) => {
     return cost;
   };
   const get_stored_quotation = async (id) => {
-    let getstoredvaue = await Fetchdata.pctaxiosrequest({
-      userid: auth.userid,
-      posttype: "fetchstoredquotation",
-      id: searchParams.get("id"),
-    }).then((response) => {
-      return response;
-    });
-    if (getstoredvaue.data.success) {
-      const details = JSON.parse(getstoredvaue.data.data.details);
-      setformuladata((prev) => ({
-        ...prev,
-        ["word"]: details.word,
-        country: details.country,
-        appno: details.appno ?? "",
-        applicant: details.applicant ?? "",
-        p: details.p ?? "",
-        c: details.c ?? "",
-        fl: details.fl ?? "",
-        i: details.i ?? "",
-        pr: details.pr ?? "",
-        char: details.char ?? "",
-        breakup: details.breakup ?? "no",
-      }));
-    } else {
+    try {
+      let getstoredvaue = await Fetchdata.pctaxiosrequest({
+        userid: auth.userid,
+        posttype: "fetchstoredquotation",
+        id: searchParams.get("id"),
+      }).then((response) => {
+        return response;
+      });
+      if (getstoredvaue.data.success) {
+        const details = JSON.parse(getstoredvaue.data.data.details);
+        setformuladata((prev) => ({
+          ...prev,
+          ["word"]: details.word,
+          country: details.country,
+          appno: details.appno ?? "",
+          applicant: details.applicant ?? "",
+          p: details.p ?? "",
+          c: details.c ?? "",
+          fl: details.fl ?? "",
+          i: details.i ?? "",
+          pr: details.pr ?? "",
+          char: details.char ?? "",
+          breakup: details.breakup ?? "no",
+        }));
+      } else {
+        console.log("failed");
+      }
+    } catch (err) {
       console.log("failed");
     }
   };
@@ -1553,19 +1557,22 @@ const Patentcalculator = ({ updatevalue, calcstate }) => {
                                           Filling Language
                                         </th>
                                         <th scope="col" className="even-color">
+                                          Deadline
+                                        </th>
+                                        <th scope="col" className="odd-color">
                                           Stages
                                         </th>
                                         {formuladata["breakup"] == "yes" ? (
                                           <>
                                             <th
                                               scope="col"
-                                              className="odd-color"
+                                              className="even-color"
                                             >
                                               Official fee{" "}
                                             </th>
                                             <th
                                               scope="col"
-                                              className="even-color"
+                                              className="odd-color"
                                             >
                                               Professional fee
                                             </th>
@@ -1621,29 +1628,33 @@ const Patentcalculator = ({ updatevalue, calcstate }) => {
                                               );
                                               return (
                                                 <tr key={index}>
-                                                  <th scope="row">
+                                                  <td scope="row">
                                                     {
                                                       defaultvalue
                                                         .countriescode[
                                                         item.value
                                                       ].name
                                                     }
-                                                  </th>
-                                                  <th scope="row">
+                                                  </td>
+                                                  <td scope="row">
                                                     {
                                                       applicantstatusvalue[
                                                         item.entity
                                                       ]
                                                     }
-                                                  </th>
-                                                  <th scope="row">
-                                                    {
-                                                      defaultvalue
-                                                        .filinglangcode[
-                                                        parseddata.part5[0].fl
-                                                      ]??''
-                                                    }
-                                                  </th>
+                                                  </td>
+                                                  <td scope="row">
+                                                    {defaultvalue
+                                                      .filinglangcode[
+                                                      parseddata.part5[0].fl
+                                                    ] ?? ""}
+                                                  </td>
+                                                  <td scope="row">
+                                                    {defaultvalue.countriescode[
+                                                      item.value
+                                                    ].deadline ?? ""}{" "}
+                                                    Month
+                                                  </td>
                                                   <td>
                                                     {stages
                                                       .map(

@@ -18,10 +18,18 @@ function App() {
   let auth = localStorage.getItem("user");
   const crmRoutes = getRoutesByCRM(config.crmtype);
   auth = auth != "" ? JSON.parse(auth) : { userid: "", type: "", org: "" };
-    const allowedRoutes = crmRoutes.filter((route) =>
+  let allowedRoutes = [];
+  if(auth?.permission?.allowedroutes){
+        allowedRoutes = crmRoutes.filter((route) =>
+          auth.permission.allowedroutes.includes(route.key)
+    );
+  }
+  else
+  {
+        allowedRoutes  = crmRoutes.filter((route) =>
       route.roles.includes(auth?.role??'user')
     );
-    console.log(auth?.role??'user',allowedRoutes);
+  }
   return (
     <div
       className="page-wrapper"

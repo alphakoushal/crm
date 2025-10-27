@@ -42,7 +42,7 @@ function Loading() {
   return <h2>🌀 Loading...</h2>;
 }
 let filtered = [];
-const PctallFreshdata = () => {
+const Masterdata = ({ reviewcategory, page }) => {
   const [d, sd] = useState([]);
   const [d2, gd] = useState([]);
   const [defaultdata, setdefaultdata] = useState({
@@ -141,6 +141,7 @@ const PctallFreshdata = () => {
       return newColumns;
     });
   };
+
   const [showeditmodal, updateeditmodal] = useState({ state: false, data: {} });
   const [agentdata, setagentdata] = useState([]);
   const [lawfirmdata, setlawfirmdata] = useState([]);
@@ -187,7 +188,8 @@ const PctallFreshdata = () => {
     accounttype: auth.type,
     org: auth.org,
     auth: JSON.stringify(auth),
-    posttype: "fetch-all-fresh-data",
+    posttype: "fetch-all-master-data",
+    reviewcategory: reviewcategory,
     email: "",
     domain: "",
     platform: platform.current,
@@ -206,7 +208,7 @@ const PctallFreshdata = () => {
   const changedata = useCallback((data, modal = "") => {
     sd(data);
     gd(data);
-    if (modal === "editmodal") {
+    if (modal == "editmodal") {
       console.log(data);
       updateeditmodal((prev) => ({ ...prev, state: false }));
     }
@@ -244,7 +246,7 @@ const PctallFreshdata = () => {
   });
   useEffect(() => {
     loaddata(formdata);
-  }, []);
+  }, [reviewcategory]);
   const showmailbox = () => {
     setdefaultdata((prev) => ({ ...prev, opensendmailbox: true }));
   };
@@ -272,16 +274,16 @@ const PctallFreshdata = () => {
 
     let obj = { key: index, value: value };
 
-    if (filtered.length === 0) {
+    if (filtered.length == 0) {
       if (value != "") {
         filtered.push(obj);
       }
     } else {
       const ind = filtered.findIndex((e) => {
-        return e.key === index;
+        return e.key == index;
       });
       if (ind > -1) {
-        if (value === "") {
+        if (value == "") {
           filtered.splice(ind, 1);
         } else {
           filtered[ind].value = value;
@@ -297,7 +299,7 @@ const PctallFreshdata = () => {
     filtered.forEach((e) => {
       var sv = e.value;
 
-      if (sv === "") {
+      if (sv == "") {
         copy = copy.filter((f) => {
           return f[e.key].toLowerCase().indexOf("") > -1;
         });
@@ -309,7 +311,7 @@ const PctallFreshdata = () => {
       }
       i++;
     });
-    if (filtered.length === i) {
+    if (filtered.length == i) {
       sd(copy);
       dispatch(userprofileupdate(copy.length));
     }
@@ -317,25 +319,25 @@ const PctallFreshdata = () => {
   async function pickvalue(e, i, ni, key, rowIndex = 0) {
     e.stopPropagation();
     setFocusedCell({ rowIndex: rowIndex, colIndex: ni });
-    if (e.detail === 1) {
+    if (e.detail == 1) {
       document.querySelector(".cell-name").value =
         key?.key ??
         document
           .querySelectorAll(".custom-table table thead tr+tr th")
           [ni].querySelector(".headers").innerText;
       document.querySelector(".cell-value").value =
-        i === "11" && e.target.tagName === "TD"
+        i == "11" && e.target.tagName == "TD"
           ? e.target.getElementsByTagName("span")[0].innerHTML
-          : i === "2" && e.target.tagName === "TD"
+          : i == "2" && e.target.tagName == "TD"
           ? e.target.getElementsByTagName("a")[0].innerHTML
           : e.target.innerHTML;
-    } else if (e.detail === 2 && i === "11") {
+    } else if (e.detail == 2 && i == "11") {
       showprofilesidebar(
         e,
         e.target.getElementsByTagName("span")[0].innerHTML,
         e.target.parentNode.children[8].innerHTML
       );
-    } else if (e.detail === 2 && i === "25") {
+    } else if (e.detail == 2 && i == "25") {
       let formdata = {
         publication_value: e.target.closest("tr").querySelectorAll("td")[0]
           .innerText,
@@ -369,9 +371,7 @@ const PctallFreshdata = () => {
           data: getdata.data.data,
           index: index,
         });
-      } catch (err) {
-        updateeditmodal({ state: state, data: "" });
-      }
+      } catch (err) {}
     } else {
       updateeditmodal({ state: state, data: "" });
     }
@@ -382,21 +382,21 @@ const PctallFreshdata = () => {
   }
   function sortdata(event, index = 0) {
     const copy = [...d];
-    if (event.detail === 1) {
+    if (event.detail == 1) {
       if (defaultdata.sortDown) {
         copy.sort(
           (a, b) =>
             -(
-              (typeof a[index] === "number" ? a[index] : a[index].trim()) >
-              (typeof b[index] === "number" ? b[index] : b[index].trim())
+              (typeof a[index] == "number" ? a[index] : a[index].trim()) >
+              (typeof b[index] == "number" ? b[index] : b[index].trim())
             )
         );
       } else {
         copy.sort(
           (a, b) =>
             -(
-              (typeof a[index] === "number" ? a[index] : a[index].trim()) <
-              (typeof b[index] === "number" ? b[index] : b[index].trim())
+              (typeof a[index] == "number" ? a[index] : a[index].trim()) <
+              (typeof b[index] == "number" ? b[index] : b[index].trim())
             )
         );
       }
@@ -563,7 +563,7 @@ const PctallFreshdata = () => {
     comments.shift();
     return comments
       .filter((c, i, a) => {
-        return a.indexOf(c) === i && c != "";
+        return a.indexOf(c) == i && c != "";
       })
       .join("\r\n\r\n");
   };
@@ -583,7 +583,7 @@ const PctallFreshdata = () => {
   const checkiffound = function (data) {
     let found = false;
     const index_of_data = agentdata.filter((e) => {
-      return e.name === data;
+      return e.name == data;
     });
     return index_of_data.length > 0 ? true : false;
   };
@@ -591,20 +591,21 @@ const PctallFreshdata = () => {
     let previosindex = 0;
     let nextindex = 0;
     previosindex =
-      data.action === "previous" && data.index === 0 ? 0 : data.index - 1;
+      data.action == "previous" && data.index == 0 ? 0 : data.index - 1;
     nextindex =
-      data.action === "next" && data.index === d.length - 1
+      data.action == "next" && data.index == d.length - 1
         ? d.length - 1
         : data.index + 1;
     document.querySelector("#loadingOverlay").classList.add("show");
     editinfo(
       true,
-      d[data.action === "previous" ? previosindex : nextindex][2] ?? "",
-      data.action === "previous" ? previosindex : nextindex
+      d[data.action == "previous" ? previosindex : nextindex][2] ?? "",
+      data.action == "previous" ? previosindex : nextindex
     );
   };
   const tableContainerRef = useRef(null);
   const viewportRef = useRef(null);
+  const [viewport, setViewport] = useState(null);
   const handleKeyDown = (e) => {
     let { rowIndex, colIndex } = focusedCell;
     let newFocused = { rowIndex, colIndex };
@@ -645,10 +646,175 @@ const PctallFreshdata = () => {
       }
     }
   };
+  const [showSearch, setShowSearch] = useState(false);
+  const [search, setSearch] = useState("");
+  const [matches, setMatches] = useState([]);
+  const [currentMatch, setCurrentMatch] = useState(0);
+  const [activeRow, setActiveRow] = useState(null);
+  const [activeCol, setActiveCol] = useState(null);
+
+   useEffect(() => {
+    const timer = setTimeout(() => {
+      if (tableContainerRef.current) {
+        console.log(tableContainerRef.current);
+        // Virtuoso scroll container has class "virtuoso-scroll-container"
+        // const vp = tableContainerRef.current.querySelector(".virtuoso-scroll-container");
+        // if (vp) {
+        //   setViewport(vp);
+        //   console.log("Viewport found:", vp);
+        // }
+      }
+    }, 100); // small delay to ensure DOM exists
+    return () => clearTimeout(timer);
+  }, []);
+
+  const scrollToColumn = (colIndex) => {
+  if (!viewport) return;
+
+  // Get any visible row (first rendered one)
+  const firstRow = viewport.querySelector("tr");
+  if (!firstRow) return;
+
+  const cell = firstRow.children[colIndex];
+  if (!cell) return;
+
+  const cellLeft = cell.offsetLeft;
+  const cellWidth = cell.offsetWidth;
+  const viewLeft = viewport.scrollLeft;
+  const viewRight = viewLeft + viewport.clientWidth;
+    console.log(firstRow,cellLeft,viewLeft);
+  // Smooth scroll logic (like Excel)
+  if (cellLeft < viewLeft) {
+    viewport.scrollBy({
+      left: cellLeft - 40,
+      behavior: "smooth",
+    });
+  } else if (cellLeft + cellWidth > viewRight) {
+    viewport.scrollBy({
+      left: cellLeft - viewport.clientWidth / 2,
+      behavior: "smooth",
+    });
+  }
+};
+  // 🎹 Keyboard shortcuts (Ctrl+F to open, Esc to close)
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.ctrlKey && e.key === "f") {
+        e.preventDefault();
+        setShowSearch(true);
+      }
+      if (e.key === "Escape") {
+        setShowSearch(false);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  // 🔍 Find matches when search changes
+  useEffect(() => {
+    if (!search.trim()) {
+      setMatches([]);
+      setActiveCol(null);
+      setActiveRow(null);
+      return;
+    }
+
+    const lower = search.toLowerCase();
+    const found = [];
+
+    d.forEach((row, rowIndex) => {
+      Object.values(row).forEach((val, colIndex) => {
+        if (String(val).toLowerCase().includes(lower)) {
+          found.push({ row: rowIndex, col: colIndex });
+        }
+      });
+    });
+
+    setMatches(found);
+    setCurrentMatch(0);
+        if (found.length > 0) {
+      setActiveRow(found[0].row);
+      setActiveCol(found[0].col);
+    }
+  }, [search, d]);
+
+  // 🧭 Scroll to active match
+  useEffect(() => {
+    if (matches.length > 0 && matches[currentMatch]) {
+      const { row,col } = matches[currentMatch];
+      tableContainerRef.current?.scrollToIndex({ index: row, align: "center" });
+      scrollToColumn(col);
+            setActiveRow(row);
+      setActiveCol(col);
+    }
+  }, [currentMatch, matches]);
+
+  const nextMatch = () => setCurrentMatch((i) => (i + 1) % matches.length || 0);
+  const prevMatch = () =>
+    setCurrentMatch((i) => (i - 1 + matches.length) % matches.length);
+
   return (
     <>
       <div className={" custom-table "} onKeyDown={handleKeyDown}>
-        {showeditmodal.state === true ? (
+        {/* 🧩 Floating Modal */}
+        {showSearch && (
+          <div
+            style={{
+              "z-index": "9",
+              width: "48%",
+              top: "29%",
+              margin: "auto",
+              right: "0",
+              left: "0",
+            }}
+            className="position-absolute bottom-6 right-6 bg-white border shadow-lg rounded-lg p-4 w-72 z-50"
+          >
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="font-semibold text-gray-700">Find</h2>
+              <button
+                className="text-gray-400 hover:text-gray-700"
+                onClick={() => setShowSearch(false)}
+              >
+                ✖
+              </button>
+            </div>
+
+            <input
+              type="text"
+              className="border rounded w-full p-2 mb-3"
+              placeholder="Type to search..."
+              autoFocus
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+
+            <div className="flex justify-between items-center text-sm text-gray-600">
+              <span>
+                {matches.length > 0
+                  ? `${currentMatch + 1} of ${matches.length}`
+                  : "No matches"}
+              </span>
+              <div className="flex gap-2">
+                <button
+                  onClick={prevMatch}
+                  disabled={!matches.length}
+                  className="px-2 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
+                >
+                  ⬆ Prev
+                </button>
+                <button
+                  onClick={nextMatch}
+                  disabled={!matches.length}
+                  className="px-2 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
+                >
+                  ⬇ Next
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {showeditmodal.state == true ? (
           <Editmodal
             pagination={pagination}
             lawfirmdata={lawfirmdata}
@@ -683,7 +849,7 @@ const PctallFreshdata = () => {
         ></IpoperationHeader>
         {defaultdata.opensendmailbox ? (
           <TransferEmailbox
-            page="allFreshdata"
+            page={page}
             platform={platform}
             alldata={d}
             changedata={changedata}
@@ -699,7 +865,7 @@ const PctallFreshdata = () => {
         )}
         {defaultdata.opendupesendmailbox ? (
           <TransferDupeemailprocess
-            page="allFreshdata"
+            page={page}
             platform={platform}
             alldata={d}
             changedata={changedata}
@@ -713,7 +879,7 @@ const PctallFreshdata = () => {
         {pivotmodalstate ? (
           <Pivotprocess
             column="63"
-            page="allFreshdata"
+            page={page}
             platform={platform}
             alldata={d}
           ></Pivotprocess>
@@ -743,6 +909,7 @@ const PctallFreshdata = () => {
                 <textarea
                   style={{ height: "40px" }}
                   className="form-control cell-value"
+                  onChange={(e) => setSearch(e.target.value)}
                 ></textarea>
               </li>
             </ul>
@@ -750,6 +917,7 @@ const PctallFreshdata = () => {
               <TableVirtuoso
                 ref={tableContainerRef}
                 components={{ className: "koushal" }}
+                componentsProps={{ viewport: { ref: viewportRef } }}
                 data={d}
                 fixedHeaderContent={() => (
                   <>
@@ -2041,13 +2209,13 @@ const PctallFreshdata = () => {
                           <i
                             className="ti ti-sort-ascending"
                             onClick={(e) => {
-                              sortdata(e, 64);
+                              sortdata(e, 65);
                             }}
                           ></i>{" "}
                         </div>
                         <input
                           className="filter"
-                          onKeyUp={(e) => filterdata(64, e.target.value)}
+                          onKeyUp={(e) => filterdata(65, e.target.value)}
                           type="text"
                         ></input>
                       </th>
@@ -2075,8 +2243,9 @@ const PctallFreshdata = () => {
                   </>
                 )}
                 itemContent={(index, user) => (
+                  
                   <>
-                    <td>{index}</td>
+                    <td className={`${index === activeRow ? 'active-column' : ''}`}>{index}</td>
                     <td
                       onClick={(e) => {
                         pickvalue(e, 2, 0, { key: "APPLN.NO." }, index);
@@ -2085,8 +2254,8 @@ const PctallFreshdata = () => {
                       style={{
                         background: user[60],
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                         position: "sticky",
@@ -2101,7 +2270,7 @@ const PctallFreshdata = () => {
                         style={{ position: "absolute", top: "18px", left: "0" }}
                         type="checkbox"
                       ></input>
-                      <a
+                      <a className={`${user[60] ? 'text-white' : ''}`}
                         target="blank"
                         href={
                           "https://patentscope.wipo.int/search/en/detail.jsf?docId=" +
@@ -2137,8 +2306,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 1
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 1
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2152,8 +2321,8 @@ const PctallFreshdata = () => {
                       className="column-value small"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 2
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 2
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2167,8 +2336,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 3
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 3
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2182,8 +2351,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 4
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 4
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2197,8 +2366,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 5
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 5
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2212,15 +2381,15 @@ const PctallFreshdata = () => {
                       className="APPLICANT NAME"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 6
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 6
                             ? "2px solid #ccc"
                             : "",
                       }}
                     >
                       {user[7]}{" "}
                       {checkiffound(user[7]) ? (
-                        <span className="badge fw-semibold py-1 bg-primary-subtle text-primary">
+                        <span class="badge fw-semibold py-1 bg-primary-subtle text-primary">
                           Found
                         </span>
                       ) : (
@@ -2234,8 +2403,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 7
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 7
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2249,8 +2418,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 8
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 8
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2264,8 +2433,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 9
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 9
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2279,8 +2448,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2294,8 +2463,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2304,15 +2473,21 @@ const PctallFreshdata = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 11, 12, { key: "Applicant EMAIL ID" }, index);
+                        pickvalue(
+                          e,
+                          11,
+                          12,
+                          { key: "Applicant EMAIL ID" },
+                          index
+                        );
                       }}
                       className={`cursor-pointer text-primary column-value align-items-center ${
                         tablesetting.countred(user[11], 11, d) ? "red-dupe" : ""
                       }`}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2327,8 +2502,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2354,8 +2529,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2369,8 +2544,8 @@ const PctallFreshdata = () => {
                       className="column-value small"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2384,8 +2559,8 @@ const PctallFreshdata = () => {
                       className="column-value small"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2399,8 +2574,8 @@ const PctallFreshdata = () => {
                       className="column-value small"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2414,8 +2589,8 @@ const PctallFreshdata = () => {
                       className="column-value small"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2429,8 +2604,8 @@ const PctallFreshdata = () => {
                       className="column-value small"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2444,8 +2619,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2465,8 +2640,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2480,8 +2655,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2495,8 +2670,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2510,8 +2685,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2525,8 +2700,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2540,8 +2715,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2555,8 +2730,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2571,8 +2746,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2588,8 +2763,8 @@ const PctallFreshdata = () => {
                       }`}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2603,8 +2778,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2629,8 +2804,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2650,8 +2825,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2665,8 +2840,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2683,8 +2858,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2712,8 +2887,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2741,8 +2916,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2770,8 +2945,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2799,8 +2974,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2828,8 +3003,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2857,8 +3032,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2886,8 +3061,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2915,8 +3090,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2944,8 +3119,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -2973,8 +3148,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3002,8 +3177,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3031,8 +3206,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3060,8 +3235,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3089,8 +3264,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3118,8 +3293,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3147,8 +3322,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3176,8 +3351,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3205,8 +3380,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3234,8 +3409,8 @@ const PctallFreshdata = () => {
                       }}
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3260,8 +3435,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3275,8 +3450,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3290,8 +3465,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3305,8 +3480,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3320,8 +3495,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3341,8 +3516,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3362,8 +3537,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3377,8 +3552,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3387,13 +3562,13 @@ const PctallFreshdata = () => {
                     </td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 59, 61, { key: "Filename" }, index);
+                        pickvalue(e, 59, 65, { key: "Filename" }, index);
                       }}
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3407,8 +3582,8 @@ const PctallFreshdata = () => {
                       className="column-value"
                       style={{
                         border:
-                          focusedCell.rowIndex === index &&
-                          focusedCell.colIndex === 0
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
                             ? "2px solid #ccc"
                             : "",
                       }}
@@ -3447,4 +3622,4 @@ const PctallFreshdata = () => {
   );
 };
 
-export default PctallFreshdata;
+export default Masterdata;

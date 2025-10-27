@@ -319,7 +319,7 @@ return <>
                       <MenuItem disabled key="all" value="all">
                         Choose Class
                       </MenuItem>
-                      {['1','2','3'].map((name) => (
+                      {Array.from({ length: 45 }, (_, i) => i + 1).map((name) => (
                         <MenuItem key={name} value={name}>
                           {name}
                         </MenuItem>
@@ -610,7 +610,7 @@ return <>
                       <MenuItem disabled key="all" value="all">
                         Choose Class
                       </MenuItem>
-                      {['1','2','3'].map((name) => (
+                      {Array.from({ length: 45 }, (_, i) => i + 1).map((name) => (
                         <MenuItem key={name} value={name}>
                           {name}
                         </MenuItem>

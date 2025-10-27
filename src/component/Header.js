@@ -60,9 +60,19 @@ const Header = React.memo(
     const crmRoutes = getRoutesByCRM(config.crmtype);
     let auth = localStorage.getItem("user");
     auth = auth != "" ? JSON.parse(auth) : "";
-    const allowedRoutes = crmRoutes.filter((route) =>
-      route.roles.includes(auth?.role ?? "user")
+      let allowedRoutes = [];
+  if(auth?.permission?.allowedroutes){
+        allowedRoutes = crmRoutes.filter((route) =>
+          auth.permission.allowedroutes.includes(route.key)
     );
+  }
+  else
+  {
+        allowedRoutes  = crmRoutes.filter((route) =>
+      route.roles.includes(auth?.role??'user')
+    );
+  }
+
     let platformaccount =
       platform.current === "it" || platform.current === "audit"
         ? defaultvalue.itaccounts
@@ -136,7 +146,7 @@ const Header = React.memo(
     const valued = useSelector((state) => state.userdata.profilebar);
     const [d, sd] = useState("hi");
     function showsidebar() {
-      document.querySelector(".uploadsidebar").classList.add("show");
+      document.querySelector(".uploadsidebar")?.classList.add("show");
     }
     function signout() {
       localStorage.setItem("user", "");
@@ -572,29 +582,35 @@ const Header = React.memo(
                       <div className=" ps-7 pt-7">
                         <div className="border-bottom">
                           <div className="row">
-                            <div className="col-3">
-                              <div className="position-relative">
-                                {allowedRoutes.map((route, index) =>
-                                  route.header ? (
-                                    <Link
-                                      to={route.path}
-                                      className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none"
-                                    >
-                                      <div className="d-inline-block">
-                                        <h6 className="mb-1 fw-semibold bg-hover-primary">
-                                          {route.name}
-                                        </h6>
-                                        <span className="fs-2 d-block text-dark">
-                                          Dashboard
-                                        </span>
-                                      </div>
-                                    </Link>
-                                  ) : (
-                                    <></>
-                                  )
-                                )}
-                              </div>
-                            </div>
+{allowedRoutes.map((route, index) => {
+  if (!route.header) return null;
+  if (index % 4 === 0) {
+    return (
+      <div className="col-3" key={index}>
+        <div className="position-relative">
+          {allowedRoutes.slice(index, index + 4).map((r, i) =>
+            r.header ? (
+              <Link
+                key={i}
+                to={r.path}
+                className="d-flex align-items-center pb-9 position-relative text-decoration-none"
+              >
+                <div className="d-inline-block">
+                  <h6 className="mb-1 fw-semibold bg-hover-primary">
+                    {r.name}
+                  </h6>
+                  <span className="fs-2 d-block text-dark">Dashboard</span>
+                </div>
+              </Link>
+            ) : null
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return null; // skip other indexes, already handled in slice
+})}
                             <div className="col-3">
                               <div className="position-relative">
                                 {auth.type == "1" || auth.type == "2" ? (

@@ -3,20 +3,9 @@ import React, {
   useMemo,
   useState,
   useRef,
-  memo,
-  Suspense,
-  lazy,
   useCallback,
 } from "react";
 import Header from "../../component/Header.js";
-import {
-  callstatus,
-  emailstatus,
-  costs,
-  standard,
-  tablesetting,
-  defaultvalue,
-} from "../../constant/Constant.js";
 import Fetchipdata from "../../services/pct/index.js";
 import moment from "moment";
 import Uploaddata from "../../services/uploaddata.js";
@@ -26,7 +15,6 @@ const PctForm = () => {
   const [agentdata, setagentdata] = useState([]);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
-  const [data, updatedata] = useState({ status: false, message: "" });
   const [validate, setvalidate] = useState({
     status: false,
     color: "error",
@@ -56,7 +44,7 @@ const PctForm = () => {
   async function checkexist(e) {
     e.preventDefault();
     let app = document.querySelector("#Aplication_number").value;
-    if (app == "") {
+    if (app === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
@@ -146,145 +134,145 @@ const PctForm = () => {
       REFERENCE_NUMBER: REFERENCE_NUMBER,
       type: "add_pct",
     };
-    if (web == "") {
+    if (web === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter Publication",
       }));
-    } else if (invention_title == "") {
+    } else if (invention_title === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter title",
       }));
-    } else if (country_code == "") {
+    } else if (country_code === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter country code",
       }));
-    } else if (email == "") {
+    } else if (email === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter email",
       }));
-    } else if (app == "") {
+    } else if (app === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter application",
       }));
-    } else if (REFERENCE_NUMBER == "") {
+    } else if (REFERENCE_NUMBER === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter ref no",
       }));
-    } else if (ISR == "") {
+    } else if (ISR === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter isr",
       }));
-    } else if (DRAWINGS == "") {
+    } else if (DRAWINGS === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter drawing",
       }));
-    } else if (PRIORITY == "") {
+    } else if (PRIORITY === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter priority",
       }));
-    } else if (CLAIMS == "") {
+    } else if (CLAIMS === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter claim",
       }));
-    } else if (PAGES == "") {
+    } else if (PAGES === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter pages",
       }));
-    } else if (agent_PHONE_NO == "") {
+    } else if (agent_PHONE_NO === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter agent phone number",
       }));
-    } else if (agent_email_ID == "") {
+    } else if (agent_email_ID === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter agent email",
       }));
-    } else if (agent_Name == "") {
+    } else if (agent_Name === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter agent name",
       }));
-    } else if (PHONE_NO == "") {
+    } else if (PHONE_NO === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter phone number",
       }));
-    } else if (Company_Name == "") {
+    } else if (Company_Name === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter company name",
       }));
-    } else if (cf == "") {
+    } else if (cf === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter contact person first name",
       }));
-    } else if (cl == "") {
+    } else if (cl === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter contact person last name",
       }));
-    } else if (d30 == "") {
+    } else if (d30 ==="") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter 30 deadline",
       }));
-    } else if (d31 == "") {
+    } else if (d31 === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter 31 deadline",
       }));
-    } else if (PRIOTITY_DATE == "") {
+    } else if (PRIOTITY_DATE === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter priority date",
       }));
-    } else if (APPLICANT_NAME == "") {
+    } else if (APPLICANT_NAME === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter applicant name",
       }));
-    } else if (CONTACT_INFO_OF == "") {
+    } else if (CONTACT_INFO_OF === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,
         message: "Enter contact info of",
       }));
-    } else if (APPLICANT_STATUS == "") {
+    } else if (APPLICANT_STATUS === "") {
       setvalidate((validate) => ({
         ...validate,
         status: true,

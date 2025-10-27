@@ -49,9 +49,18 @@ const IpoperationHeader = React.memo(
     const crmRoutes = getRoutesByCRM(config.crmtype);
     let auth = localStorage.getItem("user");
     auth = auth != "" ? JSON.parse(auth) : "";
-    const allowedRoutes = crmRoutes.filter((route) =>
-      route.roles.includes(auth?.role ?? "user")
+     let allowedRoutes = [];
+  if(auth?.permission?.allowedroutes){
+        allowedRoutes = crmRoutes.filter((route) =>
+          auth.permission.allowedroutes.includes(route.key)
     );
+  }
+  else
+  {
+        allowedRoutes  = crmRoutes.filter((route) =>
+      route.roles.includes(auth?.role??'user')
+    );
+  } 
     let platformaccount =
       platform.current === "it" || platform.current === "audit"
         ? defaultvalue.itaccounts
@@ -320,7 +329,7 @@ const IpoperationHeader = React.memo(
       }
     }
     const copydata = () => {
-      const headers = config.headers;
+      const headers = config.operationteamheaders;
       if (alldata.length <= 0) {
         setvalidate((prev) => ({
           ...prev,
@@ -332,23 +341,28 @@ const IpoperationHeader = React.memo(
         }));
         return false;
       } else {
+        const columnOrder = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,67, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 68,29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66];
+        const skipIndexes = [59,60,58,52,63,64];
         const csvData = [
-          headers.map((h) => `"${h}"`).join("\t"),
+          headers.map((value) => `"${value}"`).join("\t"),
           ...alldata.map((row) =>
-            row
-              .map((value, index) => {
+            columnOrder.map(( index) => {
                 // Assuming status is at index 2
                 if (index === 23) {
-                  return `"${emailstatus[value] || value}"`;
+                  return `"${emailstatus[row[index]] || row[index]}"`;
                 }
                 if (index === 24) {
-                  return `"${callstatus[value] || value}"`;
+                  return `"${callstatus[row[index]] || row[index]}"`;
                 }
-                value = String(value).replace(/"/g, '""');
+                if(skipIndexes.includes(index))
+                {
+                  return null;
+                }
+                let value = String(row[index]).replace(/"/g, '""');
                 value = value.replace(/\t/g, ' ').replace(/\r?\n/g, ' ');
                 return `"${value}"`;
               })
-              .join("\t")
+              .filter((v) => v !== null).join("\t")
           ),
         ].join("\n");
         navigator.clipboard
@@ -427,29 +441,35 @@ const IpoperationHeader = React.memo(
                       <div className=" ps-7 pt-7">
                         <div className="border-bottom">
                           <div className="row">
-                            <div className="col-3">
-                              <div className="position-relative">
-                                {allowedRoutes.map((route, index) =>
-                                  route.header ? (
-                                    <Link
-                                      to={route.path}
-                                      className="d-flex align-items-center pb-9 position-relative text-decoration-none text-decoration-none text-decoration-none text-decoration-none"
-                                    >
-                                      <div className="d-inline-block">
-                                        <h6 className="mb-1 fw-semibold bg-hover-primary">
-                                          {route.name}
-                                        </h6>
-                                        <span className="fs-2 d-block text-dark">
-                                          Dashboard
-                                        </span>
-                                      </div>
-                                    </Link>
-                                  ) : (
-                                    <></>
-                                  )
-                                )}
-                              </div>
-                            </div>
+                         {allowedRoutes.map((route, index) => {
+                           if (!route.header) return null;
+                           if (index % 4 === 0) {
+                             return (
+                               <div className="col-3" key={index}>
+                                 <div className="position-relative">
+                                   {allowedRoutes.slice(index, index + 4).map((r, i) =>
+                                     r.header ? (
+                                       <Link
+                                         key={i}
+                                         to={r.path}
+                                         className="d-flex align-items-center pb-9 position-relative text-decoration-none"
+                                       >
+                                         <div className="d-inline-block">
+                                           <h6 className="mb-1 fw-semibold bg-hover-primary">
+                                             {r.name}
+                                           </h6>
+                                           <span className="fs-2 d-block text-dark">Dashboard</span>
+                                         </div>
+                                       </Link>
+                                     ) : null
+                                   )}
+                                 </div>
+                               </div>
+                             );
+                           }
+                         
+                           return null; // skip other indexes, already handled in slice
+                         })}
                             <div className="col-3">
                               <div className="position-relative">
                                 {auth.type == "1" || auth.type == "2" ? (

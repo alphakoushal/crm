@@ -1,13 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import Uploaddata from "../../../services/uploaddata";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import moment from "moment";
-import { useFetcher } from "react-router-dom";
-import { motion } from "framer-motion";
 import Fuse from "fuse.js";
 import Toast from "../../New-toast";
-import { includes, set } from "lodash";
 const Editmodal = function ({
   agentdata,
   show,
@@ -22,30 +17,38 @@ const Editmodal = function ({
   const inprocess = useRef(false);
   const [constraints, setConstraints] = useState(null);
   const [query, setQuery] = useState("");
+  const [queryemail, setemailQuery] = useState("");
   const [lawfirmquery, setlawfirmQuery] = useState("");
+  const [lawfirmqueryemail, setlawfirmemailQuery] = useState("");
   const [results, setResults] = useState([]);
+  const [results_email, setemailResults] = useState([]);
   const [lawfirmresults, setlawfirmResults] = useState([]);
+  const [lawfirmresults_email, setlawfirmemailResults] = useState([]);
   const wrapperRef = useRef(null);
+  const wrapperemailRef = useRef(null);
   const wrapperAgentRef = useRef(null);
+  const wrapperAgentemailRef = useRef(null);
   other = { ...other, color: other?.color ?? "#ffffff" };
   const index_of_data = agentdata.filter((e) => {
-    return e.name == other.APPLICANT_NAME;
+    return e.name === other.APPLICANT_NAME;
   });
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const [data, updatedata] = useState({
     additional_email_id: other.additional_email_id ?? "N/A",
     additional_email_id_agent: other.additional_email_id_agent ?? "N/A",
     email: show.data.email_id,
     app: show.data.appno,
+    duplicate:show.data.duplicate,
     status: false,
     message: "",
-    ref_no: other.ref_no,
+    ref_no: other.ref_no ?? "N/A",
     isr: other.isr,
     color: other.color,
     drawing: other.drawing,
     priority: other.priority,
     claim: other.claim,
     pages: other.slpages1 ?? other.pages,
-    slpages: other.slpages2??'',
+    slpages: other.slpages2 ?? 0,
     a_p_h_n: other.a_p_h_n ?? "N/A",
     agent_email_id: other.agent_email_id,
     agent_name: other.agent_name,
@@ -55,14 +58,14 @@ const Editmodal = function ({
     c_p_l: other.c_p_l,
     firm_status: other.firm_status,
     c_p_f:
-      other.c_p_f != ""
+      other.c_p_f !== ""
         ? other.c_p_f
         : index_of_data.length > 0
         ? index_of_data[0].firstname
         : "",
-    deadline_30_month: other.deadline_30_month,
-    deadline_31_month: other.deadline_30_month,
-    p_date: other.p_date,
+    deadline_30_month: other.deadline_30_month ?? "",
+    deadline_31_month: other.deadline_30_month ?? "",
+    p_date: other.p_date ?? "",
     APPLICANT_NAME: other.APPLICANT_NAME,
     c_i_o: other.c_i_o,
     remarks: other.remarks ?? "",
@@ -80,27 +83,28 @@ const Editmodal = function ({
       additional_email_id: other.additional_email_id ?? "N/A",
       additional_email_id_agent: other.additional_email_id_agent ?? "N/A",
       email:
-        show.data.email_id != ""
+        show.data.email_id !== ""
           ? show.data.email_id
           : index_of_data.length > 0
           ? index_of_data[0].email
           : "",
       app: show.data.appno,
+      duplicate:show.data.duplicate,
       status: false,
       message: "",
-      ref_no: other.ref_no,
+      ref_no: other.ref_no ?? "N/A",
       isr: other.isr,
       color: other.color,
       drawing: other.drawing,
       priority: other.priority,
       claim: other.claim,
       pages: other.slpages1 ?? other.pages,
-      slpages: other.slpages2??'',
+      slpages: other.slpages2 ?? 0,
       a_p_h_n: other.a_p_h_n ?? "N/A",
       agent_email_id: other.agent_email_id,
       agent_name: other.agent_name,
       p_h_n:
-        other.p_h_n != ""
+        other.p_h_n !== ""
           ? other.p_h_n
           : index_of_data.length > 0
           ? index_of_data[0].contact
@@ -108,25 +112,25 @@ const Editmodal = function ({
       p_h_n_code: other.p_h_n_code,
       company_name: other.company_name,
       c_p_l:
-        other.c_p_l != ""
+        other.c_p_l !== ""
           ? other.c_p_l
           : index_of_data.length > 0
           ? index_of_data[0].lastname
           : "",
       c_p_f:
-        other.c_p_f != ""
+        other.c_p_f !== ""
           ? other.c_p_f
           : index_of_data.length > 0
           ? index_of_data[0].firstname
           : "",
       firm_status: other.firm_status,
-      deadline_30_month: other.deadline_30_month,
-      deadline_31_month: other.deadline_30_month,
-      p_date: other.p_date,
+      deadline_30_month: other.deadline_30_month ?? "",
+      deadline_31_month: other.deadline_30_month ?? "",
+      p_date: other.p_date ?? "",
       APPLICANT_NAME: other.APPLICANT_NAME,
       c_i_o: other.c_i_o,
       applicant_status:
-        other.applicant_status != ""
+        other.applicant_status !== ""
           ? other.applicant_status
           : index_of_data.length > 0
           ? index_of_data[0].status
@@ -150,7 +154,7 @@ const Editmodal = function ({
     const input = document.querySelector("#PRIOTITY_DATE");
     if (input) {
       input.value = data.p_date;
-      deadlinedate(data.p_date, "p_date");
+      deadlinedate(other.p_date ?? "", "p_date");
     }
     return () => {
       setTimeout(() => {
@@ -158,23 +162,31 @@ const Editmodal = function ({
         show.state = false;
       }, 1000);
     };
-  }, []);
+  }, [show]);
   function updatestate(value, key) {
-    if (key == "APPLICANT_NAME") {
+    if (key === "APPLICANT_NAME") {
       setQuery(value);
+      updatedata((data) => ({ ...data, [key]: value }));
+    } else if (key === "email") {
+      setemailQuery(value);
       updatedata((data) => ({ ...data, [key]: value }));
     } else if (["c_p_f", "c_p_l", "agent_name"].includes(key)) {
       updatedata((data) => ({ ...data, [key]: capitalizeFirst(value) }));
-    } else if (key == "company_name") {
+    } else if (key === "p_h_n" || key === "isr") {
+      updatedata((data) => ({ ...data, [key]: capitalizeall(value) }));
+    } else if (key === "company_name") {
       setlawfirmQuery(value);
       updatedata((data) => ({ ...data, [key]: value }));
-    } else if (key == "c_i_o") {
-      if (value == "Both - Individual & Agent") {
+    } else if (key === "agent_email_id") {
+      setlawfirmemailQuery(value);
+      updatedata((data) => ({ ...data, [key]: value }));
+    } else if (key === "c_i_o") {
+      if (value === "Both - Individual & Agent") {
         updatedata((data) => ({
           ...data,
           [key]: value,
         }));
-      } else if (value == "Individual") {
+      } else if (value === "Individual") {
         updatedata((prev) => ({
           ...prev,
           [key]: value,
@@ -189,7 +201,7 @@ const Editmodal = function ({
           email: data.email,
           isr: "",
         }));
-      } else if (value == "Agent") {
+      } else if (value === "Agent") {
         updatedata((data) => ({
           ...data,
           [key]: value,
@@ -208,15 +220,14 @@ const Editmodal = function ({
       } else {
         updatedata((data) => ({ ...data, [key]: value }));
       }
-    } else if (key == "ref_no") {
+    } else if (key === "ref_no") {
       updatedata((data) => ({ ...data, [key]: value.toUpperCase() }));
     } else {
       updatedata((data) => ({ ...data, [key]: value }));
     }
   }
-  function validatedata(e, app) {
-    e.preventDefault();
-    if (inprocess.current == true) {
+  function validatedata(app) {
+    if (inprocess.current === true) {
       setvalidate((validate) => ({
         ...validate,
         status: true,
@@ -224,148 +235,162 @@ const Editmodal = function ({
         color: "warning",
         icon: "info",
       }));
-    } else if (data.info_gap_reason == "") {
-      if (data.app == "") {
+    } else if (data.info_gap_reason === "") {
+      if (data.app === "") {
         setvalidate((validate) => ({
           ...validate,
           status: true,
           icon: "error",
           message: "Enter application",
         }));
-      } else if (data.p_date == "") {
-        setvalidate((validate) => ({
-          ...validate,
-          status: true,
-          icon: "error",
-          message: "Enter priority date",
-        }));
-      } else if (data.deadline_30_month == "") {
-        setvalidate((validate) => ({
-          ...validate,
-          status: true,
-          icon: "error",
-          message: "Enter 30 deadline",
-        }));
-      } else if (data.deadline_31_month == "") {
-        setvalidate((validate) => ({
-          ...validate,
-          status: true,
-          icon: "error",
-          message: "Enter 31 deadline",
-        }));
-      } else if (data.c_p_f == "") {
-        setvalidate((validate) => ({
-          ...validate,
-          status: true,
-          icon: "error",
-          message: "Enter contact person first name",
-        }));
-      } else if (data.c_p_l == "") {
-        setvalidate((validate) => ({
-          ...validate,
-          status: true,
-          icon: "error",
-          message: "Enter contact person last name",
-        }));
-      } else if (data.company_name == "" && data.c_i_o != "Individual") {
-        setvalidate((validate) => ({
-          ...validate,
-          status: true,
-          message: "Enter company name",
-          icon: "error",
-        }));
-      } else if (data.email == "") {
-        setvalidate((validate) => ({
-          ...validate,
-          status: true,
-          icon: "error",
-          message: "Enter email",
-        }));
-      } else if (data.p_h_n == "") {
-        setvalidate((validate) => ({
-          ...validate,
-          status: true,
-          icon: "error",
-          message: "Enter phone number",
-        }));
-      } else if (data.APPLICANT_NAME == "") {
+      } else if (data.APPLICANT_NAME === "") {
         setvalidate((validate) => ({
           ...validate,
           status: true,
           icon: "error",
           message: "Enter applicant name",
         }));
-      } else if (data.c_i_o == "") {
+      } else if (data.p_date === "") {
+        setvalidate((validate) => ({
+          ...validate,
+          status: true,
+          icon: "error",
+          message: "Enter priority date",
+        }));
+      } else if (data.deadline_30_month === "") {
+        setvalidate((validate) => ({
+          ...validate,
+          status: true,
+          icon: "error",
+          message: "Enter 30 deadline",
+        }));
+      } else if (data.deadline_31_month === "") {
+        setvalidate((validate) => ({
+          ...validate,
+          status: true,
+          icon: "error",
+          message: "Enter 31 deadline",
+        }));
+      } else if (data.c_i_o === "") {
         setvalidate((validate) => ({
           ...validate,
           status: true,
           icon: "error",
           message: "Enter contact info of",
         }));
-      } else if (data.agent_name == "") {
-        setvalidate((validate) => ({
-          ...validate,
-          status: true,
-          icon: "error",
-          message: "Enter agent name",
-        }));
-      } else if (data.agent_email_id == "") {
-        setvalidate((validate) => ({
-          ...validate,
-          status: true,
-          icon: "error",
-          message: "Enter agent email",
-        }));
-      } else if (data.a_p_h_n == "") {
-        setvalidate((validate) => ({
-          ...validate,
-          status: true,
-          icon: "error",
-          message: "Enter agent phone number",
-        }));
-      } else if (data.applicant_status == "") {
-        setvalidate((validate) => ({
-          ...validate,
-          status: true,
-          icon: "error",
-          message: "Enter applicant status",
-        }));
-      } else if (data.ref_no == "") {
+      } else if (data.ref_no === "") {
         setvalidate((validate) => ({
           ...validate,
           status: true,
           icon: "error",
           message: "Enter ref no",
         }));
-      } else if (data.isr == "") {
+      } else if (data.c_p_f === "") {
+        setvalidate((validate) => ({
+          ...validate,
+          status: true,
+          icon: "error",
+          message: "Enter contact person first name",
+        }));
+      } else if (data.c_p_l === "") {
+        setvalidate((validate) => ({
+          ...validate,
+          status: true,
+          icon: "error",
+          message: "Enter contact person last name",
+        }));
+      } else if (data.email === "") {
+        setvalidate((validate) => ({
+          ...validate,
+          status: true,
+          icon: "error",
+          message: "Enter email",
+        }));
+      } else if (data.email !== "N/A" && !emailRegex.test(data.email)) {
+        setvalidate((validate) => ({
+          ...validate,
+          status: true,
+          icon: "error",
+          message: "Enter a valid email address",
+        }));
+      } else if (data.p_h_n === "") {
+        setvalidate((validate) => ({
+          ...validate,
+          status: true,
+          icon: "error",
+          message: "Enter phone number",
+        }));
+      } else if (data.company_name === "" && data.c_i_o !== "Individual") {
+        setvalidate((validate) => ({
+          ...validate,
+          status: true,
+          message: "Enter company name",
+          icon: "error",
+        }));
+      } else if (data.agent_name === "") {
+        setvalidate((validate) => ({
+          ...validate,
+          status: true,
+          icon: "error",
+          message: "Enter agent name",
+        }));
+      } else if (data.agent_email_id === "") {
+        setvalidate((validate) => ({
+          ...validate,
+          status: true,
+          icon: "error",
+          message: "Enter agent email",
+        }));
+      } else if (data.agent_email_id !== "N/A" && !emailRegex.test(data.agent_email_id)) {
+        setvalidate((validate) => ({
+          ...validate,
+          status: true,
+          icon: "error",
+          message: "Enter a valid email address",
+        }));
+      } else if (data.a_p_h_n === "") {
+        setvalidate((validate) => ({
+          ...validate,
+          status: true,
+          icon: "error",
+          message: "Enter agent phone number",
+        }));
+      } else if (data.applicant_status === "") {
+        setvalidate((validate) => ({
+          ...validate,
+          status: true,
+          icon: "error",
+          message: "Enter applicant status",
+        }));
+      } else if (data.isr === "") {
         setvalidate((validate) => ({
           ...validate,
           status: true,
           icon: "error",
           message: "Enter ISA",
         }));
-      } else if (data.drawing == "") {
+      } else if (data.drawing === "") {
         setvalidate((prev) => ({
           ...prev,
           status: true,
           icon: "error",
           message: "Enter drawings",
         }));
-      } else if (data.priority == "") {
+      } else if (data.priority === "") {
         setvalidate((validate) => ({
           ...validate,
           status: true,
           icon: "error",
           message: "Enter priority",
         }));
-      } else if (data.claim == "") {
+      } else if (data.claim === "") {
         setvalidate((validate) => ({
           ...validate,
           status: true,
           icon: "error",
           message: "Enter claim",
         }));
-      } else if (data.pages == "") {
+      } else if (data.pages === "") {
         setvalidate((validate) => ({
           ...validate,
           status: true,
@@ -413,7 +438,7 @@ const Editmodal = function ({
           icon: "success",
         }));
         let newarray = alldata.map((item, index) => {
-          return app == item[2]
+          return app === item[2]
             ? {
                 ...item,
                 [60]: data.color,
@@ -450,16 +475,23 @@ const Editmodal = function ({
   }
   function capitalizeFirst(str) {
     if (!str) return "";
-    return str.split(' ').map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+    return str
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  }
+  function capitalizeall(str) {
+    if (!str) return "";
+    return str.toUpperCase();
   }
   function deadlinedate(v) {
     updatestate(v, "p_date");
     const input30 = document.querySelector("#d30");
     const input31 = document.querySelector("#d31");
-    let d30 = moment(v).add(30, "M").subtract(1, "d").format("DD-MM-YYYY");
-    let d31 = moment(v).add(31, "M").subtract(1, "d").format("DD-MM-YYYY");
-    input30.value = d30;
-    input31.value = d31;
+    let d30 = moment(v).add(30, "M").subtract(1, "d");
+    let d31 = moment(v).add(31, "M").subtract(1, "d");
+    input30.value = d30.format("DD-MM-YYYY");
+    input31.value = d31.format("DD-MM-YYYY");
     if (moment(d30).format("YYYY-MM-DD") < moment().format("YYYY-MM-DD")) {
       input30.classList.add("deadline-expired"); // Add your custom class
     } else {
@@ -470,8 +502,8 @@ const Editmodal = function ({
     } else {
       input31.classList.remove("deadline-expired");
     }
-    updatestate(d30, "deadline_30_month");
-    updatestate(d31, "deadline_31_month");
+    updatestate(d30.format("DD-MM-YYYY"), "deadline_30_month");
+    updatestate(d31.format("DD-MM-YYYY"), "deadline_31_month");
   }
   const handleSelect = (item) => {
     updatedata((data) => ({
@@ -486,10 +518,11 @@ const Editmodal = function ({
       c_i_o: item.contact_info,
     }));
     setResults([]);
+    setemailResults([]);
   };
   const selectlawfirm = (item) => {
-    if(item.b_list && item.b_list.toLowerCase()=='yes'){
-    alert('This lawfirm is blacklisted, please contact admin');
+    if (item.b_list && item.b_list.toLowerCase() === "yes") {
+      alert("This lawfirm is blacklisted, please contact admin");
     }
     updatedata((data) => ({
       ...data,
@@ -500,6 +533,7 @@ const Editmodal = function ({
       additional_email_id_agent: item.alt_email,
     }));
     setlawfirmResults([]);
+    setlawfirmemailResults([]);
   };
   const fuse = useMemo(() => {
     return new Fuse(agentdata, {
@@ -508,13 +542,28 @@ const Editmodal = function ({
       useExtendedSearch: true,
     });
   }, [agentdata]);
+  const fuse_email = useMemo(() => {
+    return new Fuse(agentdata, {
+      keys: ["email"], // or use a string array if it's flat
+      threshold: 0.3,
+      useExtendedSearch: true,
+    });
+  }, [agentdata]);
   const fuselawfirm = useMemo(() => {
     return new Fuse(lawfirmdata, {
       keys: ["name"], // or use a string array if it's flat
       threshold: 0.3,
-       useExtendedSearch: true,
+      useExtendedSearch: true,
     });
   }, [lawfirmdata]);
+  const fuselawfirm_email = useMemo(() => {
+    return new Fuse(lawfirmdata, {
+      keys: ["email"], // or use a string array if it's flat
+      threshold: 0.3,
+      useExtendedSearch: true,
+    });
+  }, [lawfirmdata]);
+  // Search effect with debounce for individuals
   useEffect(() => {
     const timer = setTimeout(() => {
       if (query.length > 0) {
@@ -530,6 +579,23 @@ const Editmodal = function ({
     return () => clearTimeout(timer);
   }, [query, fuse]);
 
+  // Search effect with debounce for individuals email
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (queryemail.length > 0) {
+        const result = fuse_email
+          .search(`"${queryemail}"`, { limit: 15 })
+          .map((r) => r.item);
+        setemailResults(result);
+      } else {
+        setemailResults([]);
+      }
+    }, 300); // debounce time
+
+    return () => clearTimeout(timer);
+  }, [queryemail, fuse_email]);
+
+  // Search effect with debounce for law firms
   useEffect(() => {
     const timerlawfirm = setTimeout(() => {
       if (lawfirmquery.length > 0) {
@@ -545,6 +611,23 @@ const Editmodal = function ({
 
     return () => clearTimeout(timerlawfirm);
   }, [lawfirmquery, fuselawfirm]);
+
+  // Search effect with debounce for law firms email
+  useEffect(() => {
+    const timerlawfirm = setTimeout(() => {
+      if (lawfirmqueryemail.length > 0) {
+        const result = fuselawfirm_email
+          .search(`"${lawfirmqueryemail}"`, { limit: 15 })
+          .map((r) => r.item);
+
+        setlawfirmemailResults(result);
+      } else {
+        setlawfirmemailResults([]);
+      }
+    }, 300); // debounce time
+
+    return () => clearTimeout(timerlawfirm);
+  }, [lawfirmqueryemail, fuselawfirm_email]);
 
   const handlePaste = (e) => {
     e.preventDefault();
@@ -583,6 +666,19 @@ const Editmodal = function ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+  useEffect(() => {
+    function handleClickOutsideemail(event) {
+      if (
+        wrapperemailRef.current &&
+        !wrapperemailRef.current.contains(event.target)
+      ) {
+        setemailResults([]);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutsideemail);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutsideemail);
+  }, []);
 
   useEffect(() => {
     function handleClickAgentOutside(event) {
@@ -597,6 +693,28 @@ const Editmodal = function ({
     return () =>
       document.removeEventListener("mousedown", handleClickAgentOutside);
   }, []);
+
+  useEffect(() => {
+    function handleClickAgentOutsideemail(event) {
+      if (
+        wrapperAgentemailRef.current &&
+        !wrapperAgentemailRef.current.contains(event.target)
+      ) {
+        setlawfirmemailResults([]);
+      }
+    }
+    document.addEventListener("mousedown", handleClickAgentOutsideemail);
+    return () =>
+      document.removeEventListener("mousedown", handleClickAgentOutsideemail);
+  }, []);
+  useEffect(() => {
+    setTimeout(() => {
+      const overlay = document.querySelector("#loadingOverlay");
+      if (overlay) {
+        document.querySelector("#loadingOverlay").classList.remove("show");
+      }
+    }, 1000);
+  });
   return (
     <>
       <Toast validate={validate} handleClose={handleClose}></Toast>
@@ -614,6 +732,14 @@ const Editmodal = function ({
             className="modal-dialog modal-xl modal-dialog-centered"
             role="document"
           >
+            <div id="loadingOverlay" class="loading-overlay rounded-3xl">
+              <div class="text-center">
+                <div class="pulse-ring mx-auto mb-4"></div>
+                <p class="text-lg font-medium text-gray-700">
+                  Loading Entry...
+                </p>
+              </div>
+            </div>
             <div className="modal-content">
               <div className="modal-header d-flex align-items-center">
                 <h4 className="modal-title" id="myLargeModalLabel"></h4>
@@ -627,7 +753,15 @@ const Editmodal = function ({
                   aria-label="Close"
                 ></button>
               </div>
-              <form className="form-horizontal filing-form_data">
+              <form
+                className="form-horizontal filing-form_data"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && e.target.tagName !== "BUTTON") {
+                    e.preventDefault(); // 👈 stops Enter from submitting
+                  }
+                }}
+                onSubmit={(e) => e.preventDefault()}
+              >
                 <div className="modal-body">
                   <div className="row">
                     <div className="col-md-12">
@@ -671,7 +805,7 @@ const Editmodal = function ({
                                 <input
                                   readOnly
                                   type="text"
-                                  className="date form-control Aplication_number validate-field fw-medium ANC"
+                                  className={`date form-control Aplication_number validate-field fw-medium ANC ${show.data.duplicate !== null ? "bg-danger text-white" : ""}`}
                                   value={show.data.appno}
                                   id="Aplication_number"
                                   name="Aplication_number"
@@ -795,7 +929,7 @@ const Editmodal = function ({
                                   <option value="">APPLICANT STATUS</option>
                                   <option
                                     selected={
-                                      data.applicant_status.toLowerCase() ==
+                                      data.applicant_status.toLowerCase() ===
                                       "small"
                                         ? true
                                         : false
@@ -806,7 +940,7 @@ const Editmodal = function ({
                                   </option>
                                   <option
                                     selected={
-                                      data.applicant_status.toLowerCase() ==
+                                      data.applicant_status.toLowerCase() ===
                                       "large"
                                         ? true
                                         : false
@@ -917,15 +1051,17 @@ const Editmodal = function ({
                                   <option value="">CONTACT INFO OF</option>
                                   <option
                                     selected={
-                                      data.c_i_o == "Individual" ? true : false
+                                      data.c_i_o === "Both - Individual & Agent"
+                                        ? true
+                                        : false
                                     }
-                                    value="Individual"
+                                    value="Both - Individual & Agent"
                                   >
-                                    Individual
+                                    Both - Individual & Agent
                                   </option>
                                   <option
                                     selected={
-                                      data.c_i_o == "Agent" ? true : false
+                                      data.c_i_o === "Agent" ? true : false
                                     }
                                     value="Agent"
                                   >
@@ -933,13 +1069,11 @@ const Editmodal = function ({
                                   </option>
                                   <option
                                     selected={
-                                      data.c_i_o == "Both - Individual & Agent"
-                                        ? true
-                                        : false
+                                      data.c_i_o === "Individual" ? true : false
                                     }
-                                    value="Both - Individual & Agent"
+                                    value="Individual"
                                   >
-                                    Both - Individual & Agent
+                                    Individual
                                   </option>
                                 </select>
                               </div>
@@ -962,7 +1096,9 @@ const Editmodal = function ({
                                   onChange={(e) =>
                                     updatestate(e.target.value, "ref_no")
                                   }
-                                  value={data.ref_no.toUpperCase()}
+                                  value={String(
+                                    data.ref_no || ""
+                                  ).toUpperCase()}
                                   id="REFERENCE_NUMBER"
                                   name="REFERENCE_NUMBER"
                                   placeholder="REFERENCE NUMBER"
@@ -1019,27 +1155,44 @@ const Editmodal = function ({
                                 />
                               </div>
                             </div>
-                            <div className="form-group col-md-3">
+                            <div
+                              ref={wrapperemailRef}
+                              className="form-group col-md-3"
+                            >
                               <label
                                 className="col-sm-12 fw-semibold"
                                 htmlFor="Email_ID"
                               >
-                                E-mail-ID:
+                                Applicant E-mail-ID:
                               </label>
                               <div
-                                className="col-sm-12 error_field_group"
+                                className="col-sm-12 error_field_group position-relative"
                                 id="Email_ID-group"
                               >
                                 <input
                                   type="text"
                                   className="form-control restrictedinput validate-field fw-medium ANC"
                                   value={data.email}
+                                  autoComplete="off"
                                   id="Email_ID"
                                   onChange={(e) =>
                                     updatestate(e.target.value, "email")
                                   }
-                                  placeholder="Email ID"
+                                  placeholder="Applicant Email ID"
                                 />
+                                {results_email.length > 0 && (
+                                  <ul className="position-absolute z-3 bg-white border w-full mt-1 rounded shadow max-h-60 overflow-auto">
+                                    {results_email.map((item, idx) => (
+                                      <li
+                                        key={idx}
+                                        onClick={() => handleSelect(item)}
+                                        className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                                      >
+                                        {item.email}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
                               </div>
                             </div>
                             <div className="form-group col-md-3">
@@ -1092,7 +1245,7 @@ const Editmodal = function ({
                                 ref={wrapperAgentRef}
                                 className="col-sm-12 error_field_group position-relative"
                                 id="Company_Name-group "
-                                style={{ zIndex: "99" }}
+                                style={{ zIndex: "40" }}
                               >
                                 <input
                                   type="text"
@@ -1146,7 +1299,10 @@ const Editmodal = function ({
                                 />
                               </div>
                             </div>
-                            <div className="form-group col-md-3">
+                            <div
+                              ref={wrapperAgentemailRef}
+                              className="form-group col-md-3"
+                            >
                               <label
                                 className="col-sm-12 fw-semibold"
                                 htmlFor="agent_email_ID"
@@ -1154,13 +1310,14 @@ const Editmodal = function ({
                                 Agent E-mail-ID:
                               </label>
                               <div
-                                className="col-sm-12 error_field_group"
+                                className="col-sm-12 error_field_group position-relative"
                                 id="agent_email_ID-group"
                               >
                                 <input
                                   type="text"
                                   className="form-control fw-medium ANC"
                                   value={data.agent_email_id}
+                                  autoComplete="off"
                                   onChange={(e) =>
                                     updatestate(
                                       e.target.value,
@@ -1171,6 +1328,19 @@ const Editmodal = function ({
                                   name="agent_email_ID"
                                   placeholder="Agent Email ID"
                                 />
+                                {lawfirmresults_email.length > 0 && (
+                                  <ul className="position-absolute z-3 bg-white border w-full mt-1 rounded shadow max-h-60 overflow-auto">
+                                    {lawfirmresults_email.map((item, idx) => (
+                                      <li
+                                        key={idx}
+                                        onClick={() => selectlawfirm(item)}
+                                        className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                                      >
+                                        {item.email}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
                               </div>
                             </div>
                             <div className="form-group col-md-2">
@@ -1222,7 +1392,7 @@ const Editmodal = function ({
                                   <option value="">Firm Status</option>
                                   <option
                                     selected={
-                                      data.firm_status == "N/A" ? true : false
+                                      data.firm_status === "N/A" ? true : false
                                     }
                                     value="N/A"
                                   >
@@ -1230,7 +1400,9 @@ const Editmodal = function ({
                                   </option>
                                   <option
                                     selected={
-                                      data.firm_status == "Small" ? true : false
+                                      data.firm_status === "Small"
+                                        ? true
+                                        : false
                                     }
                                     value="Small"
                                   >
@@ -1238,7 +1410,7 @@ const Editmodal = function ({
                                   </option>
                                   <option
                                     selected={
-                                      data.firm_status == "Medium"
+                                      data.firm_status === "Medium"
                                         ? true
                                         : false
                                     }
@@ -1248,7 +1420,9 @@ const Editmodal = function ({
                                   </option>
                                   <option
                                     selected={
-                                      data.firm_status == "Large" ? true : false
+                                      data.firm_status === "Large"
+                                        ? true
+                                        : false
                                     }
                                     value="Large"
                                   >
@@ -1365,7 +1539,9 @@ const Editmodal = function ({
                                   <option value="">Reason</option>
                                   <option
                                     selected={
-                                      data.info_gap_reason == "1" ? true : false
+                                      data.info_gap_reason === "1"
+                                        ? true
+                                        : false
                                     }
                                     value="1"
                                   >
@@ -1373,7 +1549,9 @@ const Editmodal = function ({
                                   </option>
                                   <option
                                     selected={
-                                      data.info_gap_reason == "2" ? true : false
+                                      data.info_gap_reason === "2"
+                                        ? true
+                                        : false
                                     }
                                     value="2"
                                   >
@@ -1381,7 +1559,9 @@ const Editmodal = function ({
                                   </option>
                                   <option
                                     selected={
-                                      data.info_gap_reason == "3" ? true : false
+                                      data.info_gap_reason === "3"
+                                        ? true
+                                        : false
                                     }
                                     value="3"
                                   >
@@ -1389,7 +1569,9 @@ const Editmodal = function ({
                                   </option>
                                   <option
                                     selected={
-                                      data.info_gap_reason == "4" ? true : false
+                                      data.info_gap_reason === "4"
+                                        ? true
+                                        : false
                                     }
                                     value="4"
                                   >
@@ -1397,7 +1579,9 @@ const Editmodal = function ({
                                   </option>
                                   <option
                                     selected={
-                                      data.info_gap_reason == "5" ? true : false
+                                      data.info_gap_reason === "5"
+                                        ? true
+                                        : false
                                     }
                                     value="5"
                                   >
@@ -1591,8 +1775,10 @@ const Editmodal = function ({
                               </button>
                               <button
                                 type="submit"
+                                onSubmit={(e) => e.preventDefault()}
                                 onClick={(e) => {
-                                  validatedata(e, show.data.appno);
+                                  e.preventDefault();
+                                  validatedata(show.data.appno);
                                 }}
                                 class="btn btn-info font-medium rounded-pill px-4"
                               >
@@ -1600,7 +1786,7 @@ const Editmodal = function ({
                                   Update &nbsp;
                                   <i
                                     class={`ti ti-refresh uploadfile ${
-                                      inprocess.current == true ? "rotate" : ""
+                                      inprocess.current === true ? "rotate" : ""
                                     }`}
                                   ></i>
                                 </div>
