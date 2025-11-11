@@ -430,6 +430,33 @@ try{
                     </div>
                   </div>
                 </div>
+              </div>    <div className="card card-body">
+                <div className="mb-3">
+                  <label htmlFor="assignfile" className="form-label">
+                    Upload Master Data
+                  </label>
+                </div>
+                <div className="col-12">
+                  <div className="d-md-flex align-items-center mt-0 align-content-md-between gap-3">
+                    <input
+                      className="form-control form-control-sm flex-item"
+                      id="uploadmasterdata"
+                      type="file"
+                    />
+                    <div className="ms-auto mt-3 mt-md-0 ">
+                      <button
+                        onClick={() => uploadanalyticdata("uploadmasterdata")}
+                        type="submit"
+                        className="btn btn-info font-medium rounded-pill px-4"
+                      >
+                        <div className="d-flex align-items-center">
+                          Upload &nbsp;
+                          <i className="ti ti-refresh uploadmasterdata"></i>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div></>
           ) : (
             <></>

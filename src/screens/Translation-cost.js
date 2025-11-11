@@ -5,7 +5,6 @@ import { defaultvalue } from "../constant/Constant";
 import Uploaddata from "../services/uploaddata";
 import moment from "moment";
 import { use } from "react";
-import { type } from "@testing-library/user-event/dist/type";
 const Translationcost = () => {
   const platform = useRef("ip");
   const [translation_Cost, updatetranslation_Cost] = useState([]);

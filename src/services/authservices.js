@@ -1,5 +1,4 @@
 import axios from "axios";
-import { json } from "react-router-dom";
 import { API_URL } from "../constant/Constant";
 let axiosConfig = { 'content-type': 'application/x-www-form-urlencoded' };
 const login = (data) => {

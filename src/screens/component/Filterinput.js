@@ -8,6 +8,7 @@ const Filterinput = ({fieldname,sortdata,filterdata,id}) =>{
                             onClick={(e) => {
                               sortdata(e, id);
                             }}
+                            data-testid="sort-icon"
                           ></i>{" "}
                         </div>
                         <input
