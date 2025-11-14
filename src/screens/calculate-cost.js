@@ -18,7 +18,6 @@ const Calculatecost = () => {
       if(result.data.success && result.data.data.length>0)
       {
          let response=result.data.data.map((item)=>{return JSON.parse(item.details);});
-         console.log("result", defaultvalue.transcost);
          defaultvalue.transcost=response;
       }
     }

@@ -3442,6 +3442,7 @@ const costs = {
   },
 };
 const API_URL = config.apiBaseUrl;
+const API_URL_NEW = config.apiBaseUrlnEW;
 let axiosConfig = { "content-type": "application/x-www-form-urlencoded" };
 export {
   callstatus,
@@ -3453,5 +3454,6 @@ export {
   tablesetting,
   defaultvalue,
   API_URL,
+  API_URL_NEW,
   axiosConfig,
 };

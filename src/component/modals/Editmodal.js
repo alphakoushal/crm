@@ -223,7 +223,7 @@ document.querySelector('#d31').value=moment(v).add(31, 'M').subtract(1, 'd').for
                                                             </div>
                                                         </div>
                                                         <div className="form-group col-md-4">
-                                                            <label className="col-sm-12" htmlFor="cntprsn">Contact Person Last1</label>
+                                                            <label className="col-sm-12" htmlFor="cntprsn">Contact Person Last</label>
                                                             <div className="col-sm-12 error_field_group" id="CONTACT_PERSON_Last_NAME-group">
                                                                 <input type="text" className="form-control restrictedinput validate-field" onChange={(e) => (updatestate(e.target.value, 'c_p_l'))} value={data.c_p_l} id="CONTACT_PERSON_Last_NAME" name="CONTACT_PERSON_Last_NAME" placeholder="LAST NAME" />
                                                             </div>

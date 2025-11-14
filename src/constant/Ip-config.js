@@ -1,5 +1,6 @@
 const config = {
   apiBaseUrl: "https://www.anuation.com/oldcrm/",
+  apiBaseUrlnEW: "https://www.anuation.com/crm-backend/api/",
   assetsurl: "https://www.anuation.com/crm/assets/",
   basepath: "crm",
   anuationcomkey: "",

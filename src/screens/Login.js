@@ -22,7 +22,9 @@ const Login =function()
            {
             var logindata = {
                 'signin_code': ecode,
+                'ecode': ecode,
                 'signin_password': signin_password,
+                'password': signin_password,
                 'cordinate':JSON.stringify({ lat: 28.6358411, long: 77.0987502 }),
                 'remember': '',
                 'type': 'login'
