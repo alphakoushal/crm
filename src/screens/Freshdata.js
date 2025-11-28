@@ -151,6 +151,7 @@ const Freshdata = () => {
   const platform = useRef("anuation");
   const auth = JSON.parse(localStorage.getItem("user"));
   const valued = useSelector((state) => state.userdata.value);
+  const [focusedCell, setFocusedCell] = useState({ rowIndex: 0, colIndex: 0 });
   const pivotmodalstate = useSelector((state) => state.crmstyle.pivot);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -178,6 +179,7 @@ const Freshdata = () => {
     org: auth.org,
     auth: JSON.stringify(auth),
     posttype: "local-fresh-data",
+    reviewcategory: '',
     email: "",
     domain: "",
     platform: platform.current,
@@ -304,8 +306,9 @@ const Freshdata = () => {
       dispatch(userprofileupdate(copy.length));
     }
   }
-  async function pickvalue(e, i, ni, key) {
+  async function pickvalue(e, i, ni, key,rowIndex = 0) {
     e.stopPropagation();
+    setFocusedCell({ rowIndex: rowIndex, colIndex: ni });
     if (e.detail == 1) {
       document.querySelector(".cell-name").value =
         key?.key ??
@@ -590,9 +593,215 @@ const Freshdata = () => {
       data.action == "previous" ? previosindex : nextindex
     );
   };
+
+
+    // ================== Search Functionality ==================
+    const tableContainerRef = useRef(null);
+    const viewportRef = useRef(null);
+    const [viewport, setViewport] = useState(null);
+    const handleKeyDown = (e) => {
+      let { rowIndex, colIndex } = focusedCell;
+      let newFocused = { rowIndex, colIndex };
+      if (e.shiftKey && e.key === "ArrowRight") {
+        newFocused = { rowIndex, colIndex: colIndex + 1 };
+      }
+      if (e.ctrlKey && e.key === "ArrowRight" && showeditmodal.state == false) {
+        e.preventDefault();
+        const container = tableContainerRef.current;
+        if (container) {
+          container.scrollBy({
+            top: 0,
+            left: 5000,
+            behavior: "smooth",
+          });
+        }
+      } else if (e.ctrlKey && e.key === "ArrowLeft" && showeditmodal.state == false) {
+        e.preventDefault();
+        const container = tableContainerRef.current;
+        if (container) {
+          container.scrollBy({
+            top: 0,
+            left: -5000,
+            behavior: "smooth",
+          });
+        }
+      } else if (e.ctrlKey && e.key === "ArrowDown" && showeditmodal.state == false) {
+        e.preventDefault();
+        const container = tableContainerRef.current;
+        if (container) {
+          container.scrollToIndex(d.length - 1);
+        }
+      } else if (e.ctrlKey && e.key === "ArrowUp" && showeditmodal.state == false) {
+        e.preventDefault();
+        const container = tableContainerRef.current;
+        if (container) {
+          container.scrollToIndex(1);
+        }
+      }
+    };
+    const [showSearch, setShowSearch] = useState(false);
+    const [search, setSearch] = useState("");
+    const [matches, setMatches] = useState([]);
+    const [currentMatch, setCurrentMatch] = useState(0);
+    const [activeRow, setActiveRow] = useState(null);
+    const [activeCol, setActiveCol] = useState(null);
+  
+     useEffect(() => {
+      const timer = setTimeout(() => {
+        if (tableContainerRef.current) {
+          console.log(tableContainerRef.current);
+          // Virtuoso scroll container has class "virtuoso-scroll-container"
+          // const vp = tableContainerRef.current.querySelector(".virtuoso-scroll-container");
+          // if (vp) {
+          //   setViewport(vp);
+          //   console.log("Viewport found:", vp);
+          // }
+        }
+      }, 100); // small delay to ensure DOM exists
+      return () => clearTimeout(timer);
+    }, []);
+  
+    const scrollToColumn = (colIndex) => {
+    if (!viewport) return;
+  
+    // Get any visible row (first rendered one)
+    const firstRow = viewport.querySelector("tr");
+    if (!firstRow) return;
+  
+    const cell = firstRow.children[colIndex];
+    if (!cell) return;
+  
+    const cellLeft = cell.offsetLeft;
+    const cellWidth = cell.offsetWidth;
+    const viewLeft = viewport.scrollLeft;
+    const viewRight = viewLeft + viewport.clientWidth;
+      console.log(firstRow,cellLeft,viewLeft);
+    // Smooth scroll logic (like Excel)
+    if (cellLeft < viewLeft) {
+      viewport.scrollBy({
+        left: cellLeft - 40,
+        behavior: "smooth",
+      });
+    } else if (cellLeft + cellWidth > viewRight) {
+      viewport.scrollBy({
+        left: cellLeft - viewport.clientWidth / 2,
+        behavior: "smooth",
+      });
+    }
+  };
+    useEffect(() => {
+      const handler = (e) => {
+        if (e.ctrlKey && e.key === "f") {
+          e.preventDefault();
+          setShowSearch(true);
+        }
+        if (e.key === "Escape") {
+          setShowSearch(false);
+        }
+      };
+      window.addEventListener("keydown", handler);
+      return () => window.removeEventListener("keydown", handler);
+    }, []);
+  
+    // 🔍 Find matches when search changes
+    useEffect(() => {
+      if (!search.trim()) {
+        setMatches([]);
+        setActiveCol(null);
+        setActiveRow(null);
+        return;
+      }
+  
+      const lower = search.toLowerCase();
+      const found = [];
+  
+      d.forEach((row, rowIndex) => {
+        Object.values(row).forEach((val, colIndex) => {
+          if (String(val).toLowerCase().includes(lower)) {
+            found.push({ row: rowIndex, col: colIndex });
+          }
+        });
+      });
+  
+      setMatches(found);
+      setCurrentMatch(0);
+          if (found.length > 0) {
+        setActiveRow(found[0].row);
+        setActiveCol(found[0].col);
+      }
+    }, [search, d]);
+  
+    // 🧭 Scroll to active match
+    useEffect(() => {
+      if (matches.length > 0 && matches[currentMatch]) {
+        const { row,col } = matches[currentMatch];
+        tableContainerRef.current?.scrollToIndex({ index: row, align: "center" });
+        scrollToColumn(col);
+              setActiveRow(row);
+        setActiveCol(col);
+      }
+    }, [currentMatch, matches]);
+  
+    const nextMatch = () => setCurrentMatch((i) => (i + 1) % matches.length || 0);
+    const prevMatch = () =>
+      setCurrentMatch((i) => (i - 1 + matches.length) % matches.length);
+    
   return (
     <>
-      <div className={" custom-table "}>
+      <div className={" custom-table "} onKeyDown={handleKeyDown}>
+                {/* 🧩 Floating Modal */}
+        {showSearch && (
+          <>
+                   <div class="modal fade show" id="addListModal" tabindex="-1" role="dialog" style={{'display':'block'}} aria-labelledby="addListModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title add-list-title" id="addListModalTitleLabel1">Find</h5>
+                  <button onClick={() => setShowSearch(false)} type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="compose-box">
+                    <div class="compose-content" id="addListModalTitle">
+                      <form action="javascript:void(0);">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="list-title d-flex align-items-center">
+                              <input  value={search} onChange={(e) => setSearch(e.target.value)} id="item-name" type="text" placeholder="Search Application number" class="form-control" name="task" />
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer justify-content-start">
+                         <span>
+                {matches.length > 0
+                  ? `${currentMatch + 1} of ${matches.length}`
+                  : "No matches"}
+              </span>
+                  <div class="d-flex gap-6">
+                                    <button
+                  onClick={prevMatch}
+                  disabled={!matches.length}
+                  className="btn add-list btn-primary"
+                >
+                  ⬆ Prev
+                </button>
+                <button
+                  onClick={nextMatch}
+                  disabled={!matches.length}
+                  className="btn add-list btn-primary"
+                >
+                  ⬇ Next
+                </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </>
+        )}
         {showeditmodal.state == true ? (
           <Editmodal
             pagination={pagination}
@@ -693,7 +902,9 @@ const Freshdata = () => {
             </ul>
             <Suspense fallback={<Loading />}>
               <TableVirtuoso
+                ref={tableContainerRef}
                 components={{ className: "koushal" }}
+                componentsProps={{ viewport: { ref: viewportRef } }}
                 data={d}
                 fixedHeaderContent={() => (
                   <>
@@ -2020,14 +2231,19 @@ const Freshdata = () => {
                 )}
                 itemContent={(index, user) => (
                   <>
-                    <td>{index}</td>
+                    <td className={`${index === activeRow ? 'active-column' : ''}`}>{index}</td>
                     <td
                       onClick={(e) => {
-                        pickvalue(e, 2, 0, { key: "APPLN.NO." });
+                        pickvalue(e, 2, 0, { key: "APPLN.NO." }, index);
                       }}
                       className="column-value"
                       style={{
                         background: user[60],
+                         border:
+                          focusedCell.rowIndex == index &&
+                          focusedCell.colIndex == 0
+                            ? "2px solid #ccc"
+                            : "",
                         position: "sticky",
                         left: 0,
                         zIndex: 1,

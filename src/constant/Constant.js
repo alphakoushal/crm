@@ -2333,7 +2333,7 @@ const defaultvalue = {
         { name: "Comoros", code: "KM", continent: "Africa", url: "comoros" },
         { name: "Congo", code: "CG", continent: "Africa", url: "congo" },
         {
-          name: "C么te d鈥橧voire",
+          name: "Cote d'Ivoire",
           code: "CI",
           continent: "Africa",
           url: "cote-d-voire",

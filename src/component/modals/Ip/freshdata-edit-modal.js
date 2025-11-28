@@ -15,6 +15,7 @@ const Editmodal = function ({
   let other = JSON.parse(show.data.otherdetail);
   const containerRef = useRef(null);
   const inprocess = useRef(false);
+  const [lawFirmId,setlawFirmId] = useState({});
   const [constraints, setConstraints] = useState(null);
   const [query, setQuery] = useState("");
   const [queryemail, setemailQuery] = useState("");
@@ -38,8 +39,9 @@ const Editmodal = function ({
     additional_email_id_agent: other.additional_email_id_agent ?? "N/A",
     email: show.data.email_id,
     app: show.data.appno,
-    duplicate:show.data.duplicate,
+    duplicate: show.data.duplicate,
     status: false,
+    add_new_lawfirm:false,
     message: "",
     ref_no: other.ref_no ?? "N/A",
     isr: other.isr,
@@ -89,7 +91,7 @@ const Editmodal = function ({
           ? index_of_data[0].email
           : "",
       app: show.data.appno,
-      duplicate:show.data.duplicate,
+      duplicate: show.data.duplicate,
       status: false,
       message: "",
       ref_no: other.ref_no ?? "N/A",
@@ -98,6 +100,7 @@ const Editmodal = function ({
       drawing: other.drawing,
       priority: other.priority,
       claim: other.claim,
+      add_new_lawfirm:false,
       pages: other.slpages1 ?? other.pages,
       slpages: other.slpages2 ?? 0,
       a_p_h_n: other.a_p_h_n ?? "N/A",
@@ -170,7 +173,12 @@ const Editmodal = function ({
     } else if (key === "email") {
       setemailQuery(value);
       updatedata((data) => ({ ...data, [key]: value }));
-    } else if (["c_p_f", "c_p_l", "agent_name"].includes(key)) {
+    } else if (key === "add_new_lawfirm") {
+      updatedata((data) => ({ ...data, [key]: value }));
+    }else if (["c_p_f", "c_p_l"].includes(key)) {
+      updatedata((data) => ({ ...data, [key]: capitalizeFirst(value) }));
+    } else if (["agent_name"].includes(key)) {
+      setlawfirmQuery(data.company_name);
       updatedata((data) => ({ ...data, [key]: capitalizeFirst(value) }));
     } else if (key === "p_h_n" || key === "isr") {
       updatedata((data) => ({ ...data, [key]: capitalizeall(value) }));
@@ -341,7 +349,10 @@ const Editmodal = function ({
           icon: "error",
           message: "Enter agent email",
         }));
-      } else if (data.agent_email_id !== "N/A" && !emailRegex.test(data.agent_email_id)) {
+      } else if (
+        data.agent_email_id !== "N/A" &&
+        !emailRegex.test(data.agent_email_id)
+      ) {
         setvalidate((validate) => ({
           ...validate,
           status: true,
@@ -418,18 +429,47 @@ const Editmodal = function ({
       updateinfo(app);
     }
   }
+ const matched_Info= useMemo(() => {
+  let mismatch=false;
+  if((lawFirmId.name??"") !== '' && data.company_name!=='' && lawFirmId.name!=data.company_name && data.add_new_lawfirm===false)
+  {
+    mismatch=true; 
+  }
+  if((lawFirmId.agentname??"")!=='' && data.agent_name!=='' && lawFirmId.agentname!=data.agent_name && data.add_new_lawfirm===false)
+  {
+    mismatch=true;
+  }
+  if((lawFirmId.email??"")!=='' && data.agent_email_id!=='' && lawFirmId.email!=data.agent_email_id && data.add_new_lawfirm===false)
+  {
+    mismatch=true;
+  }
+  if(typeof(lawFirmId.contact)!=='undefined' && data.a_p_h_n!=='' && (lawFirmId.contact??"")!=data.a_p_h_n && data.add_new_lawfirm===false)
+  {
+    mismatch=true;
+  }
+  if(typeof(lawFirmId.status)!=='undefined' && data.firm_status!=='' && (lawFirmId.status??"")!=data.firm_status && data.add_new_lawfirm===false)
+  {
+    mismatch=true;
+  }
+  return mismatch;
+ },[lawFirmId,data]);
   async function updateinfo(app) {
     let email = document.querySelector("#Email_ID").value;
+    let newfirm = document.querySelector("#newfirm").checked;
     try {
       let status = await Uploaddata.pctaxiosrequest({
         ...data,
         posttype: "updateinfo",
+        newfirm: newfirm ? "1" : "2",
+        existing_firm_Id: lawFirmId.id ?? "",
+        mismatched_Info:matched_Info,
         app: app,
       }).then((response) => {
         return response;
       });
       if (status.data.success) {
         inprocess.current = false;
+        document.querySelector("#newfirm").checked = false;
         setvalidate((prev) => ({
           ...prev,
           status: true,
@@ -463,6 +503,7 @@ const Editmodal = function ({
         }));
       }
     } catch (error) {
+      console.log("Error updating info:", error);
       inprocess.current = false;
       setvalidate((prev) => ({
         ...prev,
@@ -521,6 +562,7 @@ const Editmodal = function ({
     setemailResults([]);
   };
   const selectlawfirm = (item) => {
+    setlawFirmId(item);
     if (item.b_list && item.b_list.toLowerCase() === "yes") {
       alert("This lawfirm is blacklisted, please contact admin");
     }
@@ -528,6 +570,7 @@ const Editmodal = function ({
       ...data,
       agent_name: item.agentname,
       agent_email_id: item.email,
+      a_p_h_n: (item.contact==="" || item.contact===null) ? data.a_p_h_n: item.contact,
       company_name: item.name,
       firm_status: item.status,
       additional_email_id_agent: item.alt_email,
@@ -568,7 +611,7 @@ const Editmodal = function ({
     const timer = setTimeout(() => {
       if (query.length > 0) {
         const result = fuse
-          .search(`^"${query}"`, { limit: 15 })
+          .search(`^"${query}"`, { limit: 300 })
           .map((r) => r.item);
         setResults(result);
       } else {
@@ -584,7 +627,7 @@ const Editmodal = function ({
     const timer = setTimeout(() => {
       if (queryemail.length > 0) {
         const result = fuse_email
-          .search(`"${queryemail}"`, { limit: 15 })
+          .search(`"${queryemail}"`, { limit: 300 })
           .map((r) => r.item);
         setemailResults(result);
       } else {
@@ -599,10 +642,12 @@ const Editmodal = function ({
   useEffect(() => {
     const timerlawfirm = setTimeout(() => {
       if (lawfirmquery.length > 0) {
-        const result = fuselawfirm
-          .search(`^"${lawfirmquery}"`, { limit: 15 })
+        let result = fuselawfirm
+          .search(`^"${lawfirmquery}"`, { limit: 300 })
           .map((r) => r.item);
-
+        result = result.filter((item) =>
+          item.agentname.toLowerCase().includes(data.agent_name.toLowerCase())
+        );
         setlawfirmResults(result);
       } else {
         setlawfirmResults([]);
@@ -610,16 +655,15 @@ const Editmodal = function ({
     }, 300); // debounce time
 
     return () => clearTimeout(timerlawfirm);
-  }, [lawfirmquery, fuselawfirm]);
+  }, [lawfirmquery, fuselawfirm, data.agent_name]);
 
   // Search effect with debounce for law firms email
   useEffect(() => {
     const timerlawfirm = setTimeout(() => {
       if (lawfirmqueryemail.length > 0) {
         const result = fuselawfirm_email
-          .search(`"${lawfirmqueryemail}"`, { limit: 15 })
+          .search(`"${lawfirmqueryemail}"`, { limit: 300 })
           .map((r) => r.item);
-
         setlawfirmemailResults(result);
       } else {
         setlawfirmemailResults([]);
@@ -805,7 +849,11 @@ const Editmodal = function ({
                                 <input
                                   readOnly
                                   type="text"
-                                  className={`date form-control Aplication_number validate-field fw-medium ANC ${show.data.duplicate !== null ? "bg-danger text-white" : ""}`}
+                                  className={`date form-control Aplication_number validate-field fw-medium ANC ${
+                                    show.data.duplicate !== null
+                                      ? "bg-danger text-white"
+                                      : ""
+                                  }`}
                                   value={show.data.appno}
                                   id="Aplication_number"
                                   name="Aplication_number"
@@ -1234,13 +1282,28 @@ const Editmodal = function ({
                           </div>
 
                           <div className="row mb-2">
-                            <div className="form-group col-md-3">
+                            <div className="form-group col-md-3 position-relative">
                               <label
                                 className="col-sm-12 fw-semibold"
                                 htmlFor="Company_Name"
                               >
                                 Law firm:
                               </label>
+                              <div className="position-absolute top-0 end-0">
+                                Add New
+                                <input
+                                  class={`form-check-input `}
+                                  type="checkbox"
+                                  name="newfirm"
+                                  id="newfirm"
+                                  onChange={(e) =>
+                                    updatestate(
+                                      e.target.checked,
+                                      "add_new_lawfirm"
+                                    )
+                                  }
+                                ></input>
+                              </div>
                               <div
                                 ref={wrapperAgentRef}
                                 className="col-sm-12 error_field_group position-relative"
@@ -1249,7 +1312,7 @@ const Editmodal = function ({
                               >
                                 <input
                                   type="text"
-                                  className=" form-control validate-field fw-medium ANC"
+                                  className={`form-control validate-field fw-medium ANC ${(lawFirmId.name??"") !== '' && data.company_name!=='' && lawFirmId.name!=data.company_name && data.add_new_lawfirm===false ? 'border-red' : ''}`}
                                   id="Company_Name"
                                   autoComplete="off"
                                   onChange={(e) =>
@@ -1267,7 +1330,7 @@ const Editmodal = function ({
                                         onClick={() => selectlawfirm(item)}
                                         className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
                                       >
-                                        {item.name}
+                                        {item.name} ( <b>{item.agentname}</b> )
                                       </li>
                                     ))}
                                   </ul>
@@ -1285,8 +1348,8 @@ const Editmodal = function ({
                                 className="col-sm-12 error_field_group"
                                 id="agent_Name-group"
                               >
-                                <input
-                                  className="form-control fw-medium ANC"
+                                <input data-id={lawFirmId.agentname ?? 'hey'}
+                                  className={`form-control fw-medium ANC ${(lawFirmId.agentname??"")!=='' && data.agent_name!=='' && lawFirmId.agentname!=data.agent_name && data.add_new_lawfirm===false ? 'border-red' : ''}`}
                                   onChange={(e) =>
                                     updatestate(e.target.value, "agent_name")
                                   }
@@ -1315,7 +1378,7 @@ const Editmodal = function ({
                               >
                                 <input
                                   type="text"
-                                  className="form-control fw-medium ANC"
+                                  className={`form-control fw-medium ANC ${(lawFirmId.email??"")!=='' && data.agent_email_id!=='' && lawFirmId.email!=data.agent_email_id && data.add_new_lawfirm===false ? 'border-red' : ''}`}
                                   value={data.agent_email_id}
                                   autoComplete="off"
                                   onChange={(e) =>
@@ -1356,7 +1419,7 @@ const Editmodal = function ({
                               >
                                 <input
                                   type="text"
-                                  className="form-control fw-medium ANC"
+                                  className={`form-control fw-medium ANC ${typeof(lawFirmId.contact) !== 'undefined' && data.a_p_h_n!=='' && (lawFirmId.contact??"")!=data.a_p_h_n && data.add_new_lawfirm===false ? 'border-red' : ''}`}
                                   value={data.a_p_h_n}
                                   onChange={(e) =>
                                     updatestate(e.target.value, "a_p_h_n")
@@ -1382,7 +1445,7 @@ const Editmodal = function ({
                                   onChange={(e) => {
                                     updatestate(e.target.value, "firm_status");
                                   }}
-                                  className="form-control validate-field fw-medium ANC"
+                                  className={`form-control validate-field fw-medium ANC ${typeof(lawFirmId.status) !== 'undefined' && data.firm_status!=='' && (lawFirmId.status??"")!=data.firm_status && data.add_new_lawfirm===false ? 'border-red' : ''}`}
                                   data-field="select"
                                   data-field-name="firm_status"
                                   data-error="please select CONTACT INFO OF"
@@ -1766,6 +1829,7 @@ const Editmodal = function ({
                             <div className="mb-3 text-center d-flex justify-content-between">
                               <button
                                 onClick={(e) => {
+                                  document.querySelector("#newfirm").checked = false;
                                   pagination({ ...show, action: "previous" });
                                 }}
                                 className="btn btn-light-info text-info font-medium focus"
@@ -1778,6 +1842,7 @@ const Editmodal = function ({
                                 onSubmit={(e) => e.preventDefault()}
                                 onClick={(e) => {
                                   e.preventDefault();
+                                  
                                   validatedata(show.data.appno);
                                 }}
                                 class="btn btn-info font-medium rounded-pill px-4"
@@ -1793,6 +1858,7 @@ const Editmodal = function ({
                               </button>
                               <button
                                 onClick={(e) => {
+                                  document.querySelector("#newfirm").checked = false;
                                   pagination({ ...show, action: "next" });
                                 }}
                                 className="btn btn-light-info text-info font-medium focus"

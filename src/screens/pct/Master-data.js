@@ -141,7 +141,6 @@ const Masterdata = ({ reviewcategory, page }) => {
       return newColumns;
     });
   };
-
   const [showeditmodal, updateeditmodal] = useState({ state: false, data: {} });
   const [agentdata, setagentdata] = useState([]);
   const [lawfirmdata, setlawfirmdata] = useState([]);
@@ -153,7 +152,6 @@ const Masterdata = ({ reviewcategory, page }) => {
   const auth = JSON.parse(localStorage.getItem("user"));
   const valued = useSelector((state) => state.userdata.value);
   const [focusedCell, setFocusedCell] = useState({ rowIndex: 0, colIndex: 0 });
-  const [selectedCells, setSelectedCells] = useState([]);
   const pivotmodalstate = useSelector((state) => state.crmstyle.pivot);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -170,14 +168,6 @@ const Masterdata = ({ reviewcategory, page }) => {
     setlawfirmdata(response.data.lawfirm);
   }, []);
 
-  const copySelectedCellsToClipboard = () => {
-    const text = selectedCells.map((c) => c.value).join("\t"); // Tab-delimited
-
-    navigator.clipboard
-      .writeText(text)
-      .then(() => console.log("Copied:", text))
-      .catch((err) => console.error("Copy failed:", err));
-  };
   let data = {};
   let formdata1 = {
     type: "value",
@@ -603,6 +593,9 @@ const Masterdata = ({ reviewcategory, page }) => {
       data.action == "previous" ? previosindex : nextindex
     );
   };
+
+
+  // ================== Search Functionality ==================
   const tableContainerRef = useRef(null);
   const viewportRef = useRef(null);
   const [viewport, setViewport] = useState(null);
@@ -612,7 +605,7 @@ const Masterdata = ({ reviewcategory, page }) => {
     if (e.shiftKey && e.key === "ArrowRight") {
       newFocused = { rowIndex, colIndex: colIndex + 1 };
     }
-    if (e.ctrlKey && e.key === "ArrowRight") {
+    if (e.ctrlKey && e.key === "ArrowRight" && showeditmodal.state == false) {
       e.preventDefault();
       const container = tableContainerRef.current;
       if (container) {
@@ -622,7 +615,7 @@ const Masterdata = ({ reviewcategory, page }) => {
           behavior: "smooth",
         });
       }
-    } else if (e.ctrlKey && e.key === "ArrowLeft") {
+    } else if (e.ctrlKey && e.key === "ArrowLeft" && showeditmodal.state == false) {
       e.preventDefault();
       const container = tableContainerRef.current;
       if (container) {
@@ -632,13 +625,13 @@ const Masterdata = ({ reviewcategory, page }) => {
           behavior: "smooth",
         });
       }
-    } else if (e.ctrlKey && e.key === "ArrowDown") {
+    } else if (e.ctrlKey && e.key === "ArrowDown" && showeditmodal.state == false) {
       e.preventDefault();
       const container = tableContainerRef.current;
       if (container) {
         container.scrollToIndex(d.length - 1);
       }
-    } else if (e.ctrlKey && e.key === "ArrowUp") {
+    } else if (e.ctrlKey && e.key === "ArrowUp" && showeditmodal.state == false) {
       e.preventDefault();
       const container = tableContainerRef.current;
       if (container) {
@@ -696,7 +689,6 @@ const Masterdata = ({ reviewcategory, page }) => {
     });
   }
 };
-  // 🎹 Keyboard shortcuts (Ctrl+F to open, Esc to close)
   useEffect(() => {
     const handler = (e) => {
       if (e.ctrlKey && e.key === "f") {
@@ -759,57 +751,51 @@ const Masterdata = ({ reviewcategory, page }) => {
       <div className={" custom-table "} onKeyDown={handleKeyDown}>
         {/* 🧩 Floating Modal */}
         {showSearch && (
-          <div
-            style={{
-              "z-index": "9",
-              width: "48%",
-              top: "29%",
-              margin: "auto",
-              right: "0",
-              left: "0",
-            }}
-            className="position-absolute bottom-6 right-6 bg-white border shadow-lg rounded-lg p-4 w-72 z-50"
-          >
-            <div className="flex justify-between items-center mb-2">
-              <h2 className="font-semibold text-gray-700">Find</h2>
-              <button
-                className="text-gray-400 hover:text-gray-700"
-                onClick={() => setShowSearch(false)}
-              >
-                ✖
-              </button>
-            </div>
-
-            <input
-              type="text"
-              className="border rounded w-full p-2 mb-3"
-              placeholder="Type to search..."
-              autoFocus
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-
-            <div className="flex justify-between items-center text-sm text-gray-600">
-              <span>
+                 <div class="modal fade show" id="addListModal" tabindex="-1" role="dialog" style={{'display':'block'}} aria-labelledby="addListModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title add-list-title" id="addListModalTitleLabel1">Find</h5>
+                  <button onClick={() => setShowSearch(false)} type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="compose-box">
+                    <div class="compose-content" id="addListModalTitle">
+                      <form action="javascript:void(0);">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="list-title d-flex align-items-center">
+                              <input  value={search} onChange={(e) => setSearch(e.target.value)} id="item-name" type="text" placeholder="Search Application number" class="form-control" name="task" />
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer justify-content-start">
+                             <span>
                 {matches.length > 0
                   ? `${currentMatch + 1} of ${matches.length}`
                   : "No matches"}
               </span>
-              <div className="flex gap-2">
-                <button
+                  <div class="d-flex gap-6">
+                                    <button
                   onClick={prevMatch}
                   disabled={!matches.length}
-                  className="px-2 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
+                  className="btn add-list btn-primary"
                 >
                   ⬆ Prev
                 </button>
                 <button
                   onClick={nextMatch}
                   disabled={!matches.length}
-                  className="px-2 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
+                  className="btn add-list btn-primary"
                 >
                   ⬇ Next
                 </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

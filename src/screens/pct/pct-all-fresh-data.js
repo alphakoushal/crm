@@ -2041,13 +2041,13 @@ const PctallFreshdata = () => {
                           <i
                             className="ti ti-sort-ascending"
                             onClick={(e) => {
-                              sortdata(e, 64);
+                              sortdata(e, 65);
                             }}
                           ></i>{" "}
                         </div>
                         <input
                           className="filter"
-                          onKeyUp={(e) => filterdata(64, e.target.value)}
+                          onKeyUp={(e) => filterdata(65, e.target.value)}
                           type="text"
                         ></input>
                       </th>
@@ -2057,13 +2057,13 @@ const PctallFreshdata = () => {
                           <i
                             className="ti ti-sort-ascending"
                             onClick={(e) => {
-                              sortdata(e, 64);
+                              sortdata(e, 66);
                             }}
                           ></i>{" "}
                         </div>
                         <input
                           className="filter"
-                          onKeyUp={(e) => filterdata(64, e.target.value)}
+                          onKeyUp={(e) => filterdata(66, e.target.value)}
                           type="text"
                         ></input>
                       </th>
